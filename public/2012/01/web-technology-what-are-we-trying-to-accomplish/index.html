@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Building for the Web: What Are We Trying to Accomplish? &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Building for the Web: What Are We Trying to Accomplish?</h1>
+  <span class="post-date">Jan 4 2012</span>
+  
+
+<p>The web technology landscape is huge and growing every day. There are hundreds of options from servers to languages to frameworks for building the next big thing. Is it <a href="http://www.nginx.org/en/">nginx</a> + <a href="http://unicorn.bogomips.org/">unicorn</a> + <a href="http://rubini.us/">rubinus</a> or a <a href="http://nodejs.org/">node.js</a> restful service on <a href="http://cassandra.apache.org/">cassandra</a> running with <a href="http://emberjs.com/">ember.js</a> and html5 on the front end? Should I learn or ? What&#8217;s the best nosql database for a socially powered group buying predicative analysis real-time boutique mobile aggregator that scales to 100 million users and never fails?</p>
+
+<p>It is true there are many choices out there but web technology boils down to a very simple premise. You want to respond to a user action as quickly as possible, under any circumstance, while easily changing functionality. Everything from the technology behind this blog to what goes into facebook operates on that simple idea. The problem comes down to doing it at the scale and speed of the modern web. You have hundreds of thousands of users; you have hundreds of thousands of things you want them to see; you want them to buy, share, create, and/or change those things; you want to deliver a beautiful, customized experience; everything that happens needs to be instantaneous; it can never stop working; and the cherry on the cake is that everything is constantly changing; different features, different experiences, different content; different users. The simple &#8220;hello world&#8221; app is easy. But how do you automatically translate that into every language with a personal message and show a real-time graph with historical data of every user accessing the page <em>at scale</em>? What if we wanted to have users leave messages on the same page? Hopefully by the end of this series you will get a sense of how all the pieces fit together and what&#8217;s involved from going to 10 users to 10 thousand to 10 million.</p>
+
+<h2 id="the-web-at-50-000-feet:ba587cddf41afc4433f829b6dc01b418">The Web at 50,000 Feet</h2>
+
+<p>The web breaks down to three distinct areas: what happens with the client, what happens on the server, and what happens in between. Usually this is rendering a web page: a user clicks a link, a page delivered, the browser displays the content. It could also involve handling an ajax request, calling an API, posting a search form. Either way it boils down to <em>client action, server action, result</em>. Doing this within a users attention span given any amount of meaningful content in a fail-safe way with even the smallest amount of variation is why we have all this technology. It all works together to combine flexibility and speed with power and simplicity. The trick is using the right tool in the swiss-army knife of tech to get the job done.</p>
+
+<p>Let&#8217;s break all this down a bit. Handling a user action well comes down to:</p>
+
+<ul>
+<li>Having the server-side handle the request quickly (Serving)</li>
+<li>A quick travel time between the client and server (Delivering)</li>
+<li>Quickly displaying the result (Rendering)</li>
+</ul>
+
+<p>And developing and managing all this successfully comes down to:</p>
+
+<ul>
+<li>Changing any aspect of what is going on quickly and easily (Developing)</li>
+</ul>
+
+<p>As sites grow and come under heavier load doing any one of these things becomes increasingly difficult. More features, more users, more servers, more code. There is only so much one server can do. There is also only so much a server <em>needs</em> to do. Why hit the database if you can cache the result? Why render a page if you don&#8217;t need to? Why download a one meg html page when it&#8217;s only 100kb compressed? Why download a page if you don&#8217;t have to? How do you do all this and keep your code simple? How do you ensure everything still works even if your <a href="http://aws.amazon.com/message/65648/">data center goes down</a>?</p>
+
+<blockquote>
+<p>Http plays an important role in all of this. I didn&#8217;t truly appreciate http until I read <a href="http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260">Restful Web Services</a> by Sam Ruby and Leonard Richardson. Http as an application protocol offers an elegant, scalable mechanism for transferring data and defining intent. Understanding http verbs, various http headers and how http sits on top of tcp/ip can go along way in mastering the web.</p>
+</blockquote>
+
+<h2 id="making-it-all-work-together:ba587cddf41afc4433f829b6dc01b418">Making it all work together</h2>
+
+<p>So how do you choose and use all the tools out there to serve, deliver, render and develop for the web? What does <em>client action/server action/result</em> have to do with <a href="http://rack.rubyforge.org/">rack</a> and <a href="http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface">wsgi</a>? I naïvely thought I could write everything I wanted to in a single post: from using <a href="http://sass-lang.com/">sass</a> for compressed, minimized css to sharding databases for horizontal scalability. It will be easier to spread it out a bit so stay tuned. But remember: any language, framework or tool out there is really about improving <em>client action/server action/result</em>. Even something like <a href="http://en.wikipedia.org/wiki/WebSocket">websockets</a>. Websockets eliminates the client request completely. Why wait for a user to tell you something when you can push them content? Knowing your problem domain, your bottlenecks, and your available options will help you choose the right tool and make the right time/cost/benefit decision.</p>
+
+<p>I&#8217;ll dig into the constraints and various techniques to effectively <a href="http://wp.me/pnRto-af">deliver</a>, <a href="http://wp.me/pnRto-al">serve, develop</a> and <a href="http://wp.me/pnRto-at">render</a> for the web in upcoming posts.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

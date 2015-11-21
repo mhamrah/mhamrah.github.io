@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/linux/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2015-03-22 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Slimming down Dockerfiles: Decrease the size of Gitlab’s CI runner from 900 to 420 mb</title>
+          <link>http://blog.michaelhamrah.com/2015/03/slimming-down-dockerfiles-decrease-the-size-of-gitlabs-ci-runner-from-900-to-420-mb/</link>
+          <pubDate>Sun, 22 Mar 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/03/slimming-down-dockerfiles-decrease-the-size-of-gitlabs-ci-runner-from-900-to-420-mb/</guid>
+          <description>
+
+&lt;p&gt;I&amp;#8217;ve been leveraging Gitlab CI for our continuous integration needs, running both the CI site and CI runners on our CoreOS cluster in docker containers. It&amp;#8217;s working well. On the runner side, after cloning the ci-runner repositroy and running a &lt;code&gt;docker build -t base-runner .&lt;/code&gt; , I was a little disappointed with the size of the runner. It weighed in at 900MB, a fairly hefty size for something that should be a lightweight process. I&amp;#8217;ve built the &lt;a href=&#34;https://github.com/gitlabhq/gitlab-ci-runner/blob/master/Dockerfile&#34;&gt;ci-runner dockerfile&lt;/a&gt; with the name &amp;#8220;base-runner&amp;#8221;:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;base-runner      latest      aaf8a1c6a6b8    2 weeks ago    901.1 MB
+&lt;/pre&gt;
+
+&lt;p&gt;The dockerfile is well documented and organized, but I immediately noticed some things which cause dockerfile bloat. There are some great resources on slimming down docker files, including &lt;a href=&#34;http://www.centurylinklabs.com/optimizing-docker-images/&#34;&gt;optimizing docker images&lt;/a&gt; and the &lt;a href=&#34;https://github.com/gliderlabs/docker-alpine&#34;&gt;docker-alpine&lt;/a&gt; project. The advice comes down to:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Use the smallest possible base layer (usually Ubuntu is not needed)&lt;/li&gt;
+&lt;li&gt;Eliminate, or at least reduce, layers&lt;/li&gt;
+&lt;li&gt;Avoid extraneous cruft, usually due to excessive packages&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let&amp;#8217;s make some minor changes to see if we can slim down this image. At the top of the dockerfile, we see the usual apt-get commands:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;# Update your packages and install the ones that are needed to compile Ruby
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get install -y curl libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libssl-dev patch build-essential zlib1g-dev openssh-server libyaml-dev libicu-dev
+
+# Download Ruby and compile it
+RUN mkdir /tmp/ruby
+RUN cd /tmp/ruby &amp;#038;&amp;#038; curl --silent ftp://ftp.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p481.tar.gz | tar xz
+RUN cd /tmp/ruby/ruby-2.0.0-p481 &amp;#038;&amp;#038; ./configure --disable-install-rdoc &amp;#038;&amp;#038; make install
+&lt;/pre&gt;
+
+&lt;p&gt;Each &lt;code&gt;RUN&lt;/code&gt; command creates a separate layer, and nothing is cleaned up. These artifacts will stay with the container unnecessarily. Running another &lt;code&gt;RUN rm -rf /tmp&lt;/code&gt; won&amp;#8217;t help, because the history is still there. We need things gone and without a trace. We can &amp;#8220;flatten&amp;#8221; these commands and add some cleanup commands while preserving readability:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;# Update your packages and install the ones that are needed to compile Ruby
+# Download Ruby and compile it
+RUN apt-get update -y &amp;#038;&amp;#038; 
+    apt-get upgrade -y &amp;#038;&amp;#038; 
+    apt-get install -y curl libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libssl-dev patch build-essential zlib1g-dev openssh-server libyaml-dev libicu-dev &amp;#038;&amp;#038; 
+    mkdir /tmp/ruby &amp;#038;&amp;#038; 
+    cd /tmp/ruby &amp;#038;&amp;#038; curl --silent ftp://ftp.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p481.tar.gz | tar xz &amp;#038;&amp;#038; 
+    cd /tmp/ruby/ruby-2.0.0-p481 &amp;#038;&amp;#038; ./configure --disable-install-rdoc &amp;#038;&amp;#038; make install &amp;#038;&amp;#038; 
+    apt-get clean &amp;#038;&amp;#038; 
+    rm -rf /var/lib/apt/lists/* /tmp/*
+&lt;/pre&gt;
+
+&lt;p&gt;There&amp;#8217;s only one run command, and the last two lines cleanup the apt-get downloads and &lt;code&gt;tmp&lt;/code&gt; space. Let&amp;#8217;s see how we well we do:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;$ docker images | grep base-runner
+base-runner      latest      2a454f84e4e8      About a minute ago   566.9 MB
+&lt;/pre&gt;
+
+&lt;p&gt;Not bad; with one simple modification we went from 902mb to 566mb. This change comes at the cost of build speed. Because there&amp;#8217;s no previously cached layer, we always start from the beginning. When creating docker files, I usually start with multiple run commands so history is preserved while I&amp;#8217;m working on the file, but then concatenate everything at the end to minimize cruft.&lt;/p&gt;
+
+&lt;p&gt;566mb is a good start, but can we do better? The goal of this build is to install the ci-runner. This requires Ruby and some dependencies, all documented on the ci-runner&amp;#8217;s readme. As long as we&amp;#8217;re meeting those requirements, we&amp;#8217;re good to go. Let&amp;#8217;s switch to debian:wheezy. We&amp;#8217;ll also need to tweak the locale setting for debian. Our updated dockerfile starts with this:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;# gitlab-ci-runner
+
+FROM debian:wheezy
+MAINTAINER Michael Hamrah &amp;lt;m@hamrah.com&gt;
+
+# Get rid of the debconf messages
+ENV DEBIAN_FRONTEND noninteractive
+
+# Update your packages and install the ones that are needed to compile Ruby
+# Download Ruby and compile it
+RUN apt-get update -y &amp;#038;&amp;#038; 
+    apt-get upgrade -y &amp;#038;&amp;#038; 
+    apt-get install -y locales curl libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libssl-dev patch build-essential zlib1g-dev openssh-server libyaml-dev libicu-dev &amp;#038;&amp;#038; 
+    mkdir /tmp/ruby &amp;#038;&amp;#038; 
+    cd /tmp/ruby &amp;#038;&amp;#038; curl --silent ftp://ftp.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p481.tar.gz | tar xz &amp;#038;&amp;#038; 
+    cd /tmp/ruby/ruby-2.0.0-p481 &amp;#038;&amp;#038; ./configure --disable-install-rdoc &amp;#038;&amp;#038; make install &amp;#038;&amp;#038; 
+    apt-get clean &amp;#038;&amp;#038; 
+    rm -rf /var/lib/apt/lists/* /tmp/*
+&lt;/pre&gt;
+
+&lt;p&gt;Let&amp;#8217;s check this switch:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;base-runner      latest      40a1465ebaed      3 minutes ago      490.3 MB
+&lt;/pre&gt;
+
+&lt;p&gt;Better. A slight modification can slim this down some more; the dockerfile builds ruby from source. Not only does this take longer, it&amp;#8217;s not needed: we can just include the &lt;code&gt;ruby&lt;/code&gt; and &lt;code&gt;ruby-dev&lt;/code&gt; packages; on debian:wheezy these are good enough for running the ci-runner. By removing the install-from-source commands we can get the image down to:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash wrap:true&#34;&gt;base-runner      latest      bb4e6306811d      About a minute ago   423.6 MB
+&lt;/pre&gt;
+
+&lt;p&gt;This now more than 50% less then the original, with a minimal amount of tweaking.&lt;/p&gt;
+
+&lt;h1 id=&#34;pushing-even-further:ef76312dca5f3c1992b296f85b019da1&#34;&gt;Pushing Even Further&lt;/h1&gt;
+
+&lt;p&gt;Normally I&amp;#8217;m not looking for an absolute minimal container. I just want to avoid excessive bloat, and some simple commands can usually go a long way. I also find it best to avoid packages in favor of pre-built binaries. As an example I do a lot of work with Scala, and have an sbt container for builds. If I were to install the SBT package from debian I&amp;#8217;d get a container weighing in at a few hundred megabytes. That&amp;#8217;s because the SBT package pulls in a lot of dependencies: java, for one. But if I already have a jre, all I really need is the sbt jar file and a bash script to launch. That considerably shrinks down the dockerfile size.&lt;/p&gt;
+
+&lt;p&gt;When selecting a base image, it&amp;#8217;s important to realize what you&amp;#8217;re getting. A linux distribution is simply the linux kernel and an opinionated configuration of packages, tools and binaries. Ubuntu uses aptitude for package management, Fedora uses Yum. Centos 6 uses a specific version of the kernel, while version 7 uses another. You get one set of packages with Debian, another with Ubuntu. That&amp;#8217;s the power of specific communities: how frequently things are updated, how well they&amp;#8217;re maintained, and what you get out-of-box. A docker container jails a process to only see a specific part of the filesystem; specifically, the container&amp;#8217;s file system. Using a distribution ensures that the required libraries and support binaries are there, in place, where they should be. But major distributions aren&amp;#8217;t designed to run specific applications; their general-purposes servers that are designed to run a variety of apps and processes. If you want to run a single process there&amp;#8217;s a lot that comes with an OS you don&amp;#8217;t need.&lt;/p&gt;
+
+&lt;p&gt;There&amp;#8217;s a re-emergence of lightweight linux distributions in the docker world first popularized with embedded systems. You&amp;#8217;re probably familiar with &lt;a href=&#34;https://registry.hub.docker.com/_/busybox/&#34;&gt;busybox&lt;/a&gt; useful for running one-off bash commands. Because of busybox&amp;#8217;s embedded roots, it&amp;#8217;s not quite intended for packages. &lt;a href=&#34;https://www.alpinelinux.org&#34;&gt;Alpine Linux&lt;/a&gt; is another alternative which features its own &lt;a href=&#34;https://registry.hub.docker.com/_/alpine/&#34;&gt;official registry&lt;/a&gt;. It&amp;#8217;s still very small, based on busybox, and has its own package system. I tried getting gitlab&amp;#8217;s ci-runner working with alpine, but unfortunately some of the ruby gems used by ci-runner require GNU packages which aren&amp;#8217;t available, and I didn&amp;#8217;t want to compile them manually. In terms of time/benefit, I can live with 400mb and move on to something else. For most things you can probably do a lot with Alpine and keep your containers really small: great for doing continuous deploys to a bunch of servers.&lt;/p&gt;
+
+&lt;p&gt;The bottom line is know what you need. If you want a minimal container, build up, rather than slim down. You usually need the runtime for your application (if any), your app, and supporting dependencies. Know those dependencies, and avoid cruft when you can.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

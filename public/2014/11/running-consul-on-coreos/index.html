@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Running Consul on CoreOS &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Running Consul on CoreOS</h1>
+  <span class="post-date">Nov 29 2014</span>
+  <p>I&#8217;m a big fan of <a href="consul.io">Consul</a>, Hashicorp&#8217;s service discovery tool. I&#8217;ve also become a fan of CoreOS, the cluster framework for running docker containers. Even though CoreOS comes with etcd for service discovery I find the feature set of Consul more compelling. And as a programmer I know I can have my cake and eat it too.</p>
+
+<p>My first take was to modify my <a href="github.com/mhamrah/ansible-consul">ansible-consul</a> fork to run consul natively on CoreOS. Although this could work I find it defeats CoreOS&#8217;s container-first approach with <a href="https://github.com/coreos/fleet">fleet</a>. Jeff Lindsay created <a href="https://github.com/progrium/docker-consul">a consul docker container</a> which does the job well. I created two fleet service files: one for launching the consul container and another for service discovery. At first the service discovery aspect seemed weird; I tried to pass ip addresses via the &#8211;join parameter or use <code>ExecStartPost</code> for running the join command. However I took a cue from the CoreOS cluster setup: sometimes you need a third party to get stuff done. In this case we the built in etcd server to manage the join ip address to kickstart the consul cluster.</p>
+
+<p>The second fleet service file acts as a sidekick:</p>
+
+<ul>
+<li>For every running consul service there&#8217;s a sidekick process</li>
+<li>The sidekick process writes the current IP to a key only if that key doesn&#8217;t exist</li>
+<li>The sidekick process uses the value of that key to join the cluster with <code>docker exec</code></li>
+<li>The sidekick process removes the key if the consul service dies.</li>
+</ul>
+
+<p>The two service files are below, but you should tweak for your needs.</p>
+
+<ul>
+<li>You only need a 3 or 5 node server cluster. If your CoreOS deployment is large, use some form of restriction for the server nodes. You can do the same for the client nodes.</li>
+<li>The discovery script could be optimized. It will try and join whatever ip address is listed in the key. This avoids a few split brain scenarios, but needs to be tested.</li>
+<li>If you want DNS to work properly you need to set some Docker daemon options. Read the docker-consul README.</li>
+</ul>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

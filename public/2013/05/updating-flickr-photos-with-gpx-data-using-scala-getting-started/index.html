@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Updating Flickr Photos with Gpx Data using Scala: Getting Started &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Updating Flickr Photos with Gpx Data using Scala: Getting Started</h1>
+  <span class="post-date">May 5 2013</span>
+  
+
+<p>If you read this blog you know I&#8217;ve just returned from six months of travels around Asia, documented on our tumblr, <a href="http://thegreatbigadventure.tumblr.com">The Great Big Adventure</a> with photos on <a href="http://flickr.com/hamrah">Flickr</a>. Even though my camera doesn&#8217;t have a GPS, I realized toward the second half of the trip I could mark GPS waypoints and write a program to link that data later. I decided to write this little app in Scala, a language I&#8217;ve been learning since my return. The app is still a work in progress, but instead of one long post I&#8217;ll spread it out as I go along.</p>
+
+<h2 id="the-workflow:57d2935fd637ebe85b97477296b70272">The Workflow</h2>
+
+<p>When I took a photo I usually marked the location with a waypoint in my GPS. I accumulated a set of around 1000 of these points spread out over three gpx (xml) files. My plan is to:</p>
+
+<ol>
+<li>Read in the three gpx files and combine them into a distinct list.</li>
+<li>For each day I have at least one gpx point, get all of my flickr images for that data.</li>
+<li>For each image, find the waypoint timestamp with the least difference in time.</li>
+<li>Update that image with the waypoint data on Flickr.</li>
+</ol>
+
+<h2 id="getting-started:57d2935fd637ebe85b97477296b70272">Getting Started</h2>
+
+<p>If you&#8217;re going to be doing anything with Scala, learning <a href="http://scala-sbt.org">sbt</a> is essential. Luckily, it&#8217;s pretty straightforward, but the documentation across the internet is somewhat inconsistent. As of this writing, <a href="http://twitter.github.io/scala_school/sbt.html">Twitter&#8217;s Scala School SBT Documentation</a>, which I used as a reference to get started, incorrectly states that SBT creates a template for you. It no longer does, with the preferred approach to use <a href="https://github.com/n8han/giter8">giter8</a>, an excellent templating tool. I created <a href="https://github.com/mhamrah/sbt.g8">my own simplified version</a> which is based off of the excellently documented <a href="https://github.com/ymasory/sbt.g8">template by Yuvi Masory</a>. Some of the versions in build.sbt are a outdated, but it&#8217;s worthwhile reading through the code to get a feel for the Scala and SBT ecosystem. The g8 project also contains a good working example of custom sbt commands (like g8-test). One gotcha with SBT: if you change your build.sbt file, you must call <em>reload</em> in the sbt console. Otherwise, your new dependencies will not be picked up. For rubyists this is similar to running <em>bundle update</em> after changing your gemfile.</p>
+
+<h2 id="testing:57d2935fd637ebe85b97477296b70272">Testing</h2>
+
+<p>I&#8217;m a big fan of TDD, and strive for a test-first approach. It&#8217;s easy to get a feel for the small stuff in the scala repl, but orchestration is what programming is all about, and TDD allows you to design and throughly test functionality in a repeatable way. The two main libraries are <a href="https://code.google.com/p/specs/">specs</a> (actually, it&#8217;s now <a href="http://etorreborre.github.io/specs2/">specs2</a>) and <a href="http://www.scalatest.org/">ScalaTest</a>. I originally went with specs2. It was fine, but I wasn&#8217;t too impressed with the output and not thrilled with the matchers. I believe these are all customizable, but to get a better feel for the ecosystem I switched to ScalaTest. I like ScalaTest&#8217;s default output better and the flexible composition of testing styles (I&#8217;m using FreeSpec) and matchers (ShouldMatchers) provide a great platform for testing. Luckily, both specs2 and scalatest integrate with SBT which provides continuous testing and growl support, so you don&#8217;t need to fully commit to either one too early.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

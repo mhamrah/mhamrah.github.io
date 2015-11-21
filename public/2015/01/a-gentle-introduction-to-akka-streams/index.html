@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      A Gentle Introduction To Akka Streams &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">A Gentle Introduction To Akka Streams</h1>
+  <span class="post-date">Jan 13 2015</span>
+  
+
+<p>I&#8217;m happy to see stream-based programming emerge as a paradigm in many languages. Streams have been around for a while: take a look at the good &#8216;ol | operator in Unix. Streams offer an interesting conceptual model to processing pipelines that is very functional: you have an input, you produce an output. You string these little functions together to build bigger, more complex pipelines. Most of the time you can make these functions asynchronous and parallelize them over input data to maximize throughput and scale. With a Stream, handling data is almost hidden behind the scenes: it just <em>flows</em> through <em>functions</em>, producing a new output from some input. In the case of an Http server, the Request-Response model across all clients is a Stream-based process: You map a Request to a Response, passing it through various functions which act on an input. Forget about MVC, it&#8217;s all middleware. No need to set variables, iterate over collections, orchestrate function calls. Just concatenate stream-enabled functions together, and run your code. Streams offer a succinct programming model for a process. The fact it also scales is a nice bonus.</p>
+
+<p>Stream based programming is possible in a variety of languages, and I encourage you to explore this space. There&#8217;s an excellent <a href="https://github.com/substack/stream-handbook">stream handbook for Node</a>, <a href="https://github.com/matz/streem">an exploratory stream language from Yukihiro &#8220;Matz&#8221; Matsumoto of Ruby fame</a>, <a href="https://spark.apache.org/streaming/">Spark Streaming</a> and of course <a href="http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/index.html">Akka-Streams</a> which joins the existing <a href="https://github.com/scalaz/scalaz-stream">scalaz-stream</a> library for Scala. Even Go&#8217;s <a href="http://golang.org/pkg/net/http/#HandleFunc">HttpHandler function</a> is Stream-esque: you can easily wrap one function around another, building up a flow, and manipulate the Response stream accordingly.</p>
+
+<h2 id="why-akka-streams:9c0e63de68271e30d1a6e002245492be">Why Akka-Streams?</h2>
+
+<p>Akka-Streams provide a higher-level abstraction over Akka&#8217;s existing actor model. The Actor model provides an excellent primitive for writing concurrent, scalable software, but it still is a primitive; it&#8217;s not hard to find a few critiques of the model. So is it possible to have your cake and eat it too? Can we abstract the functionality we want to achieve with Actors into a set of function calls? Can we treat Actor Messages as Inputs and Outputs to Functions, with type safety? Hello, Akka-Streams.</p>
+
+<p>There&#8217;s an excellent <a href="http://www.typesafe.com/activator/template/akka-stream-scala">activator template for Akka-Streams</a> offering an in-depth tutorial on several aspects of Akka-Streams. For a more a gentler introduction, read on.</p>
+
+<h2 id="the-recipe:9c0e63de68271e30d1a6e002245492be">The Recipe</h2>
+
+<p>To cook up a reasonable dish, we are going to consume messages from <a href="https://www.rabbitmq.com">RabbitMq</a> with the <a href="https://github.com/ScalaConsultants/reactive-rabbit">reactive-rabbit</a> library and output them to the console. The code is on <a href="https://github.com/mhamrah/streams-playground">GitHub</a>. If you&#8217;d like to follow along, <code>git clone</code> and then <code>git checkout intro</code>; hopefully I&#8217;ll build up more functionality in later posts so the master branch may differ.</p>
+
+<p>Let&#8217;s start with a code snippet:</p>
+
+<pre class="lang:scala">object RabbitMqConsumer {
+ def consume(implicit flowMaterializer: FlowMaterializer) = {
+    Source(connection.consume("streams-playground"))
+      .map(_.message.body.utf8String)
+      .foreach(println(_))
+  }
+}
+</pre>
+
+<ul>
+<li>We use a RabbitMq connection to consume messages off of a queue named <code>streams-playground</code>.</li>
+<li>For each message, we pull out the message and decode the bytes as a UTF-8 string</li>
+<li>We print it to the console</li>
+</ul>
+
+<h2 id="the-ingredients:9c0e63de68271e30d1a6e002245492be">The Ingredients</h2>
+
+<ul>
+<li>A <code>Source</code> is something which produces exactly one output. If you need something that generates data, you need a <code>Source</code>. Our source above is produced from the <code>connection.consume</code> function.</li>
+<li>A <code>Sink</code> is something with exactly one input. A <code>Sink</code> is the final stage of a Stream process. The <code>.foreach</code> call is a Sink which writes the input (_) to the console via <code>println</code>.</li>
+<li>A <code>Flow</code> is something with exactly one input and one output. It allows data to flow through a function: like calling <code>map</code> which also returns an element on a collection. The <code>map</code> call above is a <code>Flow</code>: it consumes a <code>Delivery</code> message and outputs a <code>String</code>.</li>
+</ul>
+
+<p>In order to actually run something using Akka-Streams you must have both a <code>Source</code> and <code>Sink</code> attached to the same pipeline. This allows you to create a <code>RunnableFlow</code> and begin processing the stream. Just as you can compose functions and classes, you can compose streams to build up richer functionality. It&#8217;s a powerful abstraction allowing you to build your processing logic independently of its execution. Think of stream libraries where you &#8220;plug in&#8221; parts of streams together and customize accordingly.</p>
+
+<h2 id="a-simple-flow:9c0e63de68271e30d1a6e002245492be">A Simple Flow</h2>
+
+<p>You&#8217;ll notice the above snippet requires an <code>implicit flowMaterializer: FlowMaterializer</code>. A <code>FlowMaterializer</code> is required to actually run a <code>Flow</code>. In the snippet above <code>foreach</code> acts as both a <code>Sink</code> and a <code>run()</code> call to run the flow. If you look at the Main.scala file you&#8217;ll see I start the stream easily in one call:</p>
+
+<pre class="lang:scala">implicit val flowMaterializer = FlowMaterializer()
+  RabbitMqConsumer.consume
+</pre>
+
+<p>Create a queue named <code>streams-playground</code> via the RabbitMq Admin UI and run the application. You can use publish messages in the RabbitMq Admin UI and they will appear in the console. Try some UTF-8 characters, like åßç∂!</p>
+
+<h2 id="a-variation:9c0e63de68271e30d1a6e002245492be">A Variation</h2>
+
+<p>The original snippet is nice, but it does require the implicit FlowMaterializer to build and run the stream in <code>consume</code>. If you remove it, you&#8217;ll get a compile error. Is there a way to separate the definition of the stream with the running of the stream? Yes, by simply removing the <code>foreach</code> call. <code>foreach</code> is just syntactical sugar for a <code>map</code> with a <code>run()</code> call. By explicitly setting a <code>Sink</code> without a call to <code>run()</code> we can construct our stream blueprint producing a new object of type <code>RunnableFlow</code>. Intuitively, it&#8217;s a <code>Flow</code> which can be <code>run()</code>.</p>
+
+<p>Here&#8217;s the variation:</p>
+
+<pre class="lang:scala">def consume() = {
+     Source(connection.consume("streams-playground"))
+      .map(_.message.body.utf8String)
+      .map(println(_))
+      .to(Sink.ignore) //won't start consuming until run() is called!
+  }
+</pre>
+
+<p>We got rid of our <code>flowMaterializer</code> implicit by terminating our Stream with a <code>to()</code> call and a simple Sink.ignore which discards messages. This stream will not be run when called. Instead we must call it explicitly in Main.scala:</p>
+
+<pre class="lang:scala">implicit val flowMaterializer = FlowMaterializer()
+  RabbitMqConsumer.consume().run()
+</pre>
+
+<p>We&#8217;ve separated out the entire pipeline into two stages: the build stage, via the <code>consume</code> call, and the run stage, with <code>run()</code>. Ideally you&#8217;d want to compose your stream processing as you wire up the app, with each component, like RabbitMqConsumer, providing part of the overall stream process.</p>
+
+<h2 id="a-counter-example:9c0e63de68271e30d1a6e002245492be">A Counter Example</h2>
+
+<p>As an alternative, explore the <a href="http://www.rabbitmq.com/tutorials/tutorial-one-java.html">rabbitmq tutorials</a> for Java examples. Here&#8217;s a snippet from the site:</p>
+
+<pre class="lang:java">QueueingConsumer consumer = new QueueingConsumer(channel);
+    channel.basicConsume(QUEUE_NAME, true, consumer);
+
+    while (true) {
+      QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+      String message = new String(delivery.getBody());
+      System.out.println(" [x] Received '" + message + "'");
+    }
+</pre>
+
+<p>This is typical of an imperative style. Our flow is controlled by the while loop, we have to explicitly manage variables, and there&#8217;s no flow control. We could separate out the body from the while loop, but we&#8217;d have a crazy function signature. Alternatively on the Akka side there&#8217;s the solid <a href="https://github.com/sstone/amqp-client">amqp-client library</a> which provides an Actor based model over RabbitMq:</p>
+
+<pre class="lang:scala">// create an actor that will receive AMQP deliveries
+  val listener = system.actorOf(Props(new Actor {
+    def receive = {
+      case Delivery(consumerTag, envelope, properties, body) => {
+        println("got a message: " + new String(body))
+        sender ! Ack(envelope.getDeliveryTag)
+      }
+    }
+  }))
+
+  // create a consumer that will route incoming AMQP messages to our listener
+  // it starts with an empty list of queues to consume from
+  val consumer = ConnectionOwner.createChildActor(conn, Consumer.props(listener, channelParams = None, autoack = false))
+</pre>
+
+<p>You get the concurrency primitives via configuration over the actor system, but we still enter imperative-programming land in the Actor&#8217;s <code>receive</code> blog (sure, this can be refactored to some degree). In general, if we can model our process as a set of streams, we achieve the same benefits we get with functional programming: clear composition on what is happening, not how it&#8217;s doing it.</p>
+
+<p>Streams can be applied in a variety of contexts. I&#8217;m happy to see the amazing and powerful <a href="http://spray.io">spray.io</a> library for Restful web services will be merged into Akka as a stream enabled http toolkit. It&#8217;s also not hard to find out what&#8217;s been done with <a href="https://github.com/scalaz/scalaz-stream#projects-using-scalaz-stream">scalaz-streams</a> or the plethora of tooling already available in other languages.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

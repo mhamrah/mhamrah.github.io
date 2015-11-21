@@ -1,0 +1,14 @@
+languageCode = "en-us"
+baseurl = "http://blog.michaelhamrah.com/"
+canonifyurls = true
+
+[permalinks]
+post = ":year/:month/:title/"
+fixed = ":title/"
+
+[params]
+DateForm = "Jan 2 2006"
+Title = "Adventures in HttpContext"
+Tagline = "All the stuff after 'Hello, World'"
+Author = "Michael Hamrah"
+

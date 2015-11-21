@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/ansible/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2014-06-26 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Setting up a Multi-Node Mesos Cluster running Docker, HAProxy and Marathon with Ansible</title>
+          <link>http://blog.michaelhamrah.com/2014/06/setting-up-a-multi-node-mesos-cluster-running-docker-haproxy-and-marathon-with-ansible/</link>
+          <pubDate>Thu, 26 Jun 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/06/setting-up-a-multi-node-mesos-cluster-running-docker-haproxy-and-marathon-with-ansible/</guid>
+          <description>
+
+&lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;With Mesos 0.20 Docker support is now native, and Deimos has been deprecated. The ansible-mesos-playbook has been updated appropriately, and most of this blog post still holds true. There are slight variations with how you post to Marathon.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&#34;http://eurosys2013.tudos.org/wp-content/uploads/2013/paper/Schwarzkopf.pdf&#34;&gt;Google Omega Paper&lt;/a&gt; has given birth to cloud vNext: cluster schedulers managing containers. You can make a bunch of nodes appear as one big computer and deploy anything to your own private cloud; just like Docker, but across any number of nodes. &lt;a href=&#34;https://github.com/GoogleCloudPlatform/kubernetes&#34;&gt;Google&amp;#8217;s Kubernetes&lt;/a&gt;, &lt;a href=&#34;flynn.io&#34;&gt;Flynn&lt;/a&gt;, &lt;a href=&#34;https://github.com/coreos/fleet&#34;&gt;Fleet&lt;/a&gt; and &lt;a href=&#34;http://mesos.apache.org/&#34;&gt;Apache Mesos&lt;/a&gt;, originally from Twitter, are implementations of Omega with the goal of abstracting away discrete nodes and optimizing compute resources. Each implementation has its own tweak, but they all follow the same basic setup: leaders, for coordination and scheduling; some service discovery component; some underlying cluster tool (like Zookeeper); followers, for processing.&lt;/p&gt;
+
+&lt;p&gt;In this post we&amp;#8217;ll use &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; to install a multi-node Mesos cluster using packages from &lt;a href=&#34;http://mesosphere.io/&#34;&gt;Mesosphere&lt;/a&gt;. Mesos, as a cluster framework, allows you to run a variety of cluster-enabled software, including &lt;a href=&#34;http://spark.apache.org/&#34;&gt;Spark&lt;/a&gt;, &lt;a href=&#34;https://github.com/mesosphere/storm-mesos&#34;&gt;Storm&lt;/a&gt; and &lt;a href=&#34;https://github.com/mesos/hadoop&#34;&gt;Hadoop&lt;/a&gt;. You can also run &lt;a href=&#34;https://github.com/jenkinsci/mesos-plugin&#34;&gt;Jenkins&lt;/a&gt;, schedule tasks with &lt;a href=&#34;https://github.com/airbnb/chronos&#34;&gt;Chronos&lt;/a&gt;, even run &lt;a href=&#34;https://github.com/mesosphere/elasticsearch-mesos&#34;&gt;ElasticSearch&lt;/a&gt; and &lt;a href=&#34;https://github.com/mesosphere/cassandra-mesos&#34;&gt;Cassandra&lt;/a&gt; without having to double to specific servers. We&amp;#8217;ll also set up &lt;a href=&#34;https://github.com/mesosphere/marathon&#34;&gt;Marathon&lt;/a&gt; for running services with &lt;a href=&#34;https://github.com/mesosphere/deimos&#34;&gt;Deimos&lt;/a&gt; support for Docker containers.&lt;/p&gt;
+
+&lt;p&gt;Mesos, even with Marathon, doesn&amp;#8217;t offer the holistic integration of some other tools, namely Kubernetes, but at this point it&amp;#8217;s easier to set up on your own set of servers. Although young Mesos is one of the oldest projects of the group and allows more of a DIY approach on service composition.&lt;/p&gt;
+
+&lt;h3 id=&#34;tl-dr:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;TL;DR&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://github.com/mhamrah/ansible-mesos-playbook&#34;&gt;The playbook is on github, just follow the readme!&lt;/a&gt;&lt;/em&gt;. If you want to simply try out Mesos, Marathon, and Docker &lt;a href=&#34;http://mesosphere.io/learn/run-docker-on-mesosphere/&#34;&gt;mesosphere has an excellent tutorial to get you started on a single node&lt;/a&gt;. This tutorial outlines the creation of a more complex multi-node setup.&lt;/p&gt;
+
+&lt;h3 id=&#34;system-setup:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;System Setup&lt;/h3&gt;
+
+&lt;p&gt;The system is divided into two parts: a set of masters, which handle scheduling and task distribution, with a set of slaves providing compute power. Mesos uses Zookeeper for cluster coordination and leader election. A key component is service discovery: you don&amp;#8217;t know which host or port will be assigned to a task, which makes, say, accessing a website running on a slave difficult. The Marathon API allows you to query task information, and we use this feature to configure HAProxy frontend/backend resources.&lt;/p&gt;
+
+&lt;p&gt;Our masters run:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Zookeeper&lt;/li&gt;
+&lt;li&gt;Mesos-Master&lt;/li&gt;
+&lt;li&gt;HAProxy&lt;/li&gt;
+&lt;li&gt;Marathon&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and our slaves run:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Mesos-Slave&lt;/li&gt;
+&lt;li&gt;Docker&lt;/li&gt;
+&lt;li&gt;Deimos, the Mesos -&amp;gt; Docker bridge&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;ansible:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;Ansible&lt;/h3&gt;
+
+&lt;p&gt;Ansible works by running a playbook, composed of roles, against a set of hosts, organized into groups. My &lt;a href=&#34;https://github.com/mhamrah/ansible-mesos-playbook&#34;&gt;Ansible-Mesos-Playbook&lt;/a&gt; on GitHub has an example hosts file with some EC2 instances listed. You should be able to replace these with your own EC2 instances running Ubuntu 14.04, our your own private instances running Ubuntu 14.04. Ansible allows us to pass node information around so we can configure multiple servers to properly set up our masters, zookeeper set, point slaves to masters, and configure Marathon for high availability.&lt;/p&gt;
+
+&lt;p&gt;We want at least three servers in our master group for a proper zookeeper quorum. We use host variables to specify the zookeeper id for each node.&lt;/p&gt;
+
+&lt;pre class=&#34;brush: plain; title: ; notranslate&#34; title=&#34;&#34;&gt;[mesos_masters]
+ec2-54-204-214-172.compute-1.amazonaws.com zoo_id=1
+ec2-54-235-59-210.compute-1.amazonaws.com zoo_id=2
+ec2-54-83-161-83.compute-1.amazonaws.com zoo_id=3
+&lt;/pre&gt;
+
+&lt;p&gt;The &lt;a href=&#34;https://github.com/mhamrah/ansible-mesos&#34;&gt;mesos-ansible&lt;/a&gt; playbook will use nodes in the &lt;code&gt;mesos_masters&lt;/code&gt; for a variety of configuration options. First, the &lt;code&gt;/etc/zookeeper/conf/zoo.cfg&lt;/code&gt; will list all master nodes, with &lt;code&gt;/etc/zookeeper/conf/myid&lt;/code&gt; being set appropriately. It will also set up upstart scripts in &lt;code&gt;/etc/init/mesos-master.conf&lt;/code&gt;, &lt;code&gt;/etc/init/mesos-slave.conf&lt;/code&gt; with default configuration files in &lt;code&gt;/etc/defaults/mesos.conf&lt;/code&gt;. Mesos 0.19 supports external executors, so we use Deimos to run docker containers. This is only required on slaves, but the configuration options are set in the shared &lt;code&gt;/etc/defaults/mesos.conf&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;h3 id=&#34;marathon-and-haproxy:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;Marathon and HAProxy&lt;/h3&gt;
+
+&lt;p&gt;The playbook leverages an &lt;code&gt;ansible-marathon&lt;/code&gt; role to install a custom build of marathon with Deimos support. If Mesos is the OS for the data center, Marathon is the init system. Marathoin allows us to &lt;code&gt;http post&lt;/code&gt; new tasks, containing docker container configurations, which will run on Mesos slaves. With HAProxy we can use the masters as a load balancing proxy server routing traffic from known hosts (the masters) to whatever node/port is running the marathon task. HAProxy is configured via a cron job running &lt;a href=&#34;https://github.com/mhamrah/ansible-marathon/blob/master/files/haproxy_dns_cfg&#34;&gt;a custom bash script&lt;/a&gt;. The script queries the marathon API and will route to the appropriate backend by matching a host header prefix to the marathon job name.&lt;/p&gt;
+
+&lt;h3 id=&#34;mesos-followers-slaves:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;Mesos Followers (Slaves)&lt;/h3&gt;
+
+&lt;p&gt;The slaves are pretty straightforward. We don&amp;#8217;t need any host variables, so we just list whatever slave nodes you&amp;#8217;d like to configure:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: plain; title: ; notranslate&#34; title=&#34;&#34;&gt;[mesos_slaves]
+ec2-54-91-78-105.compute-1.amazonaws.com
+ec2-54-82-227-223.compute-1.amazonaws.com 
+&lt;/pre&gt;
+
+&lt;p&gt;Mesos-Slave will be configured with Deimos support.&lt;/p&gt;
+
+&lt;h3 id=&#34;the-result:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;The Result&lt;/h3&gt;
+
+&lt;p&gt;With all this set up you can set up a wildcard domain name, say &lt;code&gt;*.example.com&lt;/code&gt;, to point to all of your master node ip addresses. If you launch a task like &amp;#8220;www&amp;#8221; you can visit www.example.com and you&amp;#8217;ll hit whatever server is running your application. Let&amp;#8217;s try launching a simple web server which returns the docker container&amp;#8217;s hostname:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;POST to one of our masters:
+
+POST /v2/apps
+
+{
+  &#34;container&#34;: {
+    &#34;image&#34;: &#34;docker:///mhamrah/mesos-sample&#34;
+  },
+  &#34;cpus&#34;: &#34;.25&#34;,
+  &#34;id&#34;: &#34;www&#34;,
+  &#34;instances&#34;: 4,
+  &#34;mem&#34;: 512,
+  &#34;ports&#34;: [0],
+  &#34;uris&#34;: []
+}
+&lt;/pre&gt;
+
+&lt;p&gt;We run four instances allocating 25% of a cpu with an application name of &lt;code&gt;www&lt;/code&gt;. If we hit &lt;code&gt;www.example.com&lt;/code&gt;, we&amp;#8217;ll get the hostname of the docker container running on whatever slave node is hosting the task. Deimos will inspect whatever ports are &lt;code&gt;EXPOSE&lt;/code&gt;d in the docker container and assign a port for Mesos to use. Even though the config script only works on port 80 you can easily reconfigure for your own needs.&lt;/p&gt;
+
+&lt;p&gt;To view marathon tasks, simply go to one of your master hosts on port 8080. Marathon will proxy to the correct master. To view mesos tasks, navigate to port 5050 and you&amp;#8217;ll be redirected to the appropriate master. You can also inspect the STDOUT and STDERR of Mesos tasks.&lt;/p&gt;
+
+&lt;h3 id=&#34;notes:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;Notes&lt;/h3&gt;
+
+&lt;p&gt;In my testing I noticed, on rare occasion, the cluster didn&amp;#8217;t have a leader or marathon wasn&amp;#8217;t running. You can simply restart zookeeper, mesos, or marathon via ansible:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;#Restart Zookeeper
+ansible mesos_masters -a &#34;sudo service zookeeper restart&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;There&amp;#8217;s a high probability something won&amp;#8217;t work. Check the logs, it took me a while to get things working: grepping &lt;code&gt;/var/log/syslog&lt;/code&gt; will help, along with &lt;code&gt;/var/log/upstart/mesos-master.conf&lt;/code&gt;, &lt;code&gt;mesos-slave.conf&lt;/code&gt; and &lt;code&gt;marathon.conf&lt;/code&gt;, along with the &lt;code&gt;/var/log/mesos/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;what-8217-s-next:eb793d553e2cf336944f7f93c5d3c089&#34;&gt;What&amp;#8217;s Next&lt;/h3&gt;
+
+&lt;p&gt;Cluster schedulers are an exciting tool for running production applications. It&amp;#8217;s never been easier to build, package and deploy services on public, private clouds or bare metal servers. Mesos, with Marathon, offers a cool combination for running docker containers&amp;#8211;and other mesos-based services&amp;#8211;in production. &lt;a href=&#34;https://engineering.twitter.com/university/videos/docker-mesos&#34;&gt;This Twitter U video highlights how OpenTable uses Mesos for production&lt;/a&gt;. The HAProxy approach, albeit simple, offers a way to route traffic to the correct container. HAProxy will detect failures and reroute traffic accordingly.&lt;/p&gt;
+
+&lt;p&gt;I didn&amp;#8217;t cover inter-container communication (say, a website requiring a database) but you can use your service-discovery tool of choice to solve the problem. The Mesos-Master nodes provide good &amp;#8220;anchor points&amp;#8221; for known locations to look up stuff; you can always query the marathon api for service discovery. Ansible provides a way to automate the install and configuration of mesos-related tools across multiple nodes so you can have a serious mesos-based platform for testing or production use.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

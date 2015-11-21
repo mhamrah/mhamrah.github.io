@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/html5/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2011-03-21 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Updated MVC3 Html5 Boilerplate Template: Now with Twitter and Facebook</title>
+          <link>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</link>
+          <pubDate>Mon, 21 Mar 2011 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</guid>
+          <description>&lt;p&gt;I pushed a major update to the MVC3/Html5 Boilerplate Template found on the &lt;a href=&#34;https://github.com/mhamrah/Html5OpenIdTemplate&#34;&gt;github&lt;/a&gt; page. The new update includes the latest boilerplate code and uses the DotnetOpenAuth CTP for logging in via Twitter and Facebook. Thanks to &lt;a href=&#34;http://www.twitter.com/jacob4u2&#34;&gt;@jacob4u2&lt;/a&gt; for making some necessary web.config changes (he has an alternate template on his &lt;a href=&#34;https://bitbucket.org/jacob4u2/mothereffin-html5-site&#34;&gt;bitbucket&lt;/a&gt; site you should also check out.&lt;/p&gt;
+
+&lt;p&gt;Your best option is to &lt;code class=&#34;syntax bash&#34;&gt;git clone git@github.com:mhamrah/Html5OpenIdTemplate.git&lt;/code&gt; the template with your own app. That way you&amp;#8217;ll get the latest nu-get packages with the bundle. You can also use the template, but you&amp;#8217;ll need to manually pull &lt;a href=&#34;http://sourceforge.net/projects/dnoa/files/CTP/OAuth2/&#34;&gt;the latest CTP for DotNetOpenAuth&lt;/a&gt; to get the latest dlls.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Updated: Visual Studio Html5OpenId Template.  Now with MVC 3 RC and Html5 Boilerplate 0.9.5</title>
+          <link>http://blog.michaelhamrah.com/2010/11/updated-visual-studio-html5openid-template-now-with-mvc-3-rc-and-html5-boilerplate-0-9-5/</link>
+          <pubDate>Mon, 15 Nov 2010 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2010/11/updated-visual-studio-html5openid-template-now-with-mvc-3-rc-and-html5-boilerplate-0-9-5/</guid>
+          <description>&lt;p&gt;&lt;a href=&#34;http://www.michaelhamrah.com/blog/2010/08/mvc-3-preview-1-vs-2010-template-w-razor-html-5-boilerplate-and-openid-authentication/&#34;&gt;In my previous I created a Visual Studio Template which uses OpenId via DotNetOpenAuth and Html5 Boilerplate by Paul Irish&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;del datetime=&#34;2011-02-17T16:21:27+00:00&#34;&gt;That template has been updated to use MVC 3 RC and Html5 Boilerplate .0.9.5.&lt;/del&gt; That template has been updated to use MVC 3 full and html5 boilerplate&amp;#8217;s master as of 2/17/11.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/downloads/mhamrah/Html5OpenIdTemplate/Html5OpenIdTemplate.zip&#34;&gt;You can grab the new template&lt;/a&gt; or &lt;a href=&#34;https://github.com/mhamrah/Html5OpenIdTemplate&#34;&gt;view/clone the project on Github.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.michaelhamrah.com/blog/2010/08/mvc-3-preview-1-vs-2010-template-w-razor-html-5-boilerplate-and-openid-authentication/&#34;&gt;Read the original post to learn what it&amp;#8217;s all about.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&#34;font-size: 13.2px;&#34;&gt;&lt;/span&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Adventures in HttpContext &middot; All the stuff after &#39;Hello, World&#39;
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item  active " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+
+
+
+<div class="posts">
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/12/go-style-directory-layout-for-scala-with-sbt/">Go Style Directory Layout for Scala with SBT</a></h1>
+        <span class="post-date">Dec 7 2014</span>
+        <p>I&#8217;ve come to appreciate Go&#8217;s directory layout where <em>test</em> and <em>build</em> files are located side-by-side. This promotes a conscience testing priority. It also enables easy navigation to usage of a particular class/trait/object along with the implementation. After reading through the <a href="http://www.scala-sbt.org/0.13.2/docs/Howto/defaultpaths.html">getting-better-every-day sbt documentation</a> I noticed you can easily change default directories for sources, alleviating the folder craziness of default projects. Simply add a few lines to your build.sbt:</p>
+
+<pre class="syntax scala">//Why do I need a Scala folder? I don't!
+//Set the folder for Scala sources to the root "src" folder
+scalaSource in Compile := baseDirectory.value / "src"
+
+//Do the same for the test configuration. 
+scalaSource in Test := baseDirectory.value / "src"
+
+//We'll suffix our test files with _test, so we can exclude
+//then from the main build, and keep the HiddenFileFilter
+excludeFilter in (Compile, unmanagedSources) := HiddenFileFilter || "*_test.scala"
+
+//And we need to re-include them for Tests 
+excludeFilter in (Test, unmanagedSources) := HiddenFileFilter
+</pre>
+
+<p>Although breaking from the norm of java-build tools may cause confusion, if you like the way something works, go for it; don&#8217;t chain yourself to past practices. I never understood the class-to-file relationship of java sources, and I absolutely <em>hate</em> navigating one-item folders. Thankfully Scala improved the situation, but the sbt maven-like defaults are still folder-heavy. IDEs make the situation easier, but I prefer simple text editors; and to paraphrase Dan North, &#8220;Your fancy IDE is a painkiller for your shitty language&#8221;.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/11/running-consul-on-coreos/">Running Consul on CoreOS</a></h1>
+        <span class="post-date">Nov 29 2014</span>
+        <p>I&#8217;m a big fan of <a href="consul.io">Consul</a>, Hashicorp&#8217;s service discovery tool. I&#8217;ve also become a fan of CoreOS, the cluster framework for running docker containers. Even though CoreOS comes with etcd for service discovery I find the feature set of Consul more compelling. And as a programmer I know I can have my cake and eat it too.</p>
+
+<p>My first take was to modify my <a href="github.com/mhamrah/ansible-consul">ansible-consul</a> fork to run consul natively on CoreOS. Although this could work I find it defeats CoreOS&#8217;s container-first approach with <a href="https://github.com/coreos/fleet">fleet</a>. Jeff Lindsay created <a href="https://github.com/progrium/docker-consul">a consul docker container</a> which does the job well. I created two fleet service files: one for launching the consul container and another for service discovery. At first the service discovery aspect seemed weird; I tried to pass ip addresses via the &#8211;join parameter or use <code>ExecStartPost</code> for running the join command. However I took a cue from the CoreOS cluster setup: sometimes you need a third party to get stuff done. In this case we the built in etcd server to manage the join ip address to kickstart the consul cluster.</p>
+
+<p>The second fleet service file acts as a sidekick:</p>
+
+<ul>
+<li>For every running consul service there&#8217;s a sidekick process</li>
+<li>The sidekick process writes the current IP to a key only if that key doesn&#8217;t exist</li>
+<li>The sidekick process uses the value of that key to join the cluster with <code>docker exec</code></li>
+<li>The sidekick process removes the key if the consul service dies.</li>
+</ul>
+
+<p>The two service files are below, but you should tweak for your needs.</p>
+
+<ul>
+<li>You only need a 3 or 5 node server cluster. If your CoreOS deployment is large, use some form of restriction for the server nodes. You can do the same for the client nodes.</li>
+<li>The discovery script could be optimized. It will try and join whatever ip address is listed in the key. This avoids a few split brain scenarios, but needs to be tested.</li>
+<li>If you want DNS to work properly you need to set some Docker daemon options. Read the docker-consul README.</li>
+</ul>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/">Clustering Akka Applications with Docker — Version 3</a></h1>
+        <span class="post-date">Nov 27 2014</span>
+        <p>The SBT Native Packager plugin now offers first-class Docker support for building Scala based applications. My last post involved combining SBT Native Packager, SBT Docker, and a custom start script to launch our application. We can simplify the process in two ways:</p>
+
+<ol>
+<li>Although the SBT Docker plugin allows for better customization of Dockerfiles it&#8217;s unnecessary for our use case. SBT Native Packager is enough.</li>
+<li>A separate start script was required for IP address inspection so TCP traffic can be routed to the actor system. I recently contributed an update for <a href="https://github.com/sbt/sbt-native-packager/pull/411">better ENTRYPOINT support within SBT Native Packager</a> which gives us options for launching our app in a container.</li>
+</ol>
+
+<p>With this PR we can now add our IP address inspection snippet to our build removing the need for extraneous files. We could have added this snippet to <code>bashScriptExtraDefines</code> but that is a global change, requiring <code>/sbin/ifconfig eth0</code> to be available wherever the application is run. This is definitely infrastructure bleed-out and must be avoided.</p>
+
+<p><a href="https://github.com/mhamrah/akka-docker-cluster-example">The new code, on GitHub,</a> uses a shell with ENTRYPOINT exec mode to set our environment variable before launching the application:</p>
+
+<pre class="code scala">dockerExposedPorts in Docker := Seq(1600)
+
+dockerEntrypoint in Docker := Seq("sh", "-c", "CLUSTER_IP=`/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'` bin/clustering $*")
+</pre>
+
+<p>The <code>$*</code> allows for command-line parameters to be honored when launching the container. Because the app leverages the Typesafe Config library we can also set via Java system properties:</p>
+
+<pre class="code bash">docker run --rm -i -t --name seed mhamrah/clustering:0.3 -Dclustering.cluster.name=example-cluster
+</pre>
+
+<p>Launching the cluster is exactly as before:</p>
+
+<pre class="code bash">docker run --rm -d --name seed mhamrah/clustering:0.3
+docker run --rm -d --name member1 --link seed:seed mhamrah/clustering:0.3
+</pre>
+
+<p>For complex scripts it may be too messy to overload the ENTRYPOINT sequence. For those cases simply bake your own docker container as a base and use the ENTRYPOINT approach to call out to your script. SBT Native Packager will still upload all your dependencies and its bash script to <code>/opt/docker/bin/&lt;your app&gt;</code>. The Docker <code>WORKDIR</code> is set to <code>/opt/docker</code> so you can drop the <code>/opt/docker</code> as above.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/10/accelerate-team-development-with-your-own-sbt-plugin-defaults/">Accelerate Team Development with your own SBT Plugin Defaults</a></h1>
+        <span class="post-date">Oct 13 2014</span>
+        
+
+<p>My team manages several Scala services built with SBT. The setup of these projects are very similar, from included plugins, dependencies, and build-and-deploy configurations. At first we simply copied and paste these settings across projects but as the number of services increased the hunt-and-change strategy became laborious. Time to optimize.</p>
+
+<p>I heard of a few teams that created their own sbt plugins for default settings but couldn&#8217;t find information on how this looked. The recent change to <a href="http://www.scala-sbt.org/0.13/docs/Plugins.html">AutoPlugins</a> also didn&#8217;t help existing documentation. I found Will Sargent&#8217;s excellent post on <a href="tersesystems.com/2014/06/24/writing-an-sbt-plugin">writing an sbt plugin</a> helpful but it wasn&#8217;t what I was looking for. I want a plugin which included other plugins and set defaults for those plugins. The goal is to &#8220;drop in&#8221; this plugin and automatically have a set of defaults: using <a href="https://github.com/sbt/sbt-native-packager">sbt-native-packager</a>, a configured <a href="https://github.com/sbt/sbt-release">sbt-release</a> and our nexus artifact server good-to-go.</p>
+
+<h2 id="file-locations:abbf4ae7a81d9cf247973d7e1dba3596">File Locations</h2>
+
+<p>As an sbt refresher anything in the <code>project/</code> folder relates to the build. If you want to develop your own plugin just for the current project you can simply add your .scala files to <code>project/</code>. If you want to develop your own plugin as a standalone project you put those files in the <code>src/</code> directory as usual. I mistakenly thought an sbt plugin project only required files in the <code>project/</code> folder. Silly me.</p>
+
+<h2 id="sbt-builds:abbf4ae7a81d9cf247973d7e1dba3596">SBT Builds</h2>
+
+<p>It&#8217;s important to note that the project folder&#8211;and the build itself&#8211;is separate from how your source code is built. SBT uses Scala 2.10, so anything in the <code>project/</code> folder will be built against 2.10 even if your project is set to 2.11. Thus when developing your plugin use Scala 2.10 to match sbt.</p>
+
+<h2 id="dependencies:abbf4ae7a81d9cf247973d7e1dba3596">Dependencies</h2>
+
+<p>Usually when you include a plugin you specify it in the <code>project/plugins.sbt</code>, right? But what if you&#8217;re developing a plugin that uses other plugins? Your code is in <code>src/</code> so it won&#8217;t pick up anything in <code>project/</code> as that only relates to your build. So you need to add whatever plugin you want as a <code>dependency</code> in your build so its available in within your project, just like any other dependency. But there&#8217;s a trick with sbt plugins. Originally I had the usual in <code>build.sbt</code>:</p>
+
+<pre><code>libraryDependencies += &quot;com.typesafe.sbt&quot; % &quot;sbt-native-packager&quot; % &quot;0.8.0-M2&quot;
+</code></pre>
+
+<p>but kept getting unresolved dependency errors. This made no sense to me as the plugin is clearly available. It turns out if you want to include an sbt plugin as a project dependency you need to specify it in a special way, explicitly setting the sbt and scala version you want:</p>
+
+<pre><code>libraryDependencies += sbtPluginExtra(&quot;com.typesafe.sbt&quot; % &quot;sbt-native-packager&quot; % &quot;0.8.0-M2&quot;, sbtV = &quot;0.13&quot;, scalaV = &quot;2.10&quot;)
+</code></pre>
+
+<p>With that, your dependency will resolve and you can use include anything under sbt-native-packager when developing your plugin.</p>
+
+<h2 id="specifying-your-plugin-defaults:abbf4ae7a81d9cf247973d7e1dba3596">Specifying your Plugin Defaults</h2>
+
+<p>With your separate project and dependencies satisfied you can now create your plugin which uses other plugins and defaults settings specific to you. This part is easy and follows the usual documentation. Declare an object which extends AutoPlugin and override <code>projectSettings</code> or <code>buildSettings</code>. This class looks exactly like it would if you were setting things manually in your build.</p>
+
+<p>For instance, here&#8217;s how we&#8217;d set the <code>java_server</code> archetype as the default in our plugin:</p>
+
+<pre class="code scala">package com.hamrah.plugindefaults
+
+import sbt._
+import Keys._
+import com.typesafe.sbt.SbtNativePackager._
+
+object PluginDefaults extends AutoPlugin {
+ override lazy val projectSettings = packageArchetype.java_server
+}
+</pre>
+
+<p>You can concatenate any other settings you want to project settings, like scalaVersion, scalacOptions, etc.</p>
+
+<h2 id="using-the-plugin:abbf4ae7a81d9cf247973d7e1dba3596">Using the Plugin</h2>
+
+<p>You can build and publish your plugin to a repo and include it like you would any other plugin. Or you can include it locally for testing by putting this in your sbt file:</p>
+
+<pre><code>lazy val root = project.in( file(&quot;.&quot;) ).dependsOn( defaultPluginSettings )
+lazy val defaultPluginSettings = uri(&quot;file:///&lt;full path to your plugin directory&gt;&quot;)
+</code></pre>
+
+<p>Your default settings can be explicitly added to your project if not automatically imported with a simple:</p>
+
+<pre><code>PluginDefaults.projectSettings
+//or
+settings = PluginDefaults.projectSettings // in a .scala file
+</code></pre>
+
+<h2 id="in-closing:abbf4ae7a81d9cf247973d7e1dba3596">In Closing</h2>
+
+<p>As an FYI there could be better ways to do this. A lot of the above was trial and error, but works. If you have feedback or better suggestions please leave a comment!</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/">Accessing the Docker Host Server Within a Container</a></h1>
+        <span class="post-date">Jun 29 2014</span>
+        
+
+<p><a href="https://docs.docker.com/userguide/dockerlinks/#working-with-links-names">Docker links</a> are a great way to link two containers together but sometimes you want to know more about the host and network from within a container. You have a couple of options:</p>
+
+<ul>
+<li>You can access the Docker host by the container&#8217;s gateway.</li>
+<li>You can access the Docker host by its ip address from within a container.</li>
+</ul>
+
+<h2 id="the-gateway-approach:d6e669ce9206f072ff43b8fdf5b03a0c">The Gateway Approach</h2>
+
+<p><a href="https://github.com/dotcloud/docker/issues/1143">This GitHub Issue</a> outlines the solution. Essentially you&#8217;re using netstat to parse the gateway the docker container uses to access the outside world. This is the docker0 bridge on the host.</p>
+
+<p>As an example, we&#8217;ll run a simple docker container which returns the hostname of the container on port 8080:</p>
+
+<pre class="syntax bash">docker run -d -p 8080:8080 mhamrah/mesos-sample
+</pre>
+
+<p>Next we&#8217;ll run /bin/bash in another container to do some discovery:</p>
+
+<pre class="syntax bash">docker run -i -t ubuntu /bin/bash
+#once in, install curl:
+apt-get update
+apt-get install -y curl
+</pre>
+
+<p>We can use the following command to pull out the gateway from netstat:</p>
+
+<pre class="syntax bash">netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}'
+#returns 172.17.42.1 for me.
+</pre>
+
+<p>We can then curl our other docker container, and we should get that docker container&#8217;s hostname:</p>
+
+<pre class="syntax bash">curl 172.17.42.1:8080
+# returns 00b019ce188c
+</pre>
+
+<p>Nothing exciting, but you get the picture: it doesn&#8217;t matter that the service is inside another container, we&#8217;re accessing it via the host, and we didn&#8217;t need to use links. We just needed to know the port the other service was listening on. If you had a service running on some other port&#8211;say Postgres on 5432&#8211;not running in a Docker container&#8211;you can access it via <code>172.17.42.1:5432</code>.</p>
+
+<p>If you have docker installed in your container you can also query the docker host:</p>
+
+<pre class="syntax bash"># In a container with docker installed list other containers running on the host for other containers:
+docker -H tcp://172.17.42.1:2375 ps
+CONTAINER ID        IMAGE                         COMMAND                CREATED              STATUS              PORTS                     NAMES
+09d035054988        ubuntu:14.04                  /bin/bash              About a minute ago   Up About a minute   0.0.0.0:49153->8080/tcp   angry_bardeen
+00b019ce188c        mhamrah/mesos-sample:latest   /opt/delivery/bin/de   8 minutes ago        Up 8 minutes        0.0.0.0:8080->8080/tcp    suspicious_colden
+</pre>
+
+<p>You can use this for some hakky service-discovery.</p>
+
+<h2 id="the-ip-approach:d6e669ce9206f072ff43b8fdf5b03a0c">The IP Approach</h2>
+
+<p>The gateway approach is great because you can figure out a way to access a host from entirely within a container. You also have the same access via the host&#8217;s ip address. I&#8217;m using boot2docker, and the boot2docker ip address is <code>192.168.59.103</code> and I can accomplish the same tasks as the gateway approach:</p>
+
+<pre class="syntax bash"># Docker processes, via ip:
+docker -H tcp://192.168.59.103:2375 ps
+# Other docker containers, via ip:
+curl 192.168.59.103:8080
+</pre>
+
+<p>Although there&#8217;s no way to introspect the host&#8217;s ip address (AFAIK) you can pass this in via an environment variable:</p>
+
+<pre class="syntax bash">docker@boot2docker:~$  docker run -i -t -e DOCKER_HOST=192.168.59.103 ubuntu /bin/bash
+root@07561b0607f4:/# env
+HOSTNAME=07561b0607f4
+DOCKER_HOST=192.168.59.103
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+</pre>
+
+<p>If the container knows the ip address of its host, you can broadcast this out to other services via the container&#8217;s application. Useful for service discovery tools run from within a container where you want to tell others the host IP so others can find you.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/">Service Discovery Options with Marathon and Deimos</a></h1>
+        <span class="post-date">Jun 29 2014</span>
+        <p>I&#8217;ve become a fan of Mesos and Marathon: combined with <a href="https://github.com/mesosphere/deimos">Deimos</a> you can create a DIY PaaS for launching and scaling Docker containers across a number of nodes. Marathon supports a bare-bones service-discovery mechanism through its task API, but it would be nice for containers to register themselves with some service discovery tool themselves. In order to achieve this containers need to know their host ip address and the port Marathon assigned them so they could tell other interested services where they can be found.</p>
+
+<p>Deimos allows default parameters to be passed in when executing <code>docker run</code> and Marathon adds assigned ports to a container&#8217;s environment variables. If a container has this information it can register it with a service discovery tool.</p>
+
+<p>Here we assign the host&#8217;s IP address as a default run option in our <a href="https://github.com/mesosphere/deimos/#configuration">Deimos config file</a>.</p>
+
+<pre class="syntax bash">#/etc/deimos.cfg
+[containers.options]
+append: ["-e", "HOST_IP=192.168.33.12"]
+</pre>
+
+<p>Now let&#8217;s launch our mesos-sample container to our Mesos cluster via Marathon:</p>
+
+<pre class="syntax json">// Post to http://192.168.33.12/v2/apps
+{
+  "container": {
+    "image": "docker:///mhamrah/mesos-sample"
+  },
+  "cpus": "1",
+  "id": "www",
+  "instances": 1,
+  "mem": 512,
+  "ports": [0],
+  "uris": [],
+  "cmd": ""
+}
+</pre>
+
+<p>Once our app is launch, we can inspect all the environment variables in our container with the <code>/env</code> endpoint from <code>mhamrah/mesos-sample</code>:</p>
+
+<pre class="syntax json">curl http://192.168.33.12:31894/env
+[ {
+  "HOSTNAME" : "a4305981619d"
+}, {
+  "PORT0" : "31894"
+}, {
+  "PATH" : "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+}, {
+  "PWD" : "/tmp/mesos-sandbox"
+}, {
+  "PORTS" : "31894"
+}, {
+  "HOST_IP" : "192.168.33.12"
+}, {
+  "PORT" : "31894"
+}]
+</pre>
+
+<p>With this information some startup script could use the <code>PORT</code> (or <code>PORT0</code>) and <code>HOST_IP</code> to register itself for direct point-to-point communication in a cluster.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/06/setting-up-a-multi-node-mesos-cluster-running-docker-haproxy-and-marathon-with-ansible/">Setting up a Multi-Node Mesos Cluster running Docker, HAProxy and Marathon with Ansible</a></h1>
+        <span class="post-date">Jun 26 2014</span>
+        
+
+<p><strong>UPDATE</strong></p>
+
+<p><em>With Mesos 0.20 Docker support is now native, and Deimos has been deprecated. The ansible-mesos-playbook has been updated appropriately, and most of this blog post still holds true. There are slight variations with how you post to Marathon.</em></p>
+
+<p>The <a href="http://eurosys2013.tudos.org/wp-content/uploads/2013/paper/Schwarzkopf.pdf">Google Omega Paper</a> has given birth to cloud vNext: cluster schedulers managing containers. You can make a bunch of nodes appear as one big computer and deploy anything to your own private cloud; just like Docker, but across any number of nodes. <a href="https://github.com/GoogleCloudPlatform/kubernetes">Google&#8217;s Kubernetes</a>, <a href="flynn.io">Flynn</a>, <a href="https://github.com/coreos/fleet">Fleet</a> and <a href="http://mesos.apache.org/">Apache Mesos</a>, originally from Twitter, are implementations of Omega with the goal of abstracting away discrete nodes and optimizing compute resources. Each implementation has its own tweak, but they all follow the same basic setup: leaders, for coordination and scheduling; some service discovery component; some underlying cluster tool (like Zookeeper); followers, for processing.</p>
+
+<p>In this post we&#8217;ll use <a href="http://www.ansible.com/home">Ansible</a> to install a multi-node Mesos cluster using packages from <a href="http://mesosphere.io/">Mesosphere</a>. Mesos, as a cluster framework, allows you to run a variety of cluster-enabled software, including <a href="http://spark.apache.org/">Spark</a>, <a href="https://github.com/mesosphere/storm-mesos">Storm</a> and <a href="https://github.com/mesos/hadoop">Hadoop</a>. You can also run <a href="https://github.com/jenkinsci/mesos-plugin">Jenkins</a>, schedule tasks with <a href="https://github.com/airbnb/chronos">Chronos</a>, even run <a href="https://github.com/mesosphere/elasticsearch-mesos">ElasticSearch</a> and <a href="https://github.com/mesosphere/cassandra-mesos">Cassandra</a> without having to double to specific servers. We&#8217;ll also set up <a href="https://github.com/mesosphere/marathon">Marathon</a> for running services with <a href="https://github.com/mesosphere/deimos">Deimos</a> support for Docker containers.</p>
+
+<p>Mesos, even with Marathon, doesn&#8217;t offer the holistic integration of some other tools, namely Kubernetes, but at this point it&#8217;s easier to set up on your own set of servers. Although young Mesos is one of the oldest projects of the group and allows more of a DIY approach on service composition.</p>
+
+<h3 id="tl-dr:eb793d553e2cf336944f7f93c5d3c089">TL;DR</h3>
+
+<p><em><a href="https://github.com/mhamrah/ansible-mesos-playbook">The playbook is on github, just follow the readme!</a></em>. If you want to simply try out Mesos, Marathon, and Docker <a href="http://mesosphere.io/learn/run-docker-on-mesosphere/">mesosphere has an excellent tutorial to get you started on a single node</a>. This tutorial outlines the creation of a more complex multi-node setup.</p>
+
+<h3 id="system-setup:eb793d553e2cf336944f7f93c5d3c089">System Setup</h3>
+
+<p>The system is divided into two parts: a set of masters, which handle scheduling and task distribution, with a set of slaves providing compute power. Mesos uses Zookeeper for cluster coordination and leader election. A key component is service discovery: you don&#8217;t know which host or port will be assigned to a task, which makes, say, accessing a website running on a slave difficult. The Marathon API allows you to query task information, and we use this feature to configure HAProxy frontend/backend resources.</p>
+
+<p>Our masters run:</p>
+
+<ul>
+<li>Zookeeper</li>
+<li>Mesos-Master</li>
+<li>HAProxy</li>
+<li>Marathon</li>
+</ul>
+
+<p>and our slaves run:</p>
+
+<ul>
+<li>Mesos-Slave</li>
+<li>Docker</li>
+<li>Deimos, the Mesos -&gt; Docker bridge</li>
+</ul>
+
+<h3 id="ansible:eb793d553e2cf336944f7f93c5d3c089">Ansible</h3>
+
+<p>Ansible works by running a playbook, composed of roles, against a set of hosts, organized into groups. My <a href="https://github.com/mhamrah/ansible-mesos-playbook">Ansible-Mesos-Playbook</a> on GitHub has an example hosts file with some EC2 instances listed. You should be able to replace these with your own EC2 instances running Ubuntu 14.04, our your own private instances running Ubuntu 14.04. Ansible allows us to pass node information around so we can configure multiple servers to properly set up our masters, zookeeper set, point slaves to masters, and configure Marathon for high availability.</p>
+
+<p>We want at least three servers in our master group for a proper zookeeper quorum. We use host variables to specify the zookeeper id for each node.</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">[mesos_masters]
+ec2-54-204-214-172.compute-1.amazonaws.com zoo_id=1
+ec2-54-235-59-210.compute-1.amazonaws.com zoo_id=2
+ec2-54-83-161-83.compute-1.amazonaws.com zoo_id=3
+</pre>
+
+<p>The <a href="https://github.com/mhamrah/ansible-mesos">mesos-ansible</a> playbook will use nodes in the <code>mesos_masters</code> for a variety of configuration options. First, the <code>/etc/zookeeper/conf/zoo.cfg</code> will list all master nodes, with <code>/etc/zookeeper/conf/myid</code> being set appropriately. It will also set up upstart scripts in <code>/etc/init/mesos-master.conf</code>, <code>/etc/init/mesos-slave.conf</code> with default configuration files in <code>/etc/defaults/mesos.conf</code>. Mesos 0.19 supports external executors, so we use Deimos to run docker containers. This is only required on slaves, but the configuration options are set in the shared <code>/etc/defaults/mesos.conf</code> file.</p>
+
+<h3 id="marathon-and-haproxy:eb793d553e2cf336944f7f93c5d3c089">Marathon and HAProxy</h3>
+
+<p>The playbook leverages an <code>ansible-marathon</code> role to install a custom build of marathon with Deimos support. If Mesos is the OS for the data center, Marathon is the init system. Marathoin allows us to <code>http post</code> new tasks, containing docker container configurations, which will run on Mesos slaves. With HAProxy we can use the masters as a load balancing proxy server routing traffic from known hosts (the masters) to whatever node/port is running the marathon task. HAProxy is configured via a cron job running <a href="https://github.com/mhamrah/ansible-marathon/blob/master/files/haproxy_dns_cfg">a custom bash script</a>. The script queries the marathon API and will route to the appropriate backend by matching a host header prefix to the marathon job name.</p>
+
+<h3 id="mesos-followers-slaves:eb793d553e2cf336944f7f93c5d3c089">Mesos Followers (Slaves)</h3>
+
+<p>The slaves are pretty straightforward. We don&#8217;t need any host variables, so we just list whatever slave nodes you&#8217;d like to configure:</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">[mesos_slaves]
+ec2-54-91-78-105.compute-1.amazonaws.com
+ec2-54-82-227-223.compute-1.amazonaws.com 
+</pre>
+
+<p>Mesos-Slave will be configured with Deimos support.</p>
+
+<h3 id="the-result:eb793d553e2cf336944f7f93c5d3c089">The Result</h3>
+
+<p>With all this set up you can set up a wildcard domain name, say <code>*.example.com</code>, to point to all of your master node ip addresses. If you launch a task like &#8220;www&#8221; you can visit www.example.com and you&#8217;ll hit whatever server is running your application. Let&#8217;s try launching a simple web server which returns the docker container&#8217;s hostname:</p>
+
+<pre class="syntax bash">POST to one of our masters:
+
+POST /v2/apps
+
+{
+  "container": {
+    "image": "docker:///mhamrah/mesos-sample"
+  },
+  "cpus": ".25",
+  "id": "www",
+  "instances": 4,
+  "mem": 512,
+  "ports": [0],
+  "uris": []
+}
+</pre>
+
+<p>We run four instances allocating 25% of a cpu with an application name of <code>www</code>. If we hit <code>www.example.com</code>, we&#8217;ll get the hostname of the docker container running on whatever slave node is hosting the task. Deimos will inspect whatever ports are <code>EXPOSE</code>d in the docker container and assign a port for Mesos to use. Even though the config script only works on port 80 you can easily reconfigure for your own needs.</p>
+
+<p>To view marathon tasks, simply go to one of your master hosts on port 8080. Marathon will proxy to the correct master. To view mesos tasks, navigate to port 5050 and you&#8217;ll be redirected to the appropriate master. You can also inspect the STDOUT and STDERR of Mesos tasks.</p>
+
+<h3 id="notes:eb793d553e2cf336944f7f93c5d3c089">Notes</h3>
+
+<p>In my testing I noticed, on rare occasion, the cluster didn&#8217;t have a leader or marathon wasn&#8217;t running. You can simply restart zookeeper, mesos, or marathon via ansible:</p>
+
+<pre class="syntax bash">#Restart Zookeeper
+ansible mesos_masters -a "sudo service zookeeper restart"
+</pre>
+
+<p>There&#8217;s a high probability something won&#8217;t work. Check the logs, it took me a while to get things working: grepping <code>/var/log/syslog</code> will help, along with <code>/var/log/upstart/mesos-master.conf</code>, <code>mesos-slave.conf</code> and <code>marathon.conf</code>, along with the <code>/var/log/mesos/</code>.</p>
+
+<h3 id="what-8217-s-next:eb793d553e2cf336944f7f93c5d3c089">What&#8217;s Next</h3>
+
+<p>Cluster schedulers are an exciting tool for running production applications. It&#8217;s never been easier to build, package and deploy services on public, private clouds or bare metal servers. Mesos, with Marathon, offers a cool combination for running docker containers&#8211;and other mesos-based services&#8211;in production. <a href="https://engineering.twitter.com/university/videos/docker-mesos">This Twitter U video highlights how OpenTable uses Mesos for production</a>. The HAProxy approach, albeit simple, offers a way to route traffic to the correct container. HAProxy will detect failures and reroute traffic accordingly.</p>
+
+<p>I didn&#8217;t cover inter-container communication (say, a website requiring a database) but you can use your service-discovery tool of choice to solve the problem. The Mesos-Master nodes provide good &#8220;anchor points&#8221; for known locations to look up stuff; you can always query the marathon api for service discovery. Ansible provides a way to automate the install and configuration of mesos-related tools across multiple nodes so you can have a serious mesos-based platform for testing or production use.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/">Akka Clustering with SBT-Docker and SBT-Native-Packager</a></h1>
+        <span class="post-date">Jun 19 2014</span>
+        
+
+<p>Since my last post on <a href="http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/">akka clustering with docker containers</a> a new plugin, <a href="https://github.com/marcuslonnberg/sbt-docker">SBT-Docker</a>, has emerged which allows you to build docker containers directly from SBT. I&#8217;ve updated my <a href="https://github.com/mhamrah/akka-docker-cluster-example">akka-docker-cluster-example</a> to leverage these two plugins for a smoother docker build experience.</p>
+
+<h2 id="one-step-build:9dc58615474f52923afa41a9d5040e47">One Step Build</h2>
+
+<p>The approach is basically the same as the previous example: we use SBT Native Packager to gather up the appropriate dependencies, upload them to the docker container, and create the entrypoint. I decided to keep the start script approach to &#8220;prep&#8221; any environment variables required before launching. With SBT Docker linked to Native Packager all you need to do is fire</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">docker
+</pre>
+
+<p>from sbt and you have a docker container ready to launch or push.</p>
+
+<h2 id="understanding-the-build:9dc58615474f52923afa41a9d5040e47">Understanding the Build</h2>
+
+<p>SBT Docker requires a dockerfile defined in your build. I want to pass in artifacts from native packager to docker. This allows native packager to focus on application needs while docker is focused on docker. Docker turns into just another type of package for your app.</p>
+
+<p>We can pass in arguments by mapping the appropriate parameters to a function which returns the Dockerfile. In build.spt:</p>
+
+<pre class="syntax scala">// Define a dockerfile, using parameters from native-packager
+dockerfile in docker &lt;&lt;= (name, stagingDirectory in Universal) map {
+  case(appName, stageDir) =>
+    val workingDir = s"/opt/${appName}"
+    new Dockerfile {
+      //use java8 base box
+      from("relateiq/oracle-java8")
+      maintainer("Michael Hamrah")
+      //expose our akka port
+      expose(1600)
+      //upload native-packager staging directory files
+      add(stageDir, workingDir)
+      //make files executable
+      run("chmod", "+x", s"/opt/${appName}/bin/${appName}")
+      run("chmod", "+x", s"/opt/${appName}/bin/start")
+      //set working directory
+      workDir(workingDir)
+      //entrypoint into our start script
+      entryPointShell(s"bin/start", appName, "$@")
+    }
+}
+</pre>
+
+<h3 id="linking-sbt-docker-to-sbt-native-packager:9dc58615474f52923afa41a9d5040e47">Linking SBT Docker to SBT Native Packager</h3>
+
+<p>Because we&#8217;re relying on Native Packager to assemble our runtime dependencies we need to ensure the native packager files are &#8220;staged&#8221; before docker tries to upload them. Luckily it&#8217;s easy to create dependencies with SBT. We simply have docker depend on the native packager&#8217;s stage task:</p>
+
+<pre class="syntax scala">docker &lt;&lt;= docker.dependsOn(com.typesafe.sbt.packager.universal.Keys.stage.in(Compile))
+</pre>
+
+<h3 id="adding-additional-files:9dc58615474f52923afa41a9d5040e47">Adding Additional Files</h3>
+
+<p>The last step is to add our start script to the native packager build. Native packager has a <code>mappings</code> key where we can add files to our package. I kept the start script in the docker folder and I want it in the bin directory within the docker container. Here&rsquo;s the mapping:</p>
+
+<pre class="syntax scala">mappings in Universal += baseDirectory.value / "docker" / "start" -> "bin/start"
+</pre>
+
+<p>With this setting everything will be assembled as needed and we can package to any type we want. Setting up a cluster with docker is <a href="http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/">the same as before</a>:</p>
+
+<pre class="syntax bash">docker run --name seed -i -t clustering
+docker run --name c1 -link seed:seed -i -t clustering
+</pre>
+
+<p>It&rsquo;s interesting to note SBT Native Packager also has docker support, but it&rsquo;s undocumented and doesn&rsquo;t allow granular control over the Dockerfile output. Until SBT Native Packager fully supports docker output the SBT Docker plugin is a nice tool to package your sbt-based apps.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/05/spray-directives-custom-directives-part-two-flatmap/">Spray Directives: Custom Directives, Part Two: flatMap</a></h1>
+        <span class="post-date">May 24 2014</span>
+        <p><a href="http://blog.michaelhamrah.com/2014/05/spray-directives-creating-your-own-simple-directive/">Our last post covered custom Spray Directives</a>. We&#8217;re going to expand our UUID directive a little further. Generating a unique ID per request is great, but what if we want the client to pass in an existing unique identifier to act as a correlation id between systems?</p>
+
+<p>We&#8217;ll modify our existing directive by checking to see if the client supplied a correlation-id request-header using the existing <code>optionalHeaderValueByName</code> directive:</p>
+
+<pre class="syntax scala">def generateUuid: Directive[UUID :: HNil] = {
+    optionalHeaderValueByName("correlation-id") {
+      case Some(value) => provide(UUID.fromString(value))
+      case None => provide(UUID.randomUUID)
+    }
+  }
+</pre>
+
+<p>Unfortunately this code doesn&#8217;t compile! We get an error because Spray is looking for a Route, which is a function of RequestContext =&gt; Unit:</p>
+
+<pre class="syntax bash">[error]  found   : spray.routing.Directive1
+[error]     (which expands to)  spray.routing.Directive[shapeless.::]
+[error]  required: spray.routing.RequestContext => Unit
+[error]       case Some(value) => provide(UUID.fromString(value))
+</pre>
+
+<p>What do we do? <code>flatMap</code> comes to the rescue. Here&#8217;s the deal: we need to transform one directive (<code>optionalHeaderValueByName</code>) into another directive (one that provides a UUID). We do this by using flatMap to focus on the value in the first directive (the option returned from <code>optionalHeaderValueByName</code>) and return another value (the UUID). With <code>flatMap</code> we are basically &#8220;repackaging&#8221; one value into another package.</p>
+
+<p>Here&#8217;s the updated code which properly compiles:</p>
+
+<pre class="syntax scala">def generateUuid: Directive[UUID :: HNil] = {
+    //use flatMap to match on the Option returned and provide
+    //a new value
+    optionalHeaderValueByName("correlation-id").flatMap {
+      case Some(value) => provide(UUID.fromString(value))
+      case None => provide(UUID.randomUUID)
+    }
+  }
+</pre>
+
+<p>and the test:</p>
+
+<pre class="syntax scala">"can extract a uuid value from the header" in {
+      val uuid = java.util.UUID.randomUUID.toString
+
+      Get() ~> addHeader("correlation-id", uuid) ~> uuidRoute ~> check {
+        responseAs[String] shouldEqual uuid
+      }
+    }
+</pre>
+
+<p>There&#8217;s a small tweak we&#8217;ll make to our UUID directive to show another example of directive composition. If the client doesn&#8217;t supply a UUID, and we call generateUUID multiple times, we&#8217;ll get different uuids for the same request. This defeats the purpose of a single correlation id, and prevents us from extracting a uuid multiple times per request. A failing test shows the issue:</p>
+
+<pre class="syntax scala">"can extract the same uuid twice per request" in {
+      var uuid1: String =""
+      var uuid2: String = ""
+      Get() ~> generateUuid { uuid =>
+        {
+          uuid1 = uuid.toString
+          generateUuid { another =>
+            uuid2 = another.toString
+            complete("")
+          }
+        }
+      } ~> check {
+        //fails
+        uuid1 shouldEqual uuid2
+      }
+    }
+</pre>
+
+<p>To fix the issue, if we generate a UUID, we will add it to the request header as if the client supplied it. We&#8217;ll use the mapRequest directive to add the generated UUID to the header.</p>
+
+<pre class="syntax scala">def generateUuid: Directive[UUID :: HNil] = {
+    optionalHeaderValueByName("correlation-id").flatMap {
+      case Some(value) => provide(UUID.fromString(value))
+      case None =>
+        val id = UUID.randomUUID
+        mapRequest(r => r.withHeaders(r.headers :+ RawHeader("correlation-id", id.toString))) &#038; provide(id)
+    }
+  }
+</pre>
+
+<p>In my first version I had the mapRequest call and the provide call on separate lines (there was no &amp;). mapRequest was never being called, and it was because mapRequest was not being returned as a value- only the provide directive is returned. We need to &#8220;merge&#8221; these two directives with the &amp; operator. <code>mapRequest</code> is a no-op returning a Directive0 (a Directive with a Nil HList) so combining it with provide yields a Directive1[UUID], which is exactly what we want.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/05/spray-directives-creating-your-own-simple-directive/">Spray Directives: Creating Your Own, Simple Directive</a></h1>
+        <span class="post-date">May 24 2014</span>
+        <p>The <a href="http://spray.io/documentation/1.2.1/spray-routing/">spray-routing</a> package provides an excellent dsl for creating restful api&#8217;s with Scala and Akka. This dsl is powered by <a href="http://spray.io/documentation/1.2.1/spray-routing/key-concepts/directives/">directives</a>, small building blocks you compose to filter, process and compose requests and responses for your API. Building your own directives lets you create reusable components for your application and better organize your application.</p>
+
+<p>I recently refactored some code in a Spray API to leverage custom directives. The <a href="http://spray.io/documentation/1.2.1/spray-routing/advanced-topics/custom-directives/">Spray documentation provides a good reference on custom directives</a> but I found myself getting hung up in a few places.</p>
+
+<p>As an example we&#8217;re going to write a custom directive which produces a UUID for each request. Here&#8217;s how I want to use this custom directive:</p>
+
+<pre class="syntax scala">generateUUID { uuid =>
+  path("foo") {
+   get {
+     //log the uuid, pass it to your app, or maybe just return it
+     complete { uuid.toString }
+   }
+  }
+}
+</pre>
+
+<p>Usually you leverage existing directives to build custom directives. I (incorrectly) started with the <code>provide</code> directive to provide a value to an inner route:</p>
+
+<pre class="syntax scala">import spray.routing._
+import java.util.UUID
+import Directives._
+
+trait UuidDirectives {
+  def generateUuid: Directive1[UUID] = {
+    provide(UUID.randomUUID)
+  }
+}
+</pre>
+
+<p>Before I explain what&#8217;s wrong, let&#8217;s dig into the code. First, generateUuid is a function which returns a Directive1 wrapping a UUID value. Directive1 is just a type alias for <code>Directive[UUID :: HNil]</code>. Directives are centered around a feature of the shapeless library called heterogeneous lists, or HLists. An <code>HList</code> is simply a list, but each element in the list can be a different, specific type. Instead of a generic <code>List[Any]</code>, your list can be composed of specific types of list of String, Int, String, UUID. The first element of this list is a String, not an Any, and the second is an Int, with all the features of an Int. In the directive above I just have an <code>HList</code> with one element: <code>UUID</code>. If I write <code>Directive[UUID :: String :: HNil]</code> I have a two element list of <code>UUID</code> and String, and the compiler will throw an error if I try to use this directive with anything other a <code>UUID</code> and a String. HLists sound like a lightweight case class, but with an <code>HList</code>, you get a lot of list-like features. HLists allow the compiler to do the heavy lifting of type safety, so you can have strongly-typed functions to compose together.</p>
+
+<p>Provide is a directive which (surprise surprise) will provide a value to an inner route. I thought this would be perfect for my directive, and the corresponding test ensures it works:</p>
+
+<pre class="syntax scala">import org.scalatest._
+import org.scalatest.matchers._
+import spray.testkit.ScalatestRouteTest
+import spray.http._
+import spray.routing.Directives._
+
+class UuidDirectivesSpec
+  extends FreeSpec
+  with Matchers
+  with UuidDirectives
+  with ScalatestRouteTest {
+
+  "The UUID Directive" - {
+    "can generate a UUID" in {
+      Get() ~> generateUuid { uuid => complete(uuid.toString) } ~> check  {
+        responseAs[String].size shouldBe 36
+      }
+    }
+  }
+}
+</pre>
+
+<p>But there&#8217;s an issue! Spray directives are classes are composed when instantiated via an apply() function. The <a href="http://spray.io/documentation/1.2.1/spray-routing/advanced-topics/understanding-dsl-structure/">Spray docs on understanding the dsl structure</a> explains it best, but in summary, generateUuid will only be called once when the routing tree is built, not on every request.</p>
+
+<p>A better unit test shows the issue:</p>
+
+<pre class="syntax scala">"will generate different UUID per request" in {
+      //like the runtime, instantiate route once
+      val uuidRoute =  generateUuid { uuid => complete(uuid.toString) }
+
+      var uuid1: String = ""
+      var uuid2: String = ""
+      Get() ~> uuidRoute ~> check  {
+        responseAs[String].size shouldBe 36
+        uuid1 = responseAs[String]
+      }
+      Get() ~> uuidRoute ~> check  {
+        responseAs[String].size shouldBe 36
+        uuid2 = responseAs[String]
+      }
+      //fails!
+      uuid1 shouldNot equal (uuid2)
+    }
+  }
+</pre>
+
+<p>The fix is simple: we need to use the <code>extract</code> directive which applies the current RequestContext to our route so it&#8217;s called on every request. For our UUID directive we don&#8217;t need anything from the request, just the function which is run for every request:</p>
+
+<pre class="syntax scala">trait UuidDirectives {
+  def generateUuid: Directive[UUID :: HNil] = {
+    extract(ctx =>
+        UUID.randomUUID)
+  }
+}
+</pre>
+
+<p>With our randomUUID call wrapped in an extract directive we have a unique call per request, and our tests pass!</p>
+
+<p>In a following post we&#8217;ll add some more complexity to our custom directive, stay tuned!</p>
+
+    </div>
+  
+</div>
+
+<div class="pagination">
+  
+  <a class="pagination-item older" href="http://blog.michaelhamrah.com/page/3/">Older</a>
+  
+
+  
+  <a class="pagination-item newer" href="http://blog.michaelhamrah.com/">Newer</a>
+  
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

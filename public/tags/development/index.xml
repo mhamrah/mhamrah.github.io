@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/development/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2015-01-13 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>A Gentle Introduction To Akka Streams</title>
+          <link>http://blog.michaelhamrah.com/2015/01/a-gentle-introduction-to-akka-streams/</link>
+          <pubDate>Tue, 13 Jan 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/01/a-gentle-introduction-to-akka-streams/</guid>
+          <description>
+
+&lt;p&gt;I&amp;#8217;m happy to see stream-based programming emerge as a paradigm in many languages. Streams have been around for a while: take a look at the good &amp;#8216;ol | operator in Unix. Streams offer an interesting conceptual model to processing pipelines that is very functional: you have an input, you produce an output. You string these little functions together to build bigger, more complex pipelines. Most of the time you can make these functions asynchronous and parallelize them over input data to maximize throughput and scale. With a Stream, handling data is almost hidden behind the scenes: it just &lt;em&gt;flows&lt;/em&gt; through &lt;em&gt;functions&lt;/em&gt;, producing a new output from some input. In the case of an Http server, the Request-Response model across all clients is a Stream-based process: You map a Request to a Response, passing it through various functions which act on an input. Forget about MVC, it&amp;#8217;s all middleware. No need to set variables, iterate over collections, orchestrate function calls. Just concatenate stream-enabled functions together, and run your code. Streams offer a succinct programming model for a process. The fact it also scales is a nice bonus.&lt;/p&gt;
+
+&lt;p&gt;Stream based programming is possible in a variety of languages, and I encourage you to explore this space. There&amp;#8217;s an excellent &lt;a href=&#34;https://github.com/substack/stream-handbook&#34;&gt;stream handbook for Node&lt;/a&gt;, &lt;a href=&#34;https://github.com/matz/streem&#34;&gt;an exploratory stream language from Yukihiro &amp;#8220;Matz&amp;#8221; Matsumoto of Ruby fame&lt;/a&gt;, &lt;a href=&#34;https://spark.apache.org/streaming/&#34;&gt;Spark Streaming&lt;/a&gt; and of course &lt;a href=&#34;http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/index.html&#34;&gt;Akka-Streams&lt;/a&gt; which joins the existing &lt;a href=&#34;https://github.com/scalaz/scalaz-stream&#34;&gt;scalaz-stream&lt;/a&gt; library for Scala. Even Go&amp;#8217;s &lt;a href=&#34;http://golang.org/pkg/net/http/#HandleFunc&#34;&gt;HttpHandler function&lt;/a&gt; is Stream-esque: you can easily wrap one function around another, building up a flow, and manipulate the Response stream accordingly.&lt;/p&gt;
+
+&lt;h2 id=&#34;why-akka-streams:9c0e63de68271e30d1a6e002245492be&#34;&gt;Why Akka-Streams?&lt;/h2&gt;
+
+&lt;p&gt;Akka-Streams provide a higher-level abstraction over Akka&amp;#8217;s existing actor model. The Actor model provides an excellent primitive for writing concurrent, scalable software, but it still is a primitive; it&amp;#8217;s not hard to find a few critiques of the model. So is it possible to have your cake and eat it too? Can we abstract the functionality we want to achieve with Actors into a set of function calls? Can we treat Actor Messages as Inputs and Outputs to Functions, with type safety? Hello, Akka-Streams.&lt;/p&gt;
+
+&lt;p&gt;There&amp;#8217;s an excellent &lt;a href=&#34;http://www.typesafe.com/activator/template/akka-stream-scala&#34;&gt;activator template for Akka-Streams&lt;/a&gt; offering an in-depth tutorial on several aspects of Akka-Streams. For a more a gentler introduction, read on.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-recipe:9c0e63de68271e30d1a6e002245492be&#34;&gt;The Recipe&lt;/h2&gt;
+
+&lt;p&gt;To cook up a reasonable dish, we are going to consume messages from &lt;a href=&#34;https://www.rabbitmq.com&#34;&gt;RabbitMq&lt;/a&gt; with the &lt;a href=&#34;https://github.com/ScalaConsultants/reactive-rabbit&#34;&gt;reactive-rabbit&lt;/a&gt; library and output them to the console. The code is on &lt;a href=&#34;https://github.com/mhamrah/streams-playground&#34;&gt;GitHub&lt;/a&gt;. If you&amp;#8217;d like to follow along, &lt;code&gt;git clone&lt;/code&gt; and then &lt;code&gt;git checkout intro&lt;/code&gt;; hopefully I&amp;#8217;ll build up more functionality in later posts so the master branch may differ.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s start with a code snippet:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:scala&#34;&gt;object RabbitMqConsumer {
+ def consume(implicit flowMaterializer: FlowMaterializer) = {
+    Source(connection.consume(&#34;streams-playground&#34;))
+      .map(_.message.body.utf8String)
+      .foreach(println(_))
+  }
+}
+&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We use a RabbitMq connection to consume messages off of a queue named &lt;code&gt;streams-playground&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;For each message, we pull out the message and decode the bytes as a UTF-8 string&lt;/li&gt;
+&lt;li&gt;We print it to the console&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;the-ingredients:9c0e63de68271e30d1a6e002245492be&#34;&gt;The Ingredients&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A &lt;code&gt;Source&lt;/code&gt; is something which produces exactly one output. If you need something that generates data, you need a &lt;code&gt;Source&lt;/code&gt;. Our source above is produced from the &lt;code&gt;connection.consume&lt;/code&gt; function.&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;Sink&lt;/code&gt; is something with exactly one input. A &lt;code&gt;Sink&lt;/code&gt; is the final stage of a Stream process. The &lt;code&gt;.foreach&lt;/code&gt; call is a Sink which writes the input (_) to the console via &lt;code&gt;println&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;Flow&lt;/code&gt; is something with exactly one input and one output. It allows data to flow through a function: like calling &lt;code&gt;map&lt;/code&gt; which also returns an element on a collection. The &lt;code&gt;map&lt;/code&gt; call above is a &lt;code&gt;Flow&lt;/code&gt;: it consumes a &lt;code&gt;Delivery&lt;/code&gt; message and outputs a &lt;code&gt;String&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In order to actually run something using Akka-Streams you must have both a &lt;code&gt;Source&lt;/code&gt; and &lt;code&gt;Sink&lt;/code&gt; attached to the same pipeline. This allows you to create a &lt;code&gt;RunnableFlow&lt;/code&gt; and begin processing the stream. Just as you can compose functions and classes, you can compose streams to build up richer functionality. It&amp;#8217;s a powerful abstraction allowing you to build your processing logic independently of its execution. Think of stream libraries where you &amp;#8220;plug in&amp;#8221; parts of streams together and customize accordingly.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-simple-flow:9c0e63de68271e30d1a6e002245492be&#34;&gt;A Simple Flow&lt;/h2&gt;
+
+&lt;p&gt;You&amp;#8217;ll notice the above snippet requires an &lt;code&gt;implicit flowMaterializer: FlowMaterializer&lt;/code&gt;. A &lt;code&gt;FlowMaterializer&lt;/code&gt; is required to actually run a &lt;code&gt;Flow&lt;/code&gt;. In the snippet above &lt;code&gt;foreach&lt;/code&gt; acts as both a &lt;code&gt;Sink&lt;/code&gt; and a &lt;code&gt;run()&lt;/code&gt; call to run the flow. If you look at the Main.scala file you&amp;#8217;ll see I start the stream easily in one call:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:scala&#34;&gt;implicit val flowMaterializer = FlowMaterializer()
+  RabbitMqConsumer.consume
+&lt;/pre&gt;
+
+&lt;p&gt;Create a queue named &lt;code&gt;streams-playground&lt;/code&gt; via the RabbitMq Admin UI and run the application. You can use publish messages in the RabbitMq Admin UI and they will appear in the console. Try some UTF-8 characters, like åßç∂!&lt;/p&gt;
+
+&lt;h2 id=&#34;a-variation:9c0e63de68271e30d1a6e002245492be&#34;&gt;A Variation&lt;/h2&gt;
+
+&lt;p&gt;The original snippet is nice, but it does require the implicit FlowMaterializer to build and run the stream in &lt;code&gt;consume&lt;/code&gt;. If you remove it, you&amp;#8217;ll get a compile error. Is there a way to separate the definition of the stream with the running of the stream? Yes, by simply removing the &lt;code&gt;foreach&lt;/code&gt; call. &lt;code&gt;foreach&lt;/code&gt; is just syntactical sugar for a &lt;code&gt;map&lt;/code&gt; with a &lt;code&gt;run()&lt;/code&gt; call. By explicitly setting a &lt;code&gt;Sink&lt;/code&gt; without a call to &lt;code&gt;run()&lt;/code&gt; we can construct our stream blueprint producing a new object of type &lt;code&gt;RunnableFlow&lt;/code&gt;. Intuitively, it&amp;#8217;s a &lt;code&gt;Flow&lt;/code&gt; which can be &lt;code&gt;run()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s the variation:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:scala&#34;&gt;def consume() = {
+     Source(connection.consume(&#34;streams-playground&#34;))
+      .map(_.message.body.utf8String)
+      .map(println(_))
+      .to(Sink.ignore) //won&#39;t start consuming until run() is called!
+  }
+&lt;/pre&gt;
+
+&lt;p&gt;We got rid of our &lt;code&gt;flowMaterializer&lt;/code&gt; implicit by terminating our Stream with a &lt;code&gt;to()&lt;/code&gt; call and a simple Sink.ignore which discards messages. This stream will not be run when called. Instead we must call it explicitly in Main.scala:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:scala&#34;&gt;implicit val flowMaterializer = FlowMaterializer()
+  RabbitMqConsumer.consume().run()
+&lt;/pre&gt;
+
+&lt;p&gt;We&amp;#8217;ve separated out the entire pipeline into two stages: the build stage, via the &lt;code&gt;consume&lt;/code&gt; call, and the run stage, with &lt;code&gt;run()&lt;/code&gt;. Ideally you&amp;#8217;d want to compose your stream processing as you wire up the app, with each component, like RabbitMqConsumer, providing part of the overall stream process.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-counter-example:9c0e63de68271e30d1a6e002245492be&#34;&gt;A Counter Example&lt;/h2&gt;
+
+&lt;p&gt;As an alternative, explore the &lt;a href=&#34;http://www.rabbitmq.com/tutorials/tutorial-one-java.html&#34;&gt;rabbitmq tutorials&lt;/a&gt; for Java examples. Here&amp;#8217;s a snippet from the site:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:java&#34;&gt;QueueingConsumer consumer = new QueueingConsumer(channel);
+    channel.basicConsume(QUEUE_NAME, true, consumer);
+
+    while (true) {
+      QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+      String message = new String(delivery.getBody());
+      System.out.println(&#34; [x] Received &#39;&#34; + message + &#34;&#39;&#34;);
+    }
+&lt;/pre&gt;
+
+&lt;p&gt;This is typical of an imperative style. Our flow is controlled by the while loop, we have to explicitly manage variables, and there&amp;#8217;s no flow control. We could separate out the body from the while loop, but we&amp;#8217;d have a crazy function signature. Alternatively on the Akka side there&amp;#8217;s the solid &lt;a href=&#34;https://github.com/sstone/amqp-client&#34;&gt;amqp-client library&lt;/a&gt; which provides an Actor based model over RabbitMq:&lt;/p&gt;
+
+&lt;pre class=&#34;lang:scala&#34;&gt;// create an actor that will receive AMQP deliveries
+  val listener = system.actorOf(Props(new Actor {
+    def receive = {
+      case Delivery(consumerTag, envelope, properties, body) =&gt; {
+        println(&#34;got a message: &#34; + new String(body))
+        sender ! Ack(envelope.getDeliveryTag)
+      }
+    }
+  }))
+
+  // create a consumer that will route incoming AMQP messages to our listener
+  // it starts with an empty list of queues to consume from
+  val consumer = ConnectionOwner.createChildActor(conn, Consumer.props(listener, channelParams = None, autoack = false))
+&lt;/pre&gt;
+
+&lt;p&gt;You get the concurrency primitives via configuration over the actor system, but we still enter imperative-programming land in the Actor&amp;#8217;s &lt;code&gt;receive&lt;/code&gt; blog (sure, this can be refactored to some degree). In general, if we can model our process as a set of streams, we achieve the same benefits we get with functional programming: clear composition on what is happening, not how it&amp;#8217;s doing it.&lt;/p&gt;
+
+&lt;p&gt;Streams can be applied in a variety of contexts. I&amp;#8217;m happy to see the amazing and powerful &lt;a href=&#34;http://spray.io&#34;&gt;spray.io&lt;/a&gt; library for Restful web services will be merged into Akka as a stream enabled http toolkit. It&amp;#8217;s also not hard to find out what&amp;#8217;s been done with &lt;a href=&#34;https://github.com/scalaz/scalaz-stream#projects-using-scalaz-stream&#34;&gt;scalaz-streams&lt;/a&gt; or the plethora of tooling already available in other languages.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Don’t Sweat Choice in Tech: Be Opinionated</title>
+          <link>http://blog.michaelhamrah.com/2015/01/dont-sweat-choice-in-tech-be-opinionated/</link>
+          <pubDate>Mon, 12 Jan 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/01/dont-sweat-choice-in-tech-be-opinionated/</guid>
+          <description>&lt;p&gt;Recently I jumped back into some front-end development. My focus is primarily on backend systems and APIs so I welcomed the opportunity to hack on a UI. I keep tabs on the front-end world and a new project is a good opportunity for a test-drive or to level-up on an existing toolkit. The caveat, however, is the dreaded &lt;a href=&#34;http://techcrunch.com/2014/10/18/you-too-may-be-a-victim-of-developaralysis/&#34;&gt;developaralysis&lt;/a&gt;. We have so many choices that discerning the difference, picking the &amp;#8220;right one&amp;#8221;, and learning it becomes an overwhelming endeavor. Should I try out &lt;a href=&#34;http://gulpjs.com&#34;&gt;gulp&lt;/a&gt;? What about test-driving &lt;a href=&#34;http://facebook.github.io/react/&#34;&gt;react&lt;/a&gt;? Or should I go with the usual bootstrap/angular combo I&amp;#8217;ve come to know well?&lt;/p&gt;
+
+&lt;p&gt;It&amp;#8217;s hard to balance the cost of time in the present for the potential&amp;#8211;and I emphasize potential&amp;#8211;benefit of speed and simplicity later when choosing something new. Time is limited; do I need an exploration of browserify, amd, and umd when all I really need is a simple &lt;code&gt;script&lt;/code&gt; tag? Browserify looks cool, but what&amp;#8217;s the return on that investment? The flood of options occurs at every level of experience; it&amp;#8217;s endearing to overhear a debate amongst new developers on whether to learn rails or node first. It&amp;#8217;s definitely not helpful when &lt;a href=&#34;http://mashable.com/2014/01/21/learn-programming-languages/&#34;&gt;sites offer laundry lists of languages you should learn&lt;/a&gt;. C# and Java, really? I&amp;#8217;m surprised assembly wasn&amp;#8217;t on the list. Judging the nuances of NoSQL options is just as entertaining.&lt;/p&gt;
+
+&lt;p&gt;My programming career, now inching the 15-year mark, has seen its fair share of languages and frameworks. Happily I no longer think about ASP.NET view state or the server-control lifecycle. These were instrumental at one time, and even though they are long gone, those experiences helped shape my current opinions on how I want to develop (or, in this particular case, not to develop) software. I didn&amp;#8217;t realize I had a choice back then on how I develop: ASP.NET seemed a given. That horrible windows-on-web paradigm pushed me to an intense focus on MVC, now a staple of many web frameworks. In turn, with the advent of APIs and more complex, task-focused UX, I am keenly interested in stream-based programming emerging in &lt;a href=&#34;http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/scala/stream-index.html&#34;&gt;Scala&lt;/a&gt; and &lt;a href=&#34;https://github.com/substack/stream-handbook&#34;&gt;Node&lt;/a&gt;. What I&amp;#8217;ve come to realize in the tumultuous world of programming, and with constantly needing to level-up, is that frameworks and languages are only part of the equation. The most important part is me, and you: the developer. Steve Ballmer got it right: &lt;a href=&#34;http://vimeo.com/6668315&#34;&gt;it&amp;#8217;s about developers&lt;/a&gt;. Languages and frameworks help us do things but our opinions on how we want to do them is what moves us forward. When a framework matches your opinions, getting stuff done is simple and intuitive. When you feel like your jumping through hoops it&amp;#8217;s time to try something different.&lt;/p&gt;
+
+&lt;p&gt;My small foray back into the front-end world was met with the usual whirlwind of information. Not to mention the usual upgrade of tools, so any answers I find on google will be outdated:&lt;/p&gt;
+
+&lt;blockquote class=&#34;twitter-tweet&#34; lang=&#34;en&#34;&gt;
+  &lt;p&gt;
+    &amp;#8220;What&amp;#8217;s bower?&amp;#8221; &amp;#8220;A package manager, install it with npm.&amp;#8221; &amp;#8220;What&amp;#8217;s npm?&amp;#8221; &amp;#8220;A package manager, you can install it with brew&amp;#8221; &amp;#8220;What&amp;#8217;s brew?&amp;#8221; &amp;#8230;
+  &lt;/p&gt;
+  
+  &lt;p&gt;
+    — Stefan Baumgartner (@ddprrt) &lt;a href=&#34;https://twitter.com/ddprrt/status/529909875347030016&#34;&gt;November 5, 2014&lt;/a&gt;
+  &lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I just want to throw together a web site. Grunt vs. Gulp? Wait, there&amp;#8217;s this thing called &lt;a href=&#34;https://github.com/broccolijs/broccoli&#34;&gt;Broccoli&lt;/a&gt;? Is there something different than &lt;a href=&#34;http://getbootstrap.com&#34;&gt;Bootstrap&lt;/a&gt; that&amp;#8217;s less bootstrappy? Are people still using &lt;a href=&#34;http://html5boilerplate.com&#34;&gt;h5bp&lt;/a&gt;?&lt;/p&gt;
+
+&lt;p&gt;It seemed even the simple go-to of &lt;a href=&#34;http://yeoman.io&#34;&gt;&lt;code&gt;yo angular&lt;/code&gt;&lt;/a&gt; was fraught with peril: what are all these questions I have to answer? A massive amount of files were generated. Yes, all important and I know all required for various things, but it&amp;#8217;s information overload. Why is &lt;code&gt;unresolved&lt;/code&gt; added to the body tag? What happens if I hack the meta-viewport settings? What is &lt;code&gt;build:js&lt;/code&gt; doing? Should I put on the blinders and ignore? Maybe I should try the possible simplicity of &lt;a href=&#34;http://blog.keithcirkel.co.uk/why-we-should-stop-using-grunt/&#34;&gt;just using npm&lt;/a&gt;. I was in it: developaralysis.&lt;/p&gt;
+
+&lt;p&gt;Stop. Relax. Breathe. I already knew the simple answer to navigating the awesome amount of choice: opinion. Forget about existing, pre-conceived notions of software. You need to do something: how would you do it? Chances are someone&amp;#8217;s had a similar idea and &lt;a href=&#34;https://github.com/explore&#34;&gt;wrote some software&lt;/a&gt;. Don&amp;#8217;t even know what you need? Then start with something that&amp;#8217;s easy to learn. If it doesn&amp;#8217;t work out, you&amp;#8217;ll have formed an opinion on what you wanted to happen. This is learning by fire.&lt;/p&gt;
+
+&lt;p&gt;Opinions have given birth to some of the most widely used software in the world. &lt;a href=&#34;http://en.wikipedia.org/wiki/Ruby_(programming_language)#Early_concept&#34;&gt;Yukihiro Matsumoto created Ruby from his dissatisfaction with other OOP languages&lt;/a&gt;. &lt;a href=&#34;http://www.aosabook.org/en/nginx.html&#34;&gt;Nginx was spawned by dissatisfaction in threaded web-servers&lt;/a&gt;. You may not be ready to write a new language, framework, or web server, but your opinions can still shape what you learn and where you invest your time.&lt;/p&gt;
+
+&lt;p&gt;Nobody asked me a decade ago how I wanted to write web software. If they did I doubt I would have come up with anything similar to ASP.NET webforms, if I could even have put together a semi-coherent answer. Yet I was a full-time ASP.NET webforms developer, and that&amp;#8217;s how I was writing software. Eventually my teammates and I realized this way of programming was utter crap. We asked ourselves that simple question, which we should have asked a lot earlier: How do we want to do this?&lt;/p&gt;
+
+&lt;p&gt;At any level it&amp;#8217;s important to develop opinions on how you want to achieve goals. Beginners may seem they have a difficult spot because there&amp;#8217;s so little grounding to formulate opinions: any answer may appear &amp;#8220;too simple&amp;#8221;. But the spectrum is the same for experience developers as well. There&amp;#8217;s always &amp;#8220;something else&amp;#8221; to know and factor in behind the curtain. You&amp;#8217;re constantly peeling layers off of the onion.&lt;/p&gt;
+
+&lt;p&gt;Don&amp;#8217;t sweat the plethora of choice which exist. Nothing is perfect, and stagnation is the worst option. Take a moment and develop an opinion on how you want to solve a particular problem. Poke holes in your solution. See if somebody else has a similar idea, or a similar experience. Try something out: don&amp;#8217;t like how it happened or the result? Did you leverage the tool correctly? Okay, great, now you have the basis for something better. Develop your suite of go-to tooling. You can keep tabs on the eco-system, and cross-pollinate ideas across similar veins. Choice is a good thing: like a breadth-first search, letting you still run forward if you want.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Embracing Test Driven Development for Speed</title>
+          <link>http://blog.michaelhamrah.com/2013/02/embracing-test-driven-development-for-speed/</link>
+          <pubDate>Mon, 04 Feb 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/02/embracing-test-driven-development-for-speed/</guid>
+          <description>
+
+&lt;p&gt;A few months ago I helped a developer looking to better embrace test driven development. The session was worthwhile and made me reflect on my journey with TDD.&lt;/p&gt;
+
+&lt;p&gt;Writing tests is one thing. Striving for full test coverage, writing tests first and leveraging integration and unit tests is another. Some people find writing tests cumbersome and slow. Others may ignore tests for difficult scenarios or code spikes. When first working with tests I felt the same way. Over time I worked through issues and my feeling towards TDD changed. The pain was gone and I worked more effectively.&lt;/p&gt;
+
+&lt;p&gt;TDD is about speed. Speed of development and speed of maintenance. Once you leverage TDD as a way to better produce code you&amp;#8217;ve unlocked the promise of TDD: Code more, debug less.&lt;/p&gt;
+
+&lt;h2 id=&#34;stay-in-your-editor:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Stay In Your Editor&lt;/h2&gt;
+
+&lt;p&gt;How many times have you verified something works by firing up your browser in development? Too many times. You build, you wait for the app to start, you launch the browser, you click a link, you fill in forms, you hit submit. Maybe there&amp;#8217;s a breakpoint you step through or some trace statements you output. How much time have you wasted going from coding to verifying your code works? Too much time.&lt;/p&gt;
+
+&lt;p&gt;Stay in your editor. It has everything you need to get stuff done. Avoid the context switch. Avoid repetitive typing. Have one window for your code and another for your tests. Even on small laptops you can split windows to have both open at once. Gary Bernhardt, in an excellent &lt;a href=&#34;https://peepcode.com/products/play-by-play-bernhardt&#34;&gt;Peepcode&lt;/a&gt;, shows how he runs specs from within vim. Ryan Bates, in his screencast &lt;a href=&#34;http://railscasts.com/episodes/275-how-i-test&#34;&gt;How I Test&lt;/a&gt;, only uses the browser for UI design. If you leave your editor you are wasting time and suffering a context switch.&lt;/p&gt;
+
+&lt;p&gt;Every language has some sort of continuous testing runtime. Detect a file change, run applicable tests. Take a look at &lt;a href=&#34;https://github.com/guard/guard&#34;&gt;Guard&lt;/a&gt;. Selenium and company are excellent browser testing tools. Jasmine works great for Javascript. Rspec and Capybara are a solid combination. Growl works well for notifications. By staying in your editor you are coding all that manual verification away. Once coded you can repeat indefinitely.&lt;/p&gt;
+
+&lt;h2 id=&#34;start-with-tests:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Start with Tests&lt;/h2&gt;
+
+&lt;p&gt;Test driven doesn&amp;#8217;t mean test after. This may be the hardest rule for newcomers to follow. We&amp;#8217;ve been so engrained to write code, to design classes, to focus on OOP. We know what we need to do. We just need to do it. Once code works we&amp;#8217;ll then write tests to ensure it always works. I&amp;#8217;ve done this bad practice myself.&lt;/p&gt;
+
+&lt;p&gt;When you test last you&amp;#8217;re missing the &lt;em&gt;why&lt;/em&gt;. &lt;em&gt;Customer gets welcome email after signing up&lt;/em&gt; means nothing without context. If you know &lt;em&gt;why&lt;/em&gt; this is needed you are in a better position to define your required tests and start shaping your code. The notification could be a simple acknowledgement or part of some intricate flow. If you know the &lt;em&gt;why&lt;/em&gt; you are not driving blind. The what you will build and the how you will build it will follow. If you code the other way around, testing later, you&amp;#8217;re molding the problem to your solution. Define the problem first, then solve succinctly.&lt;/p&gt;
+
+&lt;h2 id=&#34;start-with-failing-tests:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Start with Failing Tests&lt;/h2&gt;
+
+&lt;p&gt;One of my favorite newbie mistakes is when a developer writes some code, then writes a test, watches the test pass, then is surprised when the code fails in the browser. But the test passed!&lt;/p&gt;
+
+&lt;p&gt;Anyone can write a green test. It is the action of going from red to green which gives the test meaning. Something needs to work, it doesn&amp;#8217;t. Red state. You change your code, you make it work. Green state. Without the red state first you have no idea how you got to a green state. Was it a bug in your test? Did you test the right thing? Did you forget to assert something? Who knows.&lt;/p&gt;
+
+&lt;p&gt;Combined with the &lt;em&gt;why&lt;/em&gt; going from red to green gives the code shape. You don&amp;#8217;t need to over-think class design. The code you write has purpose: it implements a need to make something work that doesn&amp;#8217;t. As your functionality becomes more complex, your code becomes more nimble. You deal with dependencies, spawning new tests and classes when cohesion breaks down. You stay focused on your goal: make something work. Combined with git commits you have a powerful history to branch and backtrack if necessary. As always, don&amp;#8217;t be afraid to refactor.&lt;/p&gt;
+
+&lt;h2 id=&#34;testing-first-safeguards-agile-development:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Testing First Safeguards Agile Development&lt;/h2&gt;
+
+&lt;p&gt;Testing first also acts as a safeguard. Too often developers will pull work from a backlog prematurely. They&amp;#8217;ll make assumptions, code to those assumptions, and have to make too many changes before release. If the first thing you do after pulling a story is ask yourself &amp;#8220;how can I verify this works&amp;#8221; you&amp;#8217;re thinking in terms of your end-user. You&amp;#8217;re writing acceptance tests. You understand what you need to deliver. BDD tools like &lt;a href=&#34;http://cukes.info/&#34;&gt;Cucumber&lt;/a&gt; put this paradigm in the foreground. You can achieve the same effect with vanilla integration tests.&lt;/p&gt;
+
+&lt;h2 id=&#34;always-test-difficult-code:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Always Test Difficult Code&lt;/h2&gt;
+
+&lt;p&gt;Most of the time not testing comes down to two reasons. The code is too hard to test or the code is not worth testing. There are other reasons, but they are all poor excuses. If you want to test code you can test code.&lt;/p&gt;
+
+&lt;p&gt;Code shouldn&amp;#8217;t be too hard to test. Testing distributed, asynchronous systems is hard but still testable. When code is too hard to test you have the wrong abstraction. You&amp;#8217;re API isn&amp;#8217;t working. You aren&amp;#8217;t adhering to SOLID principles. Your testing toolkit isn&amp;#8217;t sufficient.&lt;/p&gt;
+
+&lt;p&gt;Static languages can rely on dependency injection to handle mocking, dynamic languages can intercept methods. Tools like &lt;a href=&#34;https://www.relishapp.com/vcr/vcr&#34;&gt;VCR&lt;/a&gt; and Cassette can fake http requests for external dependencies. Databases can be tested in isolation or &lt;a href=&#34;https://github.com/nulldb/nulldb&#34;&gt;faked&lt;/a&gt;. Asynchronous code can be tricky to test but becomes easier when separating pre and post conditions (you can also block in unit tests to handle synchronization).&lt;/p&gt;
+
+&lt;p&gt;The code you don&amp;#8217;t test, especially difficult code, will always bite you. Taking the time to figure out how to test will clean up the code and will give you incredible insight into how your underlying framework works.&lt;/p&gt;
+
+&lt;h2 id=&#34;always-test-your-code:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Always Test Your Code&lt;/h2&gt;
+
+&lt;p&gt;I worked with a developer that didn&amp;#8217;t write tests because the requirements, and thus code, were changing too much and dealing with the failing tests was tedious. It actually signified a red flag exposing larger issues in the organization but the point is a common one. Some developers don&amp;#8217;t test because code may be thrown out or it&amp;#8217;s just a spike and not worth testing.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;re not testing first because it&amp;#8217;s a faster way to develop, realize that there is no such thing as throw away code (on the other hand, &lt;a href=&#34;http://code.dblock.org/treat-every-line-of-code-as-if-its-going-to-be-thrown-away-one-day&#34;&gt;all code is throw away code&lt;/a&gt;). Mixing good, tested code with untested code creates technical debt. If you put a drop of sewer in a barrel of wine you will have a barrel of sewer. The code has no &lt;em&gt;why&lt;/em&gt;. It may be just a spike but it could also turn out to be the next best thing. Then you&amp;#8217;re left retrofitting unit tests, fitting a square peg in a round hole.&lt;/p&gt;
+
+&lt;h2 id=&#34;balancing-integration-and-unit-tests:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Balancing Integration and Unit Tests&lt;/h2&gt;
+
+&lt;p&gt;Once you start testing first a lot of pieces fall into place. The balance between integration and unit tests is an interesting topic when dealing with code coverage. There will be overlap in code coverage but not in terms of covered functionality.&lt;/p&gt;
+
+&lt;p&gt;Unit tests are the distinct pieces of your code. Integration tests are how those pieces fit together. You have a customer class and a customer page. The unit tests are the rules around the customer model or the distinct actions around the customer controller. The integration tests are how the end user interacts with those models top to bottom. &lt;a href=&#34;http://pivotallabs.com/cucumber-step-definitions-are-not-methods/&#34;&gt;Pivotal Labs talks about changing state in cucumber steps&lt;/a&gt; showing how integration tests monitor the flow of events in an application. Unit tests are for the discrete methods and properties which drive those individual events.&lt;/p&gt;
+
+&lt;h2 id=&#34;automate:8bd207e84bfe3e779bdf8e84fc299a65&#34;&gt;Automate&lt;/h2&gt;
+
+&lt;p&gt;Developing applications is much more than coding. Focusing on tools and techniques at your disposal will help you write code more effectively. Your IDE, command line skills, testing frameworks, libraries and development paradigms are as important as the code you right. They are your tools and become more powerful when used correctly.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Thoughts on Kanban</title>
+          <link>http://blog.michaelhamrah.com/2011/12/thoughts-on-kanban/</link>
+          <pubDate>Thu, 15 Dec 2011 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2011/12/thoughts-on-kanban/</guid>
+          <description>
+
+&lt;p&gt;One of my favorite achievements in the agile/lean world has been the progression from standard Scrum practices to a &lt;a href=&#34;http://en.wikipedia.org/wiki/Kanban_(development)&#34;&gt;Kanban&lt;/a&gt; approach of software development. In fact, Kanban, in my opinion, is such an ideal approach to software development I cannot imagine approaching team-based development any other way.&lt;/p&gt;
+
+&lt;h2 id=&#34;what-8217-s-wrong-with-scrum:d7ec680e7904e258131968165612fab2&#34;&gt;What&amp;#8217;s Wrong With Scrum?&lt;/h2&gt;
+
+&lt;p&gt;Before answering this, I want to mention Kanban came only after altering, tweaking, and refining the Scrum process as much as possible. If anything, Kanban represents a &lt;em&gt;graduation&lt;/em&gt; from Scrum. Scrum worked, and worked well, but it was time to take the approach to the next level. Why? The Scrum process was failing. It became too constrained, too limiting. As I mentioned in my &lt;a href=&#34;http://www.michaelhamrah.com/blog/2008/12/adventures-in-agile-practical-scrum-intro/&#34;&gt;three-year old (as of this writing) post on Scrum&lt;/a&gt; one needs to constantly iterate in refining the practice. Pick one thing that isn&amp;#8217;t working, fix it, and move one. Quite simply, there was nothing with Scrum left to refine except Scrum itself.&lt;/p&gt;
+
+&lt;h3 id=&#34;why-scrum-was-failing:d7ec680e7904e258131968165612fab2&#34;&gt;Why Scrum Was Failing&lt;/h3&gt;
+
+&lt;p&gt;The main issue was simply it was time to break free from the time-boxed approach of sprints. Too much effort went into putting stories into iterations. Too much effort went into managing the process. This process took away from releasing new functionality. &lt;em&gt;Nothing can be more important than releasing new functionality.&lt;/em&gt; Tweaking iteration length did not help; one week caused too many meetings to happen too frequently. Two weeks and the early sprint planning effort was lost on stories which would not occur until the second week. Too much time went into making stories &amp;#8220;the right size&amp;#8221;. Some where too small; not worth discussing in a group. Some were too big but they did not make sense to break down to fit into the iteration. Worse, valuable contributions in meetings only occurred with a few people. This had nothing to do with the quality of dev talent; some really good developers did not jive with the story time/sprint review/retrospective/group think model. Why would they? Who really likes meetings?&lt;/p&gt;
+
+&lt;h3 id=&#34;rethinking-constraints:d7ec680e7904e258131968165612fab2&#34;&gt;Rethinking Constraints&lt;/h3&gt;
+
+&lt;p&gt;Scrum has a specific approach to constraints: limit by time. Focus on what can be accomplished in X timeframe (sprints). Add those sprints into releases. Wash, rinse, repeat. Kanban, however, rethinks constraints. Time is irrelevant; the constraint is how much work can occur at any one time. This is, essentially, your work in progress. Limit your work in work in progress (WIP) to work you can be actively doing at any one time. In order to do new work, old work must be done.&lt;/p&gt;
+
+&lt;h3 id=&#34;always-be-releasing:d7ec680e7904e258131968165612fab2&#34;&gt;Always Be Releasing&lt;/h3&gt;
+
+&lt;p&gt;The beauty of this approach is that it lends itself well to a continuous deployment approach. If you work on something, and work on it until it is done, when it is done, it can be released. So release it. Why wait until an arbitrary date? The development pipeline in Kanban is similar to Scrum. Stories are prioritized, they are sized, they are ready for work, they are developed, they are tested, they are released. The main difference is instead of doing these at set times, they are done &lt;em&gt;just-in-time&lt;/em&gt;. In order to move from one stage of the process (analysis, development, testing, etc) there must be an open &amp;#8220;slot&amp;#8221; in the next stage. This is your WIP limit. If there isn&amp;#8217;t an open slot, it cannot move, and stays as is. People can be focused on moving stories through the pipeline rather than meeting arbitrary deadlines, no matter how those deadlines came to be. Even blocking items can have WIP limits. The idea is simple: you have X resources. Map those resources directly to work items as soon as they are available, and see them through to the end. Then start again.&lt;/p&gt;
+
+&lt;h3 id=&#34;everything-is-just-in-time:d7ec680e7904e258131968165612fab2&#34;&gt;Everything is Just In Time&lt;/h3&gt;
+
+&lt;p&gt;All of the benefits of Scrum are apparent in Kanban. Transparency into what is being worked on and the state of stories. Velocity can still be measured; stories are sized and can be timed through the pipeline. Averages can be calculated over time for approximate release dates. The business can prioritize what is next up to the point of development. Bugs can be weaved into the pipeline as necessary, without having to detract from sprints. With the right build and deploy setup releases can occur as soon as code is merged into the master branch. Standup meetings are still important.&lt;/p&gt;
+
+&lt;h3 id=&#34;the-goal:d7ec680e7904e258131968165612fab2&#34;&gt;The Goal&lt;/h3&gt;
+
+&lt;p&gt;The theory of constraints is nothing new. My first encounter was with &lt;a href=&#34;http://www.amazon.com/Goal-Process-Ongoing-Improvement/dp/0884270610&#34;&gt;The Goal by Eliyahu Goldratt&lt;/a&gt;. The goal, in this case, is to release new functionality as efficiently (not quickly, not regularly; efficiently) as possible. There is a process to this: an idea happens, a request comes in. It is evaluated, it is fleshed out, given a cost. It is planned, implemented, and tested. It is released. Some are small, some are big. Some can be broken down. But in teams large and small, they go from inception to implementation to release. Value must be delivered efficiently. It can happen quickly, but it does not need to be arbitrarily time-boxed.&lt;/p&gt;
+
+&lt;p&gt;Scrum is a great and effective approach to software development. It helps focus the business and dev teams on thinking about what is next. It is a great way to get teams on board with a goal and working, in sync, together. It follows a predictable pattern to what will happen when. It offers the constraint of time. Kanban offers the constraint of capacity. For software development this is a far more effective constraint to managing work. You still need solid, manageable stories. You just don&amp;#8217;t have to fit a square peg in a round hole. Kanban streamlines the development process so resources, which always have a fixed limit, are the real limit you are dealing with. They are matched directly to the current state of work so a continuous stream of value can be delivered without the stop-and-go Scrum approach.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

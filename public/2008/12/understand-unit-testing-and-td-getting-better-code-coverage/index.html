@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Understand Unit Testing and TDD: Getting Better Code Coverage &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Understand Unit Testing and TDD: Getting Better Code Coverage</h1>
+  <span class="post-date">Dec 18 2008</span>
+  <p>One of the biggest challenges in unleashing the power of unit testing is getting good code coverage.  Most of the time, especially when teams are just starting out with Test Driven Development, unit testing usually gets in the way.  A lot of people (I succumb to this syndrome sometimes) add tests <em>after</em> they develop code.  The audacity! Some people just don&#8217;t unit test at all- especially when struggling with mocking a dependency, like a database or the HttpContext object.  And forget about finding more than one unit test for functions- you already have one for a function which passes- so you&#8217;re done, right?</p>
+
+<p>The secret in unit testing is understanding what you need to test.  You are not just testing something works- you&#8217;re testing specific functionality behaves <em>as expected</em>.  Once you understand this difference, not only will TDD be easier to achieve, but developing large projects, ensuring business rules, enforcing API guidelines, and concurrent development on the same feature will be easier and faster for you and your team.</p>
+
+<p>This post will help you think about testing: what you need to do to add unit tests to your existing project or add to what you already have.  We&#8217;re not doing test first- hopefully, this will be a precursor to TDD in getting you thinking about what to get out of your unit tests so you can get into the TDD groove.</p>
+
+<p>**Expectations And Reactions</p>
+
+<p>**</p>
+
+<p>Each class- and each function- has a specific purpose.  Systems are built on the interaction of these classes and functions.  Classes call functions.  Functions call other functions.  Data is processed.  Objects are returned.  Exceptions are thrown.  All of this interaction is like a clock- the pendulum swings, the gears turn, the hands move.  When everything does what it should, you have a healthy, usable, working system.  When something doesn&#8217;t, chaos ensues and thing don&#8217;t work- the hands of the clock don&#8217;t move.</p>
+
+<p>This boils down to a simple concept of expectations and reactions.  Class A expects Class B to do something when Class A calls a function on Class B.  Class A is <em>dependent</em> on Class B&#8217;s behavior.  What you&#8217;re looking to do is create a suite of tests to ensure Class B is actually doing the behavior Class A expects- from valid return values to handling exceptions- so the hands on the clock always turn.</p>
+
+<p><strong>The Code</strong></p>
+
+<p><a href="http://michaelhamrah.com/blog/wp-content/uploads/unittestexample.zip">Download the sample code here.</a></p>
+
+<p>I&#8217;ve created some simple code which represents an ordering system we&#8217;ll say is part of typical three tier MVC application, similar to <a href="http://blog.wekeroad.com/mvc-storefront/" target="_blank">Rob Conery&#8217;s MVC Storefront</a>, I&#8217;ve backed everything with interfaces.  To keep things simple, I&#8217;ve done this as a single class library- you can imagine all the other mumbo jumbo thrown in there.</p>
+
+<p>We&#8217;re simply going to be shipping an order- which involves getting an order from our data tier and then using a shipping service to ship the order.  For this series, I&#8217;m only going to focus on a single method in our business tier: the OrderShipmentManager.ShipOrder() function.  This will help us look at one of the two main components for a successful test suite: knowing what to tests and setting up mock objects.  In a real world application, you&#8217;ll want to apply the expectation/reaction approach to each layer.</p>
+
+<p>Currently, I&#8217;m only going to focus on what tests we need to have.  I&#8217;ll dig into how to set up mocking in another post.  Let&#8217;s start by looking at how our ShipOrder is being called in the controller:</p>
+
+<p>IOrderShipmentManager opm = new OrderShipmentManager(new DataTier.OrderStorage(), new DataTier.ShipmentService());</p>
+
+<p>Shipment shipment = null;</p>
+
+<p>try</p>
+
+<p>{</p>
+
+<p>shipment = opm.ShipOrder(orderId);</p>
+
+<p>}</p>
+
+<p>catch (OrderShipmentException ope)</p>
+
+<p>{</p>
+
+<p>System.Diagnostics.Debug.Write(&#8220;Whoops: {0}&#8221;, ope.Message);</p>
+
+<p>}</p>
+
+<p>View(shipment);</p>
+
+<p>Most controllers should look like this: very light, with the bulk of your application in your business logic layer.  This is a fairly simple call: in my controller, I take in an orderId I want to ship, and pass it to ShipOrder(). The controller expects two things to happen: a shipment to be returned, which it can pass to the view; or an exception to be thrown.</p>
+
+<p>So let&#8217;s make sure we have two unit tests to cover these two expectations (Note: I always prefix unit tests with CLASS_FUNCTION.  This makes viewing test results easier. I didn&#8217;t add that here because of redundancy- but the test project will have each test prefixed with OrderShipmentManager_ShipOrder):</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Returns_Shipment_Object()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_What()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>So I have my two unit tests- but the problem is, when should ShipOrder return a shipment? What should it actually do? And when does ShipOrder throw an exception?  What the hell do I write in these tests? We could look at the view to figure out what it does with the Shipment object.  We could read the requirements to figure out what ShipOrder should do (or, in an agile world, figure this out from our user story).  But we don&#8217;t have these things.  So let&#8217;s look at the function to see if we can make heads or tells of this:</p>
+
+<p>public Shipment ShipOrder(int orderId)</p>
+
+<p>{</p>
+
+<p>Order order;</p>
+
+<p>Shipment shipment;</p>
+
+<p>if (orderId &lt; 0) throw new OrderShipmentException(&ldquo;OrderId cannot be less than zero&rdquo;); order = _orderStorage.GetOrder(orderId); if (order == null) return null; if (order.ShipmentStatus == ShipmentStatus.Shipped) { throw new OrderShipmentException(&ldquo;Can&rsquo;t ship an order that&rsquo;s shipped!&rdquo;); } shipment = _shipmentService.CreateShipment(order.Customer.CustomerId); shipment.ShipmentProducts = new List<Product>();</p>
+
+<p>order.OrderItems.ForEach(oi =&gt; shipment.ShipmentProducts.Add(oi.Product));</p>
+
+<p>_shipmentService.CalculateShipment(shipment);</p>
+
+<p>_shipmentService.Ship(shipment);</p>
+
+<p>order.ShipmentStatus = ShipmentStatus.Shipped;</p>
+
+<p>order.ShipmentId = shipment.ShipmentId;</p>
+
+<p>_orderStorage.SaveOrder(order);</p>
+
+<p>return shipment;</p>
+
+<p>}</p>
+
+<p>Ahh, I get it now! We get the order from our order storage.  If it&#8217;s null, we can&#8217;t ship, so we return null- n0 need for an exception.  If the order&#8217;s been shipped, throw an exception.  Next, create a shipment with our shipment service, calculate the shipment cost, and save the order.  Return the shipment and we&#8217;re done.  Now we can add a suite a tests.</p>
+
+<p>Let&#8217;s focus on exceptions.  Here, we plan on throwing exceptions when either the orderId is bad or the order has already been shipped.  Other code will expect an exception to be thrown under these circumstances.  If we change this logic, things could get screwed up- code can&#8217;t react accordingly, and chaos ensues.  People may have already written code based on these expectations.  So let&#8217;s write some unit tests to ensure we&#8217;re always throwing an exception under these circumstances.</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_OrderId_Is_Less_Than_Zero()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_Order_Status_Is_Shipped()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>We&#8217;ve essentially enforced two business rules with these unit tests: when to throw our two exceptions.  (You can argue when or when not to throw an exception.  Personally, I follow the rule: If a function can&#8217;t do what it should, throw an exception).</p>
+
+<p>Coincidentally, we&#8217;re also guaranteeing something else: that our ShipOrder function will always react the same way under certain circumstances.  Here, ShipOrder will always throw an exception with an invalid orderId.  It won&#8217;t return null- and it won&#8217;t continue.  That&#8217;s important for processing logic- we wouldn&#8217;t want to create a shipment when we don&#8217;t have an order.</p>
+
+<p>Next, let&#8217;s go into functional logic.  I want to make sure a couple of things are happening, mainly that the workflow is consistent.  Let&#8217;s add some unit tests around the order object:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Gets_Order_From_Storage()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Saves_Order_With_ShipmentId_And_Status()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Returns_Null_When_No_Order()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>Next, our shipment object does a couple of more things:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Creates_Shipment_For_Customer()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Copies_OrderItems_To_Shipment()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Calculates_Shipment()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Ships_Product()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>Finally, we now know what this function should return:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Returns_New_Shipment_With_Order_Items()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>We have a pretty robust suite of tests around our ship order function.  We&#8217;re not only testing how the controller deals with this function, but the internal workings of the function as well- the expectations other objects have of our ShipOrder method.</p>
+
+<p><strong>What This Means</strong></p>
+
+<p>The core principal of testing is to make sure something works as expected.  In principal that&#8217;s totally obvious and makes perfect sense- why the hell am I even writing about it?  In reality, implementing something which meets that definition is extremely vague and easily debatable.  The pitfall most people get into in attempting TDD- or even writing unit tests- is their definition of &#8220;I&#8217;m proving it works as expected&#8221; is wrong.</p>
+
+<p>Evolving systems- especially those built with agile development- change a great deal over time. What we want to do is make sure the behavior of everything we write is always the same as these changes occur.  Ideally, nothing can be taken for granted- return values, exceptions, processing.  All must be tested.  Changes create little ripples in the interaction between all the dependencies in a system. Unchecked, ripples grow bigger and bigger into tsunamis of horrible, horrible bugs.  It&#8217;s important to understand what these interactions are, and make sure new changes don&#8217;t alter current behavior.</p>
+
+<p><strong>Where TDD Fits In</strong></p>
+
+<p>TDD simply makes you think about these interactions before you code, so you know what each class and function does for the greater good.  For most people, especially getting started with TDD, that&#8217;s a lot to wrap your head around.  Especially when you&#8217;re the type of coder that likes to code first and have the system morph into what you need it to be.  With TDD, you can easily end up over analyzing the situation, testing too much or too little.  That&#8217;s why TDD is very iterative- figure out what you need, write your single test to enforce it, then write code to pass your test.  But it&#8217;s important to note the level you need from your tests.  If you need a ShipOrder function that returns a shipment, don&#8217;t just check it returns a shipment.  Enforce it&#8217;s doing every step it should- your unit tests are guaranteeing every assumption every other piece of code makes is valid.</p>
+
+<p><strong>Up Next</strong></p>
+
+<p>I didn&#8217;t talk about mocking at all.  Mocking is the second most important factor of testing: after knowing what to test!  In another post, I&#8217;ll talk about how to write the unit tests I outlined above.  Unit tests also provide numerous benefits I mentioned earlier in this post: enforcing standards, allowing concurrent development and faster coding (no need for those console apps for class library development!).</p>
+
+<p><a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2funderstand-unit-testing-and-td-getting-better-code-coverage%2f"><img src="http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2funderstand-unit-testing-and-td-getting-better-code-coverage%2f&#038;bgcolor=0000FF" border="0" alt="kick it on DotNetKicks.com" /></a></p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

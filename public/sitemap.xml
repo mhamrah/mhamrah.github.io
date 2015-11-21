@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/</loc>
+    <lastmod>2015-06-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/06/fleet-unit-files-for-kubernetes-on-coreos/</loc>
+    <lastmod>2015-06-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/05/networking-basics-understanding-cidr-notation-and-subnets-whats-up-with-16-and-24/</loc>
+    <lastmod>2015-05-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/04/easy-scaling-with-fleet-and-coreos/</loc>
+    <lastmod>2015-04-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/03/managing-coreos-clusters-on-aws-with-cloudformation/</loc>
+    <lastmod>2015-03-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/03/slimming-down-dockerfiles-decrease-the-size-of-gitlabs-ci-runner-from-900-to-420-mb/</loc>
+    <lastmod>2015-03-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/03/book-review-go-programming-blueprints-and-the-beauty-of-a-language/</loc>
+    <lastmod>2015-03-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/03/deploying-docker-containers-on-coreos-with-the-fleet-api/</loc>
+    <lastmod>2015-03-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/01/adding-http-server-side-events-to-akka-streams/</loc>
+    <lastmod>2015-01-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/01/a-gentle-introduction-to-akka-streams/</loc>
+    <lastmod>2015-01-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2015/01/dont-sweat-choice-in-tech-be-opinionated/</loc>
+    <lastmod>2015-01-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/12/go-style-directory-layout-for-scala-with-sbt/</loc>
+    <lastmod>2014-12-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/11/running-consul-on-coreos/</loc>
+    <lastmod>2014-11-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/</loc>
+    <lastmod>2014-11-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/10/accelerate-team-development-with-your-own-sbt-plugin-defaults/</loc>
+    <lastmod>2014-10-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/</loc>
+    <lastmod>2014-06-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</loc>
+    <lastmod>2014-06-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/06/setting-up-a-multi-node-mesos-cluster-running-docker-haproxy-and-marathon-with-ansible/</loc>
+    <lastmod>2014-06-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/</loc>
+    <lastmod>2014-06-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/05/spray-directives-custom-directives-part-two-flatmap/</loc>
+    <lastmod>2014-05-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/05/spray-directives-creating-your-own-simple-directive/</loc>
+    <lastmod>2014-05-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/</loc>
+    <lastmod>2014-03-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/03/testing-akkas-fsm-using-setstate-for-unit-testing/</loc>
+    <lastmod>2014-03-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/</loc>
+    <lastmod>2014-02-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/02/using-akkas-clusterclient/</loc>
+    <lastmod>2014-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/01/first-class-function-example-in-scala-and-go/</loc>
+    <lastmod>2014-01-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2014/01/programming-akkas-finite-state-machines-in-scala/</loc>
+    <lastmod>2014-01-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/10/overview-on-web-performance-and-scalability/</loc>
+    <lastmod>2013-10-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/06/scala-web-apis-up-and-running-with-spray-and-akka/</loc>
+    <lastmod>2013-06-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/05/updating-flickr-photos-with-gpx-data-using-scala-getting-started/</loc>
+    <lastmod>2013-05-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/04/six-months-of-computer-science-without-computers/</loc>
+    <lastmod>2013-04-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/04/spdy-slide-deck/</loc>
+    <lastmod>2013-04-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/03/choosing-a-technology-youre-asking-the-wrong-question/</loc>
+    <lastmod>2013-03-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/03/markdown-powered-resume-with-css-print-styles/</loc>
+    <lastmod>2013-03-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/03/scalability-comparison-of-wordpress-with-nginxphp-fcm-and-apache-on-an-ec2-micro-instance/</loc>
+    <lastmod>2013-03-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/02/how-to-handle-a-super-bowl-size-spike-in-web-traffic/</loc>
+    <lastmod>2013-02-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2013/02/embracing-test-driven-development-for-speed/</loc>
+    <lastmod>2013-02-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/09/bus-travel-tips-in-turkey/</loc>
+    <lastmod>2012-09-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/08/effective-caching-strategies-understanding-http-fragment-and-object-caching/</loc>
+    <lastmod>2012-08-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/02/web-services-getty-images/</loc>
+    <lastmod>2012-02-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/01/agile-its-a-war-on-dates/</loc>
+    <lastmod>2012-01-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/01/building-for-the-web-understanding-the-network/</loc>
+    <lastmod>2012-01-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2012/01/web-technology-what-are-we-trying-to-accomplish/</loc>
+    <lastmod>2012-01-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/12/thoughts-on-kanban/</loc>
+    <lastmod>2011-12-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/12/my-post-about-image-delivery-on-the-getty-images-blog/</loc>
+    <lastmod>2011-12-08T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/11/solr-improving-performance-and-other-considerations/</loc>
+    <lastmod>2011-11-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/08/data-modeling-at-scale-mongodb-mongoid-callbacks-and-denormalizing-data-for-efficiency/</loc>
+    <lastmod>2011-08-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/05/nina-my-new-favorite-web-microframework/</loc>
+    <lastmod>2011-05-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</loc>
+    <lastmod>2011-03-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/03/quicktip-use-negative-margins-with-css-transforms-to-fix-clipping/</loc>
+    <lastmod>2011-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2011/02/loving-vim/</loc>
+    <lastmod>2011-02-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/12/machinist-2-mongoid-embeds_many-goodness/</loc>
+    <lastmod>2010-12-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/11/updated-visual-studio-html5openid-template-now-with-mvc-3-rc-and-html5-boilerplate-0-9-5/</loc>
+    <lastmod>2010-11-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/11/rails-fixing-bundle-no-metadata-found-issues/</loc>
+    <lastmod>2010-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/11/expressions-and-lambdas-oh-my/</loc>
+    <lastmod>2010-11-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/09/quicktip-use-commonservicelocator-and-mvcservicelocator-together-in-asp-net-mvc-3-projects/</loc>
+    <lastmod>2010-09-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/08/mvc-3-preview-1-vs-2010-template-w-razor-html-5-boilerplate-and-openid-authentication/</loc>
+    <lastmod>2010-08-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/08/the-new-webapp-architecture-asp-net-mvc-3-jquery-templating-with-pure-and-the-json-value-provider/</loc>
+    <lastmod>2010-08-04T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/03/building-a-single-speed-wheel-building/</loc>
+    <lastmod>2010-03-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/03/building-a-single-speed-bike/</loc>
+    <lastmod>2010-03-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/02/proposal-lets-call-asp-net-mvc-mvc/</loc>
+    <lastmod>2010-02-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/02/performance-tracing-for-your-applications-via-enterprise-library/</loc>
+    <lastmod>2010-02-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/02/using-flickr-and-jquery-to-learn-jsonp/</loc>
+    <lastmod>2010-02-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/02/how-eaccelerator-improved-wordpress-on-my-fedora-server/</loc>
+    <lastmod>2010-02-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/01/an-outlook-macro-to-archive-items-like-gmail/</loc>
+    <lastmod>2010-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2010/01/rocking-the-rackspace-cloud/</loc>
+    <lastmod>2010-01-13T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/12/getting-ruby-1-9-readline-rails-and-mysql-all-running-on-snow-leopard/</loc>
+    <lastmod>2009-12-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/12/organizing-javascript-for-event-pooling-with-jquery/</loc>
+    <lastmod>2009-12-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/12/help-your-business-be-a-technology-company/</loc>
+    <lastmod>2009-12-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/12/hdr-photography/</loc>
+    <lastmod>2009-12-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/06/appstorm-giveaway/</loc>
+    <lastmod>2009-06-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/05/great-site-for-the-ruby-on-rails-api/</loc>
+    <lastmod>2009-05-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/05/weird-issue-with-rspec-and-authlogic-openid/</loc>
+    <lastmod>2009-05-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/05/i-hate-persistence-but-love-azure-table-storage-with-data-services/</loc>
+    <lastmod>2009-05-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/05/authlogic-and-openid-on-rails/</loc>
+    <lastmod>2009-05-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/03/scrum-tips-managing-task-items/</loc>
+    <lastmod>2009-03-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/03/prevent-js-and-css-browser-caching-issues-with-aspnet/</loc>
+    <lastmod>2009-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/wiping-out-inherited-css-styles/</loc>
+    <lastmod>2009-02-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/tips-for-managin-aspnet-mvc-views/</loc>
+    <lastmod>2009-02-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/using-moq-3-to-implement-tests-and-avoid-stubs/</loc>
+    <lastmod>2009-02-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/how-to-hire-a-software-developer-the-in-house-interview-part-two/</loc>
+    <lastmod>2009-02-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/how-i-got-started-learning-ruby-on-rails/</loc>
+    <lastmod>2009-02-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</loc>
+    <lastmod>2009-02-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/</loc>
+    <lastmod>2009-01-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/understand-unit-testing-and-td-getting-better-code-coverage/</loc>
+    <lastmod>2008-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/saving-dynamically-added-list-items-using-jquery-and-aspnet-mvc/</loc>
+    <lastmod>2008-12-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/hiring-software-developers-the-in-house-interview-open-ended-questions/</loc>
+    <lastmod>2008-12-10T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/best-comment-ever/</loc>
+    <lastmod>2008-12-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/</loc>
+    <lastmod>2008-12-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/adventures-in-agile-practical-scrum-intro/</loc>
+    <lastmod>2008-12-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/12/how-to-hire-a-software-developer-the-phone-interview/</loc>
+    <lastmod>2008-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</loc>
+    <lastmod>2008-11-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</loc>
+    <lastmod>2008-11-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/about/</loc>
+    <lastmod>2008-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/404/</loc>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/wp-content/uploads/jqueryEventPool/</loc>
+  </url>
+  
+</urlset>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/markdown/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2013-03-23 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Markdown Powered Resume with CSS Print Styles</title>
+          <link>http://blog.michaelhamrah.com/2013/03/markdown-powered-resume-with-css-print-styles/</link>
+          <pubDate>Sat, 23 Mar 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/03/markdown-powered-resume-with-css-print-styles/</guid>
+          <description>&lt;p&gt;As much as I wish a LinkedIn profile could be a substitute for a resume, it&amp;#8217;s not, and I needed an updated resume. My previous resume was done some time ago with InDesign when I was on a design-tools kick. It worked well, but InDesign isn&amp;#8217;t the best choice for a straight forward approach to a resume and I was not interested in going back to word. So in honor of my friend Karthik&amp;#8217;s &lt;a href=&#34;http://kufli.blogspot.com/2013/02/evolution-of-my-resume-karthik.html&#34;&gt;programming themed resume&lt;/a&gt; I had an idea: program my resume. My requirements were simple:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Easy to edit: I should be able to update and output with minimal effort.&lt;/li&gt;
+&lt;li&gt;Easy to design: Something simple, but not boilerplate.&lt;/li&gt;
+&lt;li&gt;Export to Html and PDF: For easy distribution.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I&amp;#8217;m a big fan of &lt;a href=&#34;http://daringfireball.net/projects/markdown/syntax&#34;&gt;Markdown&lt;/a&gt; and happy to see the prevalence of Markdown across the web, however fragmented. I use Markdown to publish this blog and felt it would work well for writing a resume. The only problem is layout: you have minimal control over structural html elements which can make aspects of design difficult. For writing articles this isn&amp;#8217;t a problem but when you need structural markup for CSS it can be limiting. Luckily I found &lt;a href=&#34;https://github.com/bhollis/maruku&#34;&gt;Maruku&lt;/a&gt;, a ruby-based markdown interpreter which supports &lt;a href=&#34;http://michelf.ca/projects/php-markdown/extra/&#34;&gt;PHP Markdown Extra&lt;/a&gt; and a &lt;a href=&#34;http://maruku.rubyforge.org/proposal.html&#34;&gt;new meta-data syntax&lt;/a&gt; for adding id, css, and div elements to a page. It does take away from Markdown&amp;#8217;s simplicity but adds enough structure for design. Combined with CSS I had everything I needed to fulfill my requirements.&lt;/p&gt;
+
+&lt;p&gt;My &lt;a href=&#34;https://github.com/mhamrah/mlh.com/blob/master/michael-hamrah-resume.md&#34;&gt;markdown resume&lt;/a&gt; is on GitHub. I was surprised it rendered well with GitHub-Flavored Markdown despite the extraneous Maruku elements. I knew I was on the right track. Maruku lets you add your own stylesheets to the html output which I used for &lt;a href=&#34;http://www.michaelhamrah.com/michael-hamrah-resume.html&#34;&gt;posting online&lt;/a&gt;. One simple command gets me from markdown to ready-to-publish html. Exactly what I wanted.&lt;/p&gt;
+
+&lt;p&gt;Markulu supports pdf output as well, but requires a heavy LaTex install which I wasn&amp;#8217;t happy with. I also wasn&amp;#8217;t impressed with the LaTex PDF output. Luckily there&amp;#8217;s an easy alternative: printing to PDF. I used some &lt;a href=&#34;https://github.com/mhamrah/mlh.com/blob/master/scss/resume.scss&#34;&gt;SASS media query overrides&lt;/a&gt; on top of Html 5 Boilerplate&amp;#8217;s default styles to control the print layout in the way I wanted. You can even specify page breaks and print margins via CSS. I favored Safari&amp;#8217;s pdf output over Chrome&amp;#8217;s for the sole reason Safari automatically embedded custom fonts in the final PDF.&lt;/p&gt;
+
+&lt;p&gt;At the end of the day I realized I probably didn&amp;#8217;t need to add explicit divs to Markdown; I could have gotten the layout I wanted with just vanilla Markdown and CSS3 queries. I also could have a semantically better markup if I used HAML to add &lt;section&gt; tags instead of divs where appropriate, but HAML would have added a considerable amount of extraneous information to the markup. I&amp;#8217;m also not sure editing the raw HAML text would have been as easy as Markdown.&lt;/p&gt;
+
+&lt;p&gt;At the end of the day, it&amp;#8217;s all a tradeoff. GitHub flavored markdown, Markdown Here and other interpreters support fenced code blocks; I like the idea of adding fenced blocks to get &lt;section&gt; elements to get semantic correctness and layout elements in the html output. Unfortunately there&amp;#8217;s no official Markdown spec and support is somewhat fragmented across various implementations, but &lt;a href=&#34;http://www.codinghorror.com/blog/2012/10/the-future-of-markdown.html&#34;&gt;hopefully it will come together soon&lt;/a&gt;. Until then, if you need it, you can always fork. Luckily I didn&amp;#8217;t have to take it that far.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

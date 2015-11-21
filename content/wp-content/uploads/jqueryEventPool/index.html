@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Jquery Event Pool</title>
+<script type="text/javascript" src="jquery-1.2.6.min.js"></script>
+
+</head>
+
+<body>
+<div>
+<fieldset>
+Name: <input type="text" id="txtName" onkeyup="javascript:$(document).trigger('NAME_CHANGE');" />
+Address: <input type="text" id="txtAddress" />
+City: <input type="text" id="txtCity" />
+
+<br/>
+Your info: <span id="output"></span>
+<br />
+Name only: <span id="outName"></span>
+</div>
+</fieldset>
+
+<fieldset>
+<div>
+	Passing with data:
+    <input type="text" id="txtData" onkeyup="javascript:$(document).trigger('DATA_CHANGED', [$(this).val()]);" />
+    <br />
+    First Pass: <span id="first"></span>
+    <br />
+    Secondary Text: <span id="eventFired"></span>
+</div>
+</fieldset>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Bindings
+        $(document).bind('NAME_CHANGE', function(e) {
+            UpdateName();
+            UpdateOtherText(e);
+        });
+        $(document).bind('NAME_CHANGE ADDRESS_CHANGE CITY_CHANGE', function() {
+            UpdateOutput();
+        });
+    
+        $(document).bind('DATA_CHANGED', function(e, data) {
+            UpdateFirst(e, data);
+        });
+        $(document).bind('FIRST_UPDATED', function(e, data) {
+            UpdateOtherText(e, data);
+        });
+
+        //Triggers
+        $('#txtAddress').keyup(function() {
+            $(document).trigger('ADDRESS_CHANGE');
+        });
+        $('#txtCity').keyup(function() {
+            $(document).trigger('CITY_CHANGE');
+        });
+
+
+    });
+
+	function UpdateOutput() {
+		var name = $('#txtName').val();
+		var address = $('#txtAddress').val();
+		var city = $('#txtCity').val();
+		
+		$('#output').html(name + ' ' + address + ' ' + city);
+	}
+	function UpdateName() {
+		$('#outName').html($('#txtName').val());
+	}
+
+	function UpdateFirst(e, data) {
+
+	    $('#first').html(data);
+	    $(document).trigger('FIRST_UPDATED', [data]);
+	}
+
+	function UpdateOtherText(e, text) {
+	    var text;
+	    if (e.type == 'FIRST_UPDATED')
+	        text = 'from first: ' + text;
+	    else
+	        text = e.type;
+	    $('#eventFired').html(text);
+	}
+</script>
+</body>
+</html>

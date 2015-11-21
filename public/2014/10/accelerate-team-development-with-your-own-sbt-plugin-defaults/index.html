@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Accelerate Team Development with your own SBT Plugin Defaults &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Accelerate Team Development with your own SBT Plugin Defaults</h1>
+  <span class="post-date">Oct 13 2014</span>
+  
+
+<p>My team manages several Scala services built with SBT. The setup of these projects are very similar, from included plugins, dependencies, and build-and-deploy configurations. At first we simply copied and paste these settings across projects but as the number of services increased the hunt-and-change strategy became laborious. Time to optimize.</p>
+
+<p>I heard of a few teams that created their own sbt plugins for default settings but couldn&#8217;t find information on how this looked. The recent change to <a href="http://www.scala-sbt.org/0.13/docs/Plugins.html">AutoPlugins</a> also didn&#8217;t help existing documentation. I found Will Sargent&#8217;s excellent post on <a href="tersesystems.com/2014/06/24/writing-an-sbt-plugin">writing an sbt plugin</a> helpful but it wasn&#8217;t what I was looking for. I want a plugin which included other plugins and set defaults for those plugins. The goal is to &#8220;drop in&#8221; this plugin and automatically have a set of defaults: using <a href="https://github.com/sbt/sbt-native-packager">sbt-native-packager</a>, a configured <a href="https://github.com/sbt/sbt-release">sbt-release</a> and our nexus artifact server good-to-go.</p>
+
+<h2 id="file-locations:abbf4ae7a81d9cf247973d7e1dba3596">File Locations</h2>
+
+<p>As an sbt refresher anything in the <code>project/</code> folder relates to the build. If you want to develop your own plugin just for the current project you can simply add your .scala files to <code>project/</code>. If you want to develop your own plugin as a standalone project you put those files in the <code>src/</code> directory as usual. I mistakenly thought an sbt plugin project only required files in the <code>project/</code> folder. Silly me.</p>
+
+<h2 id="sbt-builds:abbf4ae7a81d9cf247973d7e1dba3596">SBT Builds</h2>
+
+<p>It&#8217;s important to note that the project folder&#8211;and the build itself&#8211;is separate from how your source code is built. SBT uses Scala 2.10, so anything in the <code>project/</code> folder will be built against 2.10 even if your project is set to 2.11. Thus when developing your plugin use Scala 2.10 to match sbt.</p>
+
+<h2 id="dependencies:abbf4ae7a81d9cf247973d7e1dba3596">Dependencies</h2>
+
+<p>Usually when you include a plugin you specify it in the <code>project/plugins.sbt</code>, right? But what if you&#8217;re developing a plugin that uses other plugins? Your code is in <code>src/</code> so it won&#8217;t pick up anything in <code>project/</code> as that only relates to your build. So you need to add whatever plugin you want as a <code>dependency</code> in your build so its available in within your project, just like any other dependency. But there&#8217;s a trick with sbt plugins. Originally I had the usual in <code>build.sbt</code>:</p>
+
+<pre><code>libraryDependencies += &quot;com.typesafe.sbt&quot; % &quot;sbt-native-packager&quot; % &quot;0.8.0-M2&quot;
+</code></pre>
+
+<p>but kept getting unresolved dependency errors. This made no sense to me as the plugin is clearly available. It turns out if you want to include an sbt plugin as a project dependency you need to specify it in a special way, explicitly setting the sbt and scala version you want:</p>
+
+<pre><code>libraryDependencies += sbtPluginExtra(&quot;com.typesafe.sbt&quot; % &quot;sbt-native-packager&quot; % &quot;0.8.0-M2&quot;, sbtV = &quot;0.13&quot;, scalaV = &quot;2.10&quot;)
+</code></pre>
+
+<p>With that, your dependency will resolve and you can use include anything under sbt-native-packager when developing your plugin.</p>
+
+<h2 id="specifying-your-plugin-defaults:abbf4ae7a81d9cf247973d7e1dba3596">Specifying your Plugin Defaults</h2>
+
+<p>With your separate project and dependencies satisfied you can now create your plugin which uses other plugins and defaults settings specific to you. This part is easy and follows the usual documentation. Declare an object which extends AutoPlugin and override <code>projectSettings</code> or <code>buildSettings</code>. This class looks exactly like it would if you were setting things manually in your build.</p>
+
+<p>For instance, here&#8217;s how we&#8217;d set the <code>java_server</code> archetype as the default in our plugin:</p>
+
+<pre class="code scala">package com.hamrah.plugindefaults
+
+import sbt._
+import Keys._
+import com.typesafe.sbt.SbtNativePackager._
+
+object PluginDefaults extends AutoPlugin {
+ override lazy val projectSettings = packageArchetype.java_server
+}
+</pre>
+
+<p>You can concatenate any other settings you want to project settings, like scalaVersion, scalacOptions, etc.</p>
+
+<h2 id="using-the-plugin:abbf4ae7a81d9cf247973d7e1dba3596">Using the Plugin</h2>
+
+<p>You can build and publish your plugin to a repo and include it like you would any other plugin. Or you can include it locally for testing by putting this in your sbt file:</p>
+
+<pre><code>lazy val root = project.in( file(&quot;.&quot;) ).dependsOn( defaultPluginSettings )
+lazy val defaultPluginSettings = uri(&quot;file:///&lt;full path to your plugin directory&gt;&quot;)
+</code></pre>
+
+<p>Your default settings can be explicitly added to your project if not automatically imported with a simple:</p>
+
+<pre><code>PluginDefaults.projectSettings
+//or
+settings = PluginDefaults.projectSettings // in a .scala file
+</code></pre>
+
+<h2 id="in-closing:abbf4ae7a81d9cf247973d7e1dba3596">In Closing</h2>
+
+<p>As an FYI there could be better ways to do this. A lot of the above was trial and error, but works. If you have feedback or better suggestions please leave a comment!</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

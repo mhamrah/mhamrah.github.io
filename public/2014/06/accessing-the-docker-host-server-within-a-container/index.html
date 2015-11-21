@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Accessing the Docker Host Server Within a Container &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Accessing the Docker Host Server Within a Container</h1>
+  <span class="post-date">Jun 29 2014</span>
+  
+
+<p><a href="https://docs.docker.com/userguide/dockerlinks/#working-with-links-names">Docker links</a> are a great way to link two containers together but sometimes you want to know more about the host and network from within a container. You have a couple of options:</p>
+
+<ul>
+<li>You can access the Docker host by the container&#8217;s gateway.</li>
+<li>You can access the Docker host by its ip address from within a container.</li>
+</ul>
+
+<h2 id="the-gateway-approach:d6e669ce9206f072ff43b8fdf5b03a0c">The Gateway Approach</h2>
+
+<p><a href="https://github.com/dotcloud/docker/issues/1143">This GitHub Issue</a> outlines the solution. Essentially you&#8217;re using netstat to parse the gateway the docker container uses to access the outside world. This is the docker0 bridge on the host.</p>
+
+<p>As an example, we&#8217;ll run a simple docker container which returns the hostname of the container on port 8080:</p>
+
+<pre class="syntax bash">docker run -d -p 8080:8080 mhamrah/mesos-sample
+</pre>
+
+<p>Next we&#8217;ll run /bin/bash in another container to do some discovery:</p>
+
+<pre class="syntax bash">docker run -i -t ubuntu /bin/bash
+#once in, install curl:
+apt-get update
+apt-get install -y curl
+</pre>
+
+<p>We can use the following command to pull out the gateway from netstat:</p>
+
+<pre class="syntax bash">netstat -nr | grep '^0\.0\.0\.0' | awk '{print $2}'
+#returns 172.17.42.1 for me.
+</pre>
+
+<p>We can then curl our other docker container, and we should get that docker container&#8217;s hostname:</p>
+
+<pre class="syntax bash">curl 172.17.42.1:8080
+# returns 00b019ce188c
+</pre>
+
+<p>Nothing exciting, but you get the picture: it doesn&#8217;t matter that the service is inside another container, we&#8217;re accessing it via the host, and we didn&#8217;t need to use links. We just needed to know the port the other service was listening on. If you had a service running on some other port&#8211;say Postgres on 5432&#8211;not running in a Docker container&#8211;you can access it via <code>172.17.42.1:5432</code>.</p>
+
+<p>If you have docker installed in your container you can also query the docker host:</p>
+
+<pre class="syntax bash"># In a container with docker installed list other containers running on the host for other containers:
+docker -H tcp://172.17.42.1:2375 ps
+CONTAINER ID        IMAGE                         COMMAND                CREATED              STATUS              PORTS                     NAMES
+09d035054988        ubuntu:14.04                  /bin/bash              About a minute ago   Up About a minute   0.0.0.0:49153->8080/tcp   angry_bardeen
+00b019ce188c        mhamrah/mesos-sample:latest   /opt/delivery/bin/de   8 minutes ago        Up 8 minutes        0.0.0.0:8080->8080/tcp    suspicious_colden
+</pre>
+
+<p>You can use this for some hakky service-discovery.</p>
+
+<h2 id="the-ip-approach:d6e669ce9206f072ff43b8fdf5b03a0c">The IP Approach</h2>
+
+<p>The gateway approach is great because you can figure out a way to access a host from entirely within a container. You also have the same access via the host&#8217;s ip address. I&#8217;m using boot2docker, and the boot2docker ip address is <code>192.168.59.103</code> and I can accomplish the same tasks as the gateway approach:</p>
+
+<pre class="syntax bash"># Docker processes, via ip:
+docker -H tcp://192.168.59.103:2375 ps
+# Other docker containers, via ip:
+curl 192.168.59.103:8080
+</pre>
+
+<p>Although there&#8217;s no way to introspect the host&#8217;s ip address (AFAIK) you can pass this in via an environment variable:</p>
+
+<pre class="syntax bash">docker@boot2docker:~$  docker run -i -t -e DOCKER_HOST=192.168.59.103 ubuntu /bin/bash
+root@07561b0607f4:/# env
+HOSTNAME=07561b0607f4
+DOCKER_HOST=192.168.59.103
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+</pre>
+
+<p>If the container knows the ip address of its host, you can broadcast this out to other services via the container&#8217;s application. Useful for service discovery tools run from within a container where you want to tell others the host IP so others can find you.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

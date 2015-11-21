@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Weird Issue with rspec and authlogic-openid &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Weird Issue with rspec and authlogic-openid</h1>
+  <span class="post-date">May 24 2009</span>
+  <p>I&#8217;ve been playing around rspec in my application which also uses <a href="http://github.com/binarylogic/authlogic_openid">AuthLogic&#8217;s OpenID</a>.  When doing</p>
+
+<pre class="brush: bash; title: ; notranslate" title="">rake spec </pre>
+
+<p>I get the following, very weird error:</p>
+
+<pre class="brush: bash; title: ; notranslate" title="">(in /Users/Michael/r/wc)
+/Users/Michael/.gem/ruby/1.8/gems/activerecord-2.3.2/lib/active_record/base.rb:1964:in `method_missing': undefined method `config' for #&lt;Class:0x263efdc&gt; (NoMethodError)
+from /Library/Ruby/Gems/1.8/gems/authlogic-oid-1.0.3/lib/authlogic_openid/acts_as_authentic.rb:35:in `optional_fields='
+from /Users/Michael/r/wc/app/models/user.rb:3
+from /Library/Ruby/Gems/1.8/gems/authlogic-2.0.13/lib/authlogic/acts_as_authentic/base.rb:37:in `acts_as_authentic'
+from /Users/Michael/r/wc/app/models/user.rb:2
+from /Library/Ruby/Site/1.8/rubygems/custom_require.rb:31:in `gem_original_require'
+from /Library/Ruby/Site/1.8/rubygems/custom_require.rb:31:in `require'
+</pre>
+
+<p>As seen above I&#8217;m using version 1.0.3 of the source code.  For the life of me, I couldn&#8217;t figure out what was wrong.  What was even stranger was the code was working when running the site.  It turns out, config got changed to rw_config, and the gem repository at rubyforge hasn&#8217;t been updated to the latest 1.0.4 <a href="http://github.com/binarylogic/authlogic_openid/commit/8a8c7729cf5590636892535167a86fffd40650b4">which includes this change</a>:</p>
+
+<pre>Change from using config to the new rw_config. Requires the latest version 
+of authlogic. config was too general of a name and was causing conflicts 
+for people in their own projects.
+
+</pre>
+
+<p>So I changed the acts_as_authentic.rb file so config is named rw_config, and everything worked fine.</p>
+
+<p>I&#8217;d love to find a good reference on how rspec loads gems, and why this isn&#8217;t an issue when running the site.  I&#8217;m also interested in knowning how to pull content as a gem from github source (the openid gem isn&#8217;t at gems.github.com).</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+
