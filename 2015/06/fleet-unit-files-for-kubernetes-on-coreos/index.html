@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Fleet Unit Files for Kubernetes on CoreOS &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Fleet Unit Files for Kubernetes on CoreOS</h1>
+  <span class="post-date">Jun 27 2015</span>
+  <p>As I&#8217;ve been leveraging CoreOS more and more for running docker containers, the limitations of Fleet have become apparent.</p>
+
+<p>Despite the benefits of <a href="http://blog.michaelhamrah.com/2015/04/easy-scaling-with-fleet-and-coreos/">dynamic unit files via the Fleet API</a> there is still a need for fine-grained scheduling, discovery, and more complex dependencies across containers. Thus I&#8217;ve been exploring Kubernetes. Although young, it shows promise for practical usage. The <a href="https://github.com/GoogleCloudPlatform/kubernetes">Kubernetes repository</a> has a plethora of &#8220;getting started&#8221; examples across a variety of environments. There are a few CoreOS related already, but they embed the kubernetes units in a cloud-config file, which may not be what you want.</p>
+
+<p>My preference is to separate the CoreOS cluster setup from the Kubernetes installation. Keeping your CoreOS cloud-config minimal has many benefits, especially on AWS where you can&#8217;t easily update your cloud-config. Plus, you may already have a CoreOS cluster and you just want to deploy Kubernetes on top of it.</p>
+
+<p>The <a href="https://github.com/mhamrah/kubernetes-coreos-units">Fleet Unit Files for Kubernetes on CoreOS are on GitHub</a>. The unit files makes a few assumptions, mainly you are running with a <a href="https://coreos.com/docs/cluster-management/setup/cluster-architectures/#production-cluster-with-central-services">production setup using central services</a>. For AWS <a href="http://blog.michaelhamrah.com/2015/03/managing-coreos-clusters-on-aws-with-cloudformation/">you can use Cloudformation to manage multiple sets of CoreOS roles as distinct stacks, and join them together via input parameters</a>.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

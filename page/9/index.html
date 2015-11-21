@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Adventures in HttpContext &middot; All the stuff after &#39;Hello, World&#39;
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item  active " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+
+
+
+<div class="posts">
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2009/02/how-i-got-started-learning-ruby-on-rails/">How I Got Started Learning Ruby on Rails</a></h1>
+        <span class="post-date">Feb 20 2009</span>
+        
+
+<p>As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-1:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-1:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-1:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-1:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-2:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-2:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-2:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-2:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-3:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-3:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-3:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-3:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the]<a href="https://peepcode.com/products/textmate-for-rails-2">8</a> video (I use a Mac).  I&#8217;m very happy with them.  I&#8217;ve also heard great things about the <a href="https://peepcode.com/products/rest-for-rails-2">Rest</a> screencast (now in version 2, I&#8217;ve seen version 1 and liked it).  I plan on getting the Git and RSpec videos as well.</p>
+
+<p>If you don&#8217;t want to spend money, check out <a href="http://railscasts.com/">Railscasts</a>.  These are done by the same people from peepcode and offer shorter videos on specific topics.  Well worth it.  (For those .NET people, think of <a href="http://dimecasts.net/">Dimecasts</a>).</p>
+
+<h3 id="the-hardware-software-setup:07a84db2bfd60e17f47a574617953835">The Hardware/Software Setup</h3>
+
+<p>I use a MacBook Pro.  It&#8217;s pretty easy to get setup with Rails on a Mac.  Google for the how-to.  For an editor, I use <a href="http://www.macromates.com">Textmate</a> and love it. (Especially after watching the Peepcode screencast).  I played around with [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-4:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-4:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-4:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-4:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-5:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-5:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-5:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-5:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-6:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-6:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-6:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-6:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-7:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-7:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-7:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-7:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the]<a href="https://peepcode.com/products/textmate-for-rails-2">8</a> video (I use a Mac).  I&#8217;m very happy with them.  I&#8217;ve also heard great things about the <a href="https://peepcode.com/products/rest-for-rails-2">Rest</a> screencast (now in version 2, I&#8217;ve seen version 1 and liked it).  I plan on getting the Git and RSpec videos as well.</p>
+
+<p>If you don&#8217;t want to spend money, check out <a href="http://railscasts.com/">Railscasts</a>.  These are done by the same people from peepcode and offer shorter videos on specific topics.  Well worth it.  (For those .NET people, think of <a href="http://dimecasts.net/">Dimecasts</a>).</p>
+
+<h3 id="the-hardware-software-setup-1:07a84db2bfd60e17f47a574617953835">The Hardware/Software Setup</h3>
+
+<p>I use a MacBook Pro.  It&#8217;s pretty easy to get setup with Rails on a Mac.  Google for the how-to.  For an editor, I use <a href="http://www.macromates.com">Textmate</a> and love it. (Especially after watching the Peepcode screencast).  I played around with]<a href="http://www.aptana.com">13</a> and <a href="http://www.netbeans.com">NetBeans</a>, but stopped using them both.  It&#8217;s not worth it if you&#8217;re just starting out- these two programs are good IDE&#8217;s, but they wrap a lot of functionality that I&#8217;m finding is just easier to do on the command line.  Get comfortable with the simple first and add what you feel you&#8217;re missing.  On Windows, I&#8217;ve played around with <a href="http://www.e-texteditor.com/">e Text Editor</a> and found it pretty nice.</p>
+
+<p>IDE&#8217;s are very important.  As a .NET developer, I love Visual Studio.  It&#8217;s awesome- I love the intellisense, resharper, the immediate window, debugging, tfs integration, I&#8217;m spoiled.  You can pry code completion from my cold, dead hands.  I wanted that in Rails IDE.  But don&#8217;t try finding Visual Studio for Rails- Rails doesn&#8217;t need Visual Studio, and it will just get in the way.  Everything you need to do can be done in a simple text editor and the terminal window.  When you feel like you&#8217;re lacking something, there&#8217;s an easy way to do it.  Different is okay.</p>
+
+<h3 id="other-stuff:07a84db2bfd60e17f47a574617953835">Other Stuff</h3>
+
+<p>This is random:</p>
+
+<ol>
+<li><a href="http://tryruby.hobix.com/">Ruby in 15 minutes</a> is a great site for learning Ruby.</li>
+<li>Learn and understand <a href="http://github.com">Git</a>.</li>
+<li>You seriously haven&#8217;t checked out [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</li>
+</ol>
+
+<h2 id="learning-ruby-on-rails-8:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-8:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-8:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-8:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-9:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-9:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-9:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-9:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-10:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-10:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-10:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-10:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-11:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-11:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-11:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-11:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the]<a href="https://peepcode.com/products/textmate-for-rails-2">8</a> video (I use a Mac).  I&#8217;m very happy with them.  I&#8217;ve also heard great things about the <a href="https://peepcode.com/products/rest-for-rails-2">Rest</a> screencast (now in version 2, I&#8217;ve seen version 1 and liked it).  I plan on getting the Git and RSpec videos as well.</p>
+
+<p>If you don&#8217;t want to spend money, check out <a href="http://railscasts.com/">Railscasts</a>.  These are done by the same people from peepcode and offer shorter videos on specific topics.  Well worth it.  (For those .NET people, think of <a href="http://dimecasts.net/">Dimecasts</a>).</p>
+
+<h3 id="the-hardware-software-setup-2:07a84db2bfd60e17f47a574617953835">The Hardware/Software Setup</h3>
+
+<p>I use a MacBook Pro.  It&#8217;s pretty easy to get setup with Rails on a Mac.  Google for the how-to.  For an editor, I use <a href="http://www.macromates.com">Textmate</a> and love it. (Especially after watching the Peepcode screencast).  I played around with [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-12:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-12:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-12:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-12:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-13:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-13:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-13:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-13:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-14:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-14:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-14:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-14:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The [As I wrote recently in a previous post, <a href="http://www.michaelhamrah.com/blog/index.php/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">I&#8217;ve been playing around with Rails</a>.   I wanted to touch on how I got up and running learning and digging into Rails.</p>
+
+<h2 id="learning-ruby-on-rails-15:07a84db2bfd60e17f47a574617953835">Learning Ruby on Rails</h2>
+
+<h3 id="the-web-15:07a84db2bfd60e17f47a574617953835">The Web:</h3>
+
+<p><a href="http://guides.rails.info/">Ruby on Rails Guides</a> is the best place to learn Rails.  People looking to get started should definitely start here.  The guides are broken down into various topics, and are extremely well written with good coverage.  You&#8217;ll get exactly what you need, even if you&#8217;re an experienced programmer.</p>
+
+<h3 id="books-15:07a84db2bfd60e17f47a574617953835">Books:</h3>
+
+<p>I bought <a href="http://www.amazon.com/Simply-Rails-2-Patrick-Lenz/dp/0980455200/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1231523564&amp;sr=1-1">Simply Rails 2</a> and almost immediately returned it.  It&#8217;s geared towards someone who has no programming experience whatsover.  It has minimal depth, if any.  Don&#8217;t buy this book.</p>
+
+<p>I then bought <a href="http://www.amazon.com/Rails-Way-Addison-Wesley-Professional-Ruby/dp/0321445619/ref=pd_bxgy_b_img_c">The Rails Way</a> which I did not return, and now use as a reference.  It&#8217;s a pretty big book with a decent amount of whitespace.  However, I like this book because it&#8217;s not a how-to book.  It&#8217;s also not really for learning Rails, but by explaining what Rails does and why.  It has a good format- with snippets from contributors highlighting certain points (think of the comments in <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321545613/ref=sr_1_1?ie=UTF8&amp;s=books&amp;qid=1234999371&amp;sr=1-1">Framework Design Guidelines</a>).  To be honest, you can get what you need from the Rails guides, but if you like books, get The Rails Way.</p>
+
+<p>I also found some PDF&#8217;s of Rails Recipes and Advanced Rails Recipes which I found useful.  However, Rails changes pretty frequently, so a lot of books get outdated pretty quickly.  Rails Guides is simply your best bet.</p>
+
+<h3 id="peepcode-and-railscasts-15:07a84db2bfd60e17f47a574617953835">Peepcode and Railscasts:</h3>
+
+<p>I&#8217;m usually not a fan of screencasts, but I bought a 5 pack from <a href="http://peepcode.com/">Peepcode</a> and am glad I did.  I wish I bought the unlimited.  Peepcode offers very well done videos about various topics on Rails.  There are also some pdf e-books you can download.  So far I&#8217;ve bought The]<a href="https://peepcode.com/products/rails-2-pdf">7</a> e-book which is worth the $9, and the]<a href="https://peepcode.com/products/textmate-for-rails-2">8</a> video (I use a Mac).  I&#8217;m very happy with them.  I&#8217;ve also heard great things about the <a href="https://peepcode.com/products/rest-for-rails-2">Rest</a> screencast (now in version 2, I&#8217;ve seen version 1 and liked it).  I plan on getting the Git and RSpec videos as well.</p>
+
+<p>If you don&#8217;t want to spend money, check out <a href="http://railscasts.com/">Railscasts</a>.  These are done by the same people from peepcode and offer shorter videos on specific topics.  Well worth it.  (For those .NET people, think of <a href="http://dimecasts.net/">Dimecasts</a>).</p>
+
+<h3 id="the-hardware-software-setup-3:07a84db2bfd60e17f47a574617953835">The Hardware/Software Setup</h3>
+
+<p>I use a MacBook Pro.  It&#8217;s pretty easy to get setup with Rails on a Mac.  Google for the how-to.  For an editor, I use <a href="http://www.macromates.com">Textmate</a> and love it. (Especially after watching the Peepcode screencast).  I played around with]<a href="http://www.aptana.com">13</a> and <a href="http://www.netbeans.com">NetBeans</a>, but stopped using them both.  It&#8217;s not worth it if you&#8217;re just starting out- these two programs are good IDE&#8217;s, but they wrap a lot of functionality that I&#8217;m finding is just easier to do on the command line.  Get comfortable with the simple first and add what you feel you&#8217;re missing.  On Windows, I&#8217;ve played around with <a href="http://www.e-texteditor.com/">e Text Editor</a> and found it pretty nice.</p>
+
+<p>IDE&#8217;s are very important.  As a .NET developer, I love Visual Studio.  It&#8217;s awesome- I love the intellisense, resharper, the immediate window, debugging, tfs integration, I&#8217;m spoiled.  You can pry code completion from my cold, dead hands.  I wanted that in Rails IDE.  But don&#8217;t try finding Visual Studio for Rails- Rails doesn&#8217;t need Visual Studio, and it will just get in the way.  Everything you need to do can be done in a simple text editor and the terminal window.  When you feel like you&#8217;re lacking something, there&#8217;s an easy way to do it.  Different is okay.</p>
+
+<h3 id="other-stuff-1:07a84db2bfd60e17f47a574617953835">Other Stuff</h3>
+
+<p>This is random:</p>
+
+<ol>
+<li><a href="http://tryruby.hobix.com/">Ruby in 15 minutes</a> is a great site for learning Ruby.</li>
+<li>Learn and understand <a href="http://github.com">Git</a>.</li>
+<li>You seriously haven&#8217;t checked out]<a href="http://guides.rails.info/">2</a> yet?</li>
+<li>I spent too much time searching the Internet learning rails and not enough time programming Rails.  Get to it!</li>
+</ol>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/">Digging into Ruby on Rails from C# and .MVC (Asp.Net MVC)</a></h1>
+        <span class="post-date">Feb 18 2009</span>
+        <p>One of the things I&#8217;ve been doing lately is digging into Ruby on Rails. I&#8217;ve always wanted to learn Rails since I was first exposed to Rails at an AjaxWorld conference in &#8217;06 (at least, I think in 06). David Heinemeier Hansson actually presented!</p>
+
+<p>Alas, I never could devote enough time to get past the tipping point. I&#8217;m comfortable with C# and ASP.NET and evolving those skills has always been the priority. But the perfect storm has happened recently- in order to save space in my apartment, I got rid of my PC desktop and now only use my MacBook. I got tired of using Parallels and Visual Studio, and a new project came up in which I could either use ASP.NET MVC (which I&#8217;m calling .MVC from now on) or RoR. I thought it was time to finally try RoR.</p>
+
+<p>The verdict is Rails is great. I still can&#8217;t &#8220;express&#8221; myself as well as I want to with Rails, but in comparison to .MVC Rails is pretty slick, and the evolution of Rails (specifically, <a href="http://rubyonrails.org/merb">combining Merb with Rails</a>) is pretty exciting.  Most importantly, learning Rails has actually made me a better C#/ASP.NET MVC developer- if you&#8217;re working with .MVC you have to spend at least an afternoon playing around with Rails- you&#8217;ll get an invaluable perspective on MVC and web programming.</p>
+
+<p>Now, a discussion on any programming language/framework always causes a heated debated.  I&#8217;m not an expert (or even a beginner) on Ruby or Rails, but these are my initial impressions.</p>
+
+<p>**Ruby, as a Language</p>
+
+<p>**</p>
+
+<p>One major leap between .MVC and Rails is Ruby as a language. Yes, Ruby and C# are both OO languages, but Ruby is a <a href="http://en.wikipedia.org/wiki/Dynamic_programming_language">dynamic language</a>&#8211; and if you&#8217;re up on C# 4.0, you&#8217;ll know that C# is on it&#8217;s way to <a href="http://ironpython-urls.blogspot.com/2008/12/c-becomes-dynamic-language.html">becoming a dynamic language too</a>. So if you want keep your C# skills on the cutting edge, get a head start on a full fledged dynamic language!</p>
+
+<p>I originally made the mistake of jumping in and assuming Ruby was more vb- or js- esque than it actually was.  It&#8217;s pretty smart in the way it behaves, almost a tailored version of C#.  Ruby&#8217;s use of <a href="http://glu.ttono.us/articles/2005/08/19/understanding-ruby-symbols">symbols</a> is pretty big difference over other languages that&#8217;s extensively used in Rails and pretty handy.</p>
+
+<p>Lambda expressions are also core part of Ruby, and are becoming a more integral part of C#.  This allows Ruby to be extremely concise in getting things done- which is awesome when you know what you&#8217;re doing.  When you don&#8217;t it can be confusing.  But lambdas make sense and are awesome when you know how to use them- and knowing Ruby can help you grasp lambda expressions in C#.</p>
+
+<p>Rails leverages Ruby&#8217;s dynamic language to make a lot happen under the hood.  I personally found letting the Rails framework do its thing as one of the biggest hurdles in learning Rails.  I wanted to either program or explicitly orchestrate everything!  One prime example is the persistence model in Rails-  I struggled to figure out how properties where set in models from migration classes- but it&#8217;s entirely automatic!  Also, a lot of methods are created dynamically.  This allows an extremely fluid expression in writing code, making Ruby a pretty natural programming language.  (Example: the find_by ActiveRecord methods; declaring links like edit_xxx_path).</p>
+
+<p>C# is making its way into being a more fluid programming language similar to Ruby.  Meaning, writing code and describing code are converging to be the same thing.  This is seen in lambda expressions and fluent interfaces, where you can daisy chain methods together.  <a href="http://code.google.com/p/moq/">Moq</a> is a good example of the fluent interface approach.  I wouldn&#8217;t be surprised if there&#8217;s even a larger convergence with C# and Ruby in the years to come.</p>
+
+<p><strong>Rails, as a Framework</strong></p>
+
+<p>Those in the .NET world who follow <a href="http://codebetter.com/blogs/jeremy.miller/">Jeremy Miller</a> have probably heard the term of <a href="http://codebetter.com/blogs/jeremy.miller/archive/2008/10/23/our-opinions-on-the-asp-net-mvc-introducing-the-thunderdome-principle.aspx">opinionated software.</a> He talks about opinionated software in the context of <a href="http://code.google.com/p/fubumvc/">FubuMVC</a>, an alternative to .MVC written in an opinionated style.  It&#8217;s worth checking out- it&#8217;s very interesting to use but Rails still cracks the MVC shell wide open because it leverages Ruby&#8217;s language features.</p>
+
+<p>Opinionated software originally came from the Adam and Eve of Rails, <a href="http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php">37Signals</a>.  Rails is highly opinionated- which is a blessing and curse.  The great thing about Rails is that it does what it does extremely well.  The MVC triangle are completely separate but seamlessly integrated, and extension points are explicit.  It&#8217;s how MVC should be- and .MVC doesn&#8217;t come close to Rails as an MVC framework.  Hate NHibernate configuration?  You&#8217;ve never seen an ORM framework until you&#8217;ve used ActiveRecord.  Really want to abandon code-behind files and excessive code in views? Really want to do TDD (and even BDD)?  Rails right now is the iPhone in a tin cup and string world.</p>
+
+<p>Here are some highlights:</p>
+
+<ol>
+<li>Respond_to method for rendering html, xml, json or whatever from a single controller.  .MVC ActionResult could learn a thing or two.</li>
+<li>Rails&#8217; partial layouts, partial actions and partial views are pretty slick compared .MVC&#8217;s master pages, partial views, and partial layouts.  A prime example is using Rails partial views to render a collection of objects.</li>
+<li>Passing data between controllers and actions is a lot slicker than .MVC ViewData</li>
+<li>Rails helpers are a lot more helpful.</li>
+<li>Rails is pretty slick when it comes to mapping between posted data and Models- a lot better than binders.</li>
+<li>And of course, Rails&#8217; database integration will make you wonder why you ever spent more than 5 minutes learning about databases- it&#8217;s such a model centric approach with migrations you&#8217;ll hate doing any data tier work in .MVC.  (Although learning databases are extremely important no matter what language/framework you use).</li>
+<li>Plugins.  Rails Plugins are simply awesome- extremely fluid integration into your Rails application.  And combining plugins and other support with gem makes maintenance and upgrades a breeze (forget the GAC!)</li>
+</ol>
+
+<p><strong>Where .MVC Shines</strong></p>
+
+<p>I&#8217;ve been hyping up Rails a lot, but there is a major disadvantage with Rails: good luck straying from the Rails track.  If you get off the train, you&#8217;re walking alone.  This is something .MVC does well- allows you to change the game with whatever architecture pattern you wish.  It&#8217;s one reason I love .NET- you can do literally do whatever want (yes, you can whatever you want with any language, but the .NET framework is pretty awesome).  .MVC is extremely extensible- from replaceable view engines, routing engines, controller factories, coupled with whatever architecture pattern you want.  And all very testable.  C#&#8217;s usage of extension methods also add pretty nice extensibility to classes, too.</p>
+
+<p>In fact, Rails&#8217; plans to integrate with Merb as way to be more modular is a prime example of something .MVC already does well- allows you to mix and match what you want instead of forcing conformance.  Allowing total and explicit control over the application stack- including your architecture- is a great advantage in maintaining the health of ongoing software. Yes, you can evolve Rails to do what you want, but the transparency .NET offers is something I don&#8217;t see in Rails just yet.  It&#8217;s definitely a pro and a con- on the one hand, Rails offers fluid interaction between components.  On the other, .NET doesn&#8217;t force you into any specific pattern.</p>
+
+<p><strong>In Conclusion</strong></p>
+
+<p>The bottom line is, check out Rails.  The best way to get started is with <a href="http://guides.rails.info/">the Rails guides</a>.  From a .MVC perspective, you&#8217;ll learn a lot about MVC and what an MVC framework can do- and it will help you out in your .NET development.  Knowing Ruby will also keep your C# skills sharp and help you in becoming a well rounded developer.  I&#8217;ll even bet you carry over some Rails tricks to your next .MVC app!</p>
+
+<p><a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f"><img src="http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f&#038;bgcolor=000099" border="0" alt="kick it on DotNetKicks.com" /></a></p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/">All those jQuery fans: new event delegation</a></h1>
+        <span class="post-date">Jan 14 2009</span>
+        <p>jQuery 1.3 now has a &#8216;live&#8217; function which acts similar to liveQuery. It lets you wire up events automatically for newly injected DOM elements. Not bad!</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/understand-unit-testing-and-td-getting-better-code-coverage/">Understand Unit Testing and TDD: Getting Better Code Coverage</a></h1>
+        <span class="post-date">Dec 18 2008</span>
+        <p>One of the biggest challenges in unleashing the power of unit testing is getting good code coverage.  Most of the time, especially when teams are just starting out with Test Driven Development, unit testing usually gets in the way.  A lot of people (I succumb to this syndrome sometimes) add tests <em>after</em> they develop code.  The audacity! Some people just don&#8217;t unit test at all- especially when struggling with mocking a dependency, like a database or the HttpContext object.  And forget about finding more than one unit test for functions- you already have one for a function which passes- so you&#8217;re done, right?</p>
+
+<p>The secret in unit testing is understanding what you need to test.  You are not just testing something works- you&#8217;re testing specific functionality behaves <em>as expected</em>.  Once you understand this difference, not only will TDD be easier to achieve, but developing large projects, ensuring business rules, enforcing API guidelines, and concurrent development on the same feature will be easier and faster for you and your team.</p>
+
+<p>This post will help you think about testing: what you need to do to add unit tests to your existing project or add to what you already have.  We&#8217;re not doing test first- hopefully, this will be a precursor to TDD in getting you thinking about what to get out of your unit tests so you can get into the TDD groove.</p>
+
+<p>**Expectations And Reactions</p>
+
+<p>**</p>
+
+<p>Each class- and each function- has a specific purpose.  Systems are built on the interaction of these classes and functions.  Classes call functions.  Functions call other functions.  Data is processed.  Objects are returned.  Exceptions are thrown.  All of this interaction is like a clock- the pendulum swings, the gears turn, the hands move.  When everything does what it should, you have a healthy, usable, working system.  When something doesn&#8217;t, chaos ensues and thing don&#8217;t work- the hands of the clock don&#8217;t move.</p>
+
+<p>This boils down to a simple concept of expectations and reactions.  Class A expects Class B to do something when Class A calls a function on Class B.  Class A is <em>dependent</em> on Class B&#8217;s behavior.  What you&#8217;re looking to do is create a suite of tests to ensure Class B is actually doing the behavior Class A expects- from valid return values to handling exceptions- so the hands on the clock always turn.</p>
+
+<p><strong>The Code</strong></p>
+
+<p><a href="http://michaelhamrah.com/blog/wp-content/uploads/unittestexample.zip">Download the sample code here.</a></p>
+
+<p>I&#8217;ve created some simple code which represents an ordering system we&#8217;ll say is part of typical three tier MVC application, similar to <a href="http://blog.wekeroad.com/mvc-storefront/" target="_blank">Rob Conery&#8217;s MVC Storefront</a>, I&#8217;ve backed everything with interfaces.  To keep things simple, I&#8217;ve done this as a single class library- you can imagine all the other mumbo jumbo thrown in there.</p>
+
+<p>We&#8217;re simply going to be shipping an order- which involves getting an order from our data tier and then using a shipping service to ship the order.  For this series, I&#8217;m only going to focus on a single method in our business tier: the OrderShipmentManager.ShipOrder() function.  This will help us look at one of the two main components for a successful test suite: knowing what to tests and setting up mock objects.  In a real world application, you&#8217;ll want to apply the expectation/reaction approach to each layer.</p>
+
+<p>Currently, I&#8217;m only going to focus on what tests we need to have.  I&#8217;ll dig into how to set up mocking in another post.  Let&#8217;s start by looking at how our ShipOrder is being called in the controller:</p>
+
+<p>IOrderShipmentManager opm = new OrderShipmentManager(new DataTier.OrderStorage(), new DataTier.ShipmentService());</p>
+
+<p>Shipment shipment = null;</p>
+
+<p>try</p>
+
+<p>{</p>
+
+<p>shipment = opm.ShipOrder(orderId);</p>
+
+<p>}</p>
+
+<p>catch (OrderShipmentException ope)</p>
+
+<p>{</p>
+
+<p>System.Diagnostics.Debug.Write(&#8220;Whoops: {0}&#8221;, ope.Message);</p>
+
+<p>}</p>
+
+<p>View(shipment);</p>
+
+<p>Most controllers should look like this: very light, with the bulk of your application in your business logic layer.  This is a fairly simple call: in my controller, I take in an orderId I want to ship, and pass it to ShipOrder(). The controller expects two things to happen: a shipment to be returned, which it can pass to the view; or an exception to be thrown.</p>
+
+<p>So let&#8217;s make sure we have two unit tests to cover these two expectations (Note: I always prefix unit tests with CLASS_FUNCTION.  This makes viewing test results easier. I didn&#8217;t add that here because of redundancy- but the test project will have each test prefixed with OrderShipmentManager_ShipOrder):</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Returns_Shipment_Object()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_What()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>So I have my two unit tests- but the problem is, when should ShipOrder return a shipment? What should it actually do? And when does ShipOrder throw an exception?  What the hell do I write in these tests? We could look at the view to figure out what it does with the Shipment object.  We could read the requirements to figure out what ShipOrder should do (or, in an agile world, figure this out from our user story).  But we don&#8217;t have these things.  So let&#8217;s look at the function to see if we can make heads or tells of this:</p>
+
+<p>public Shipment ShipOrder(int orderId)</p>
+
+<p>{</p>
+
+<p>Order order;</p>
+
+<p>Shipment shipment;</p>
+
+<p>if (orderId &lt; 0) throw new OrderShipmentException(&ldquo;OrderId cannot be less than zero&rdquo;); order = _orderStorage.GetOrder(orderId); if (order == null) return null; if (order.ShipmentStatus == ShipmentStatus.Shipped) { throw new OrderShipmentException(&ldquo;Can&rsquo;t ship an order that&rsquo;s shipped!&rdquo;); } shipment = _shipmentService.CreateShipment(order.Customer.CustomerId); shipment.ShipmentProducts = new List<Product>();</p>
+
+<p>order.OrderItems.ForEach(oi =&gt; shipment.ShipmentProducts.Add(oi.Product));</p>
+
+<p>_shipmentService.CalculateShipment(shipment);</p>
+
+<p>_shipmentService.Ship(shipment);</p>
+
+<p>order.ShipmentStatus = ShipmentStatus.Shipped;</p>
+
+<p>order.ShipmentId = shipment.ShipmentId;</p>
+
+<p>_orderStorage.SaveOrder(order);</p>
+
+<p>return shipment;</p>
+
+<p>}</p>
+
+<p>Ahh, I get it now! We get the order from our order storage.  If it&#8217;s null, we can&#8217;t ship, so we return null- n0 need for an exception.  If the order&#8217;s been shipped, throw an exception.  Next, create a shipment with our shipment service, calculate the shipment cost, and save the order.  Return the shipment and we&#8217;re done.  Now we can add a suite a tests.</p>
+
+<p>Let&#8217;s focus on exceptions.  Here, we plan on throwing exceptions when either the orderId is bad or the order has already been shipped.  Other code will expect an exception to be thrown under these circumstances.  If we change this logic, things could get screwed up- code can&#8217;t react accordingly, and chaos ensues.  People may have already written code based on these expectations.  So let&#8217;s write some unit tests to ensure we&#8217;re always throwing an exception under these circumstances.</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_OrderId_Is_Less_Than_Zero()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Throws_OrderShipmentException_When_Order_Status_Is_Shipped()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>We&#8217;ve essentially enforced two business rules with these unit tests: when to throw our two exceptions.  (You can argue when or when not to throw an exception.  Personally, I follow the rule: If a function can&#8217;t do what it should, throw an exception).</p>
+
+<p>Coincidentally, we&#8217;re also guaranteeing something else: that our ShipOrder function will always react the same way under certain circumstances.  Here, ShipOrder will always throw an exception with an invalid orderId.  It won&#8217;t return null- and it won&#8217;t continue.  That&#8217;s important for processing logic- we wouldn&#8217;t want to create a shipment when we don&#8217;t have an order.</p>
+
+<p>Next, let&#8217;s go into functional logic.  I want to make sure a couple of things are happening, mainly that the workflow is consistent.  Let&#8217;s add some unit tests around the order object:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Gets_Order_From_Storage()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Saves_Order_With_ShipmentId_And_Status()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void Returns_Null_When_No_Order()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>Next, our shipment object does a couple of more things:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Creates_Shipment_For_Customer()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Copies_OrderItems_To_Shipment()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Calculates_Shipment()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Ships_Product()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>Finally, we now know what this function should return:</p>
+
+<p>[TestMethod()]</p>
+
+<p>public void OrderShipmentManager_ShipOrder_Returns_New_Shipment_With_Order_Items()</p>
+
+<p>{</p>
+
+<p>}</p>
+
+<p>We have a pretty robust suite of tests around our ship order function.  We&#8217;re not only testing how the controller deals with this function, but the internal workings of the function as well- the expectations other objects have of our ShipOrder method.</p>
+
+<p><strong>What This Means</strong></p>
+
+<p>The core principal of testing is to make sure something works as expected.  In principal that&#8217;s totally obvious and makes perfect sense- why the hell am I even writing about it?  In reality, implementing something which meets that definition is extremely vague and easily debatable.  The pitfall most people get into in attempting TDD- or even writing unit tests- is their definition of &#8220;I&#8217;m proving it works as expected&#8221; is wrong.</p>
+
+<p>Evolving systems- especially those built with agile development- change a great deal over time. What we want to do is make sure the behavior of everything we write is always the same as these changes occur.  Ideally, nothing can be taken for granted- return values, exceptions, processing.  All must be tested.  Changes create little ripples in the interaction between all the dependencies in a system. Unchecked, ripples grow bigger and bigger into tsunamis of horrible, horrible bugs.  It&#8217;s important to understand what these interactions are, and make sure new changes don&#8217;t alter current behavior.</p>
+
+<p><strong>Where TDD Fits In</strong></p>
+
+<p>TDD simply makes you think about these interactions before you code, so you know what each class and function does for the greater good.  For most people, especially getting started with TDD, that&#8217;s a lot to wrap your head around.  Especially when you&#8217;re the type of coder that likes to code first and have the system morph into what you need it to be.  With TDD, you can easily end up over analyzing the situation, testing too much or too little.  That&#8217;s why TDD is very iterative- figure out what you need, write your single test to enforce it, then write code to pass your test.  But it&#8217;s important to note the level you need from your tests.  If you need a ShipOrder function that returns a shipment, don&#8217;t just check it returns a shipment.  Enforce it&#8217;s doing every step it should- your unit tests are guaranteeing every assumption every other piece of code makes is valid.</p>
+
+<p><strong>Up Next</strong></p>
+
+<p>I didn&#8217;t talk about mocking at all.  Mocking is the second most important factor of testing: after knowing what to test!  In another post, I&#8217;ll talk about how to write the unit tests I outlined above.  Unit tests also provide numerous benefits I mentioned earlier in this post: enforcing standards, allowing concurrent development and faster coding (no need for those console apps for class library development!).</p>
+
+<p><a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2funderstand-unit-testing-and-td-getting-better-code-coverage%2f"><img src="http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2funderstand-unit-testing-and-td-getting-better-code-coverage%2f&#038;bgcolor=0000FF" border="0" alt="kick it on DotNetKicks.com" /></a></p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/saving-dynamically-added-list-items-using-jquery-and-aspnet-mvc/">Saving dynamically added list items using jQuery and ASP.NET MVC</a></h1>
+        <span class="post-date">Dec 15 2008</span>
+        <p>There are going to be times when you want to allow a user to enter multiple copies of a single form on a web page.  This frequently happens when adding items to a list- like products in a shopping cart or tasks in a task list.  You want the user to add as many &#8220;items&#8221; as they want to the list, then save the entire list at once.</p>
+
+<p>Dynamically adding elements to a page is easy with jQuery, but parsing out list items on the server can be difficult- especially when you don&#8217;t know how many items are on the page!   Things get even trickier when the number of input controls for each item increases- you have to keep all these input controls in sync so each item gets saved correctly.  Luckily, ASP.NET MVC has <a href="http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx" target="_blank">a built in feature to pull out a list of complex types posted to a page</a> and automatically put them in a model.  We&#8217;re going to combine this feature with jQuery to dynamically add form elements on a page which end up in a list of complex types that can be accessed in a controller action.</p>
+
+<p>In our example,  a user will be creating a shopping list and will  have the ability to add items to the shopping list dynamically.  When the user hits &#8220;Save&#8221; the entire list with all items will be posted to the server and serialized into a ShoppingList model.</p>
+
+<p>We&#8217;re going to use:</p>
+
+<pre class="syntax html"><ul>
+  <li>
+    jQuery to dynamically drive the client side and dynamically add list items
+  </li>
+    
+  
+  <li>
+    ASP.NET MVC as our web infrastructure
+  </li>
+    
+  
+  <li>
+    The DefaultModelBinder to build a list of complex types which can be passed to an action method.
+  </li>
+  
+</ul>
+</pre>
+
+<p>Our model is simple- we have a ShoppingList with properties of Name and ShoppingItems:</p>
+
+<pre class="syntax c#">public class ShoppingList
+{
+public string ListName { get; set; }
+public IList&lt;ShoppingItem> Items { get; set; }
+}
+
+public class ShoppingItem
+{
+public string Name { get; set; }
+public int Quantity { get; set; }
+}
+
+</pre>
+
+<p><strong>Posting Multiple Items At Once</strong></p>
+
+<p>The key to this feature is posting multiple related elements which end up in a list.  In order for the DefaultModelBinder to build a list, we have to post elements in a certain way.  Essentially, each set of related input elements are grouped together using a uniquer key.  The key can be any string- it doesn&#8217;t have to be an integer index.</p>
+
+<p>Keys are specified with a hidden input element.  In our sample, we want our list to end up in the myList.Items property.  So for every object in the Items list, we need a hidden input field with a name of &#8220;myList.Items.Index&#8221;.  The key we specify for the element will be the key we use in the name attribute the input element.  If our key is &#8220;foo&#8221;, and our property is &#8220;Quantity&#8221;, we&#8217;ll have:</p>
+
+<pre class="syntax html"><input type="hidden" name="myList.Items.Index" value="foo" />
+
+<input type="hidden" name="myList.Items[foo].Quantity" value="5" />
+
+[/pre]
+
+Even though we couldn't do that in c#, we can do it in our markup.  Think of keys for a hashtable- the key can be anything you want.  The hashtable is a list of the complex type your building, so typing hashtable["myKey'] returns the complex type, and you have access to all properties of that type.
+
+I've created a unit test which shows off this magic for multiple items:
+
+
+
+<pre class="syntax c#">
+
+shoppingController.Request.Form.Add("myList.ListName", "My Shopping List");
+shoppingController.Request.Form.Add("myList.Items.Index", "1");
+shoppingController.Request.Form.Add("myList.Items[1].Name", "Chocolate");
+shoppingController.Request.Form.Add("myList.Items[1].Quantity", "5");
+shoppingController.Request.Form.Add("myList.Items.Index", "Alpha");
+shoppingController.Request.Form.Add("myList.Items[Alpha].Name", "Graham Crackers");
+shoppingController.Request.Form.Add("myList.Items[Alpha].Quantity", "10");
+
+</pre>
+
+<p>
+  Notice how we're passing multiple "myList.Items.Index" values.  Don't worry- they won't overwrite eachother.  Servers turn multiple name values into a comma delimited list (you'll end up with: "1,Alpha" has your values for "myList.Items.Index".  All the DefaultModelBinder is doing is parsing the list of  keys for whatever array you want, then matching those values to the form package. My naming convention of myList.Items is simply allowing the myList parameter in the controller action to be populated correctly by the DefaultModelBinder.
+</p>
+
+<p>
+  To reiterate, the indexer I use for each array object is simply grouping related html elements together- Graham Crackers has a quantity of 10 because I'm using the same indexer for each name: Items[Alpha].Name and Items[Alpha].Quantity, just like a hashtable.
+</p>
+
+<p>
+  The rest of the unit test shows how the DefaultModelBinder will build the ShoppingList Item's property using these form values:
+</p>
+
+<pre class="syntax c#">
+
+var defaultBinding = ModelBinders.GetBinder(typeof(ShoppingList));
+var bindingContext = new ModelBindingContext(shoppingController.ControllerContext,
+shoppingController.ValueProvider,
+typeof(ShoppingList),
+"myList", null, shoppingController.ModelState, null);
+var binderResult = defaultBinding.BindModel(bindingContext);
+
+Assert.IsNotNull(binderResult);
+Assert.IsNotNull(binderResult.Value);
+Assert.IsInstanceOfType(binderResult.Value, typeof(ShoppingList));
+
+var myList = binderResult.Value as ShoppingList;
+
+Assert.IsTrue(myList.ListName == "My Shopping List");
+Assert.IsTrue(myList.Items.Count > 0);
+Assert.IsTrue(myList.Items[0].Name == "Chocolate");
+Assert.IsTrue(myList.Items[0].Quantity == 5);
+
+Assert.IsTrue(myList.Items[1].Name == "Graham Crackers");
+Assert.IsTrue(myList.Items[1].Quantity == 10);
+
+</pre>
+
+<p>
+  <strong>The View</strong>
+</p>
+
+<p>
+  I want a button to "add another item" to the shopping list.  If the user clicks this button, two new textboxes should appear: one for name, and another for quantity.  These need to have the same indexer.  When the page first loads, there should already be an item to enter.
+</p>
+
+<p>
+  I have a couple of choices to build this logic.  I could specify one set of input elements in the view, and use jQuery to add individual elements to the DOM when the user hits the button.  I don't like this idea because it means I have two places to build the list items: one in the view, the other in jQuery.  When you build the same code in multiple places, you're going to get discrepancies, which lead to bugs-  I guarantee it. I could use jQuery to add the default form when the page loads, but I don't like this- html is easy and simply, it allows me to see what I'm doing.  It's much easier to write html than write javascript to build html.
+</p>
+
+<p>
+  Instead, I'm going for a partial view approach using actions.  By putting the injected section of markup into its own UserControl with a controller action I can embed the markup in the parent view and use ajax to get the rendered html snippet to the client via a url.  I can also choose how to generate the indexer in the action method's body: I'm going to use Guids.  With Guids, I won't have to track any other indexers- I'm guaranteed a unique value I can use for all the related elements in the partial view.  Here's the markup:
+</p>
+
+<p>
+  The parent view, which the user sees on load:
+</p>
+
+<pre class="syntax html">
+
+
+
+</pre>
+
+<p>
+  The partial view for each item:
+</p>
+
+<pre class="syntax html">
+
+
+
+<div class="itemContent">
+  &lt;input type="hidden" name="&lt;%= ViewData["Prefix"] + ".Index" %>" value="&lt;%=ViewData["GUID"] %>" />
+  <label>Item: </label>&lt;input type="text" name="&lt;%= ViewData["Prefix"]  + "[" + ViewData["GUID"] + "].Name" %>" />
+  <br />
+  <label>Quantity: </label>&lt;input type="text" name="&lt;%= ViewData["Prefix"] + "[" + ViewData["GUID"] + "].Quantity" %>" />
+  <br />
+  
+</div>
+
+</pre>
+
+<p>
+  I chose to make the "prefix" I need a variable so I can potentially use this same view in other forms if needed.  I may want to put this form somewhere else, where the server argument isn't myList, but something else- I could forgo a parameter of ShoppingList and want to post a list of ShoppingItems.  This is useful when adding some sort of "update" feature in another section of page- say, when I already have a ShoppingList and I'm updating with a new list of items.
+</p>
+
+<p>
+  On the client side I simply wire up my button to request the html snippet from the server and inject that snippet with jQuery:
+</p>
+
+<pre class="syntax js">
+
+$(document).ready(function() {
+$("#btnAddAnother").click(function() {
+$.ajax(
+{
+type: "GET",
+url: "/Shopping/ShoppingItemFormContent/myList.Items",
+success: function(result) {
+var toInject = $(result);
+$("#itemContainer").append(toInject);
+}
+});
+
+})
+
+});
+
+</pre>
+
+<p>
+  There's something I don't like about this: I need to call the server every time I need a view.  This isn't that snappy, and could create a lot of chatter with the server.  There's a way around this for brevity I'm only going to explain: render the indexer as a specific value which can be parsed out and replaced with something else later.  My original goal is only wanting one place to specify markup: I do not want to have to duplicate code across a project.  But that shouldn't mean I need to call the server every time I need an html snippet.  I could make the snippet regular html which can be cached, then use a string or regular expression replace function to replace the hard coded indexer with something unique.
+</p>
+
+<p>
+  <a href="http://michaelhamrah.com/blog/wp-content/uploads/postingalist.zip">You can download the sample project here.</a><br />
+  <a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fsaving-dynamically-added-list-items-using-jquery-and-aspnet-mvc%2f"><img src="http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fsaving-dynamically-added-list-items-using-jquery-and-aspnet-mvc%2f&#038;bgcolor=0000CC" border="0" alt="kick it on DotNetKicks.com" /></a>
+</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/hiring-software-developers-the-in-house-interview-open-ended-questions/">Hiring Software Developers: The In House Interview (Open Ended Questions)</a></h1>
+        <span class="post-date">Dec 10 2008</span>
+        <p><em>Note: This is part of a series on hiring software developers.  See <a title="Interview" href="http://www.michaelhamrah.com/blog/index.php/tag/interview/" target="_self">articles tagged with interview for the series</a>.  I needed to break the in house interview post into two parts.  This part focuses on open ended questions.</em></p>
+
+<p>The in house interview is by far the most important part of the hiring process.  It&#8217;s also the most difficult.  You need to vet a person thoroughly in a very short time.  If you don&#8217;t have a strategy for the in house interview you will not effectively gauge a candidate nor be able to make a confident &#8216;yes&#8217; decision.  Furthermore, if you enter into a bargaining/negotiating process, you want enough information to know how far to go in the negotiations.</p>
+
+<p><strong>Open Ended Questions</strong></p>
+
+<p>Quite simply, you&#8217;re testing a developer on how well they solve problems.  No, not those ridiculous how many dentists are in San Fransisco questions.  Development problems- that measure a candidate in how well they analyze information, gather requirements, structure applications, organize data, implement software and scale for the future.  These are development- not programming- problems.  They&#8217;re not algorithms or set theory or knowing the best collection class to use.  These are problems regarding how well you go from a customer or product owner telling you something to a living, breathing software system.  If you&#8217;re an agile development shop, or want to be one, it&#8217;s essential you hire developers- not programmers- who do this well.</p>
+
+<p>Open ended questions offer a suite of scenarios where you explore various skills that define a good developer.  These scenarios are really up to you and can include everything from data modeling to application architecture to user interface design.  Essentially, you simply tee up a situation and see how the developer deals with the situation.  There&#8217;s no right or wrong answer, just good or bad discussions.  More importantly, it requires solid communication- the ability to understand and explain ideas- which is the cornerstone of a good developer.</p>
+
+<p><strong>The Questions</strong></p>
+
+<p>The first example focuses on application design and analysis.  Here in New York, we have MTA vending machines.  These are straightforward machines that let you buy either a prepaid or an all-you-can ride pass with credit or cash.  It&#8217;s a simple system, everyone in New York has probably used it, and is perfect system to talk system design.  A regular ATM machine or other common system also works well- you want the developer already have an understanding of the system so they can focus on application design.</p>
+
+<p><em>Design the system architecture for an MTA vending machine.  How would you break up the system into various components? How would the system work? What problems can occur? How can you deal with them?</em></p>
+
+<p>I get to see how well a candidate can come up with all the different things you&#8217;d need to know about a vending machine, and how thorough they are in their application design.  If they say &#8220;I&#8217;ll create a user input class and a payment processor&#8221; they&#8217;re not thinking through the issues. If they ramble on for ten minutes, they&#8217;re not organized with their thoughts or approach.  I want to know how well they understand tiers and class design- roles and responsibilities and program organization.  Don&#8217;t be afraid to ask what classes they would create to implement this system.</p>
+
+<p>This question should focus on a system the user is already comfortable with.  Don&#8217;t have them gather requirements- it throws another dimension which can be difficult to maneuver, and takes away from the core point of system design.  It&#8217;s important to ease them into this interview approach, so they don&#8217;t get flustered or confused (however, it probably says a lot about them if they do).</p>
+
+<p>Here&#8217;s a data modelling question inspired by Flickr:</p>
+
+<p><em>Design a data model for photo album software.  There should be photos, where each photo belongs to one, and only one album.  Albums belong to users.  Users can view other people&#8217;s photos if they are marked as public.  If a photo is private, no one can see the photo.  Each photo can be tagged using a simple &#8220;tagging&#8221; system.  Photos can have comments, which are linked to both the photo and the user who wrote the comment.  Finally, photos can belong to sets.  A set is a group of photos from various users.  A set is owned by a single user, but anyone can add a photo to a set.</em></p>
+
+<p>This question works well on two fronts.  First, it obviously covers data modelling.  More importantly, it gauges the candidates ability to absorb information.  The question is explaining what we need from a business perspective- it doesn&#8217;t list any specific attributes.  The candidate should think and ask what we need to put in these tables.  The question also highlights entity relationships, to see how well the candidate can deal with joins and data organization.  Unlike the MTA question, I&#8217;m not approaching this as if they new what system I was talking about.  I could make this like the MTA question by saying, &#8220;Datamodel Flickr&#8221;.  I didn&#8217;t.  I&#8217;m looking how well they go from what the customer wants to an implementation- specifically, a data model.</p>
+
+<p>Here&#8217;s a web service related question:</p>
+
+<p style="margin-left: 1.6pt;">
+  <em>Let&#8217;s say I have two existing systems- an ordering system and a warehouse system.  The ordering system handles billing customers and fulfilling orders.  The warehouse system tracks inventory and sends shipments.  Currently, each night, orders are printed from the ordering system and faxed to the warehouse, where they are checked to see if they have any inventory.  If they are, they are fulfilled.  If not, they get put on hold and the warehouse calls the sales rep to have them update the ordering system to mark the order â€œon holdâ€ until the product comes in.  Your job is to make the ordering system and warehouse system talk to each other via web services.  What does the communication between the two system will look like?  What functions need to be exposed at which points? </em>
+</p>
+
+<p style="margin-left: 1.6pt;">
+  There&#8217;s a part two:
+</p>
+
+<p style="margin-left: 1.6pt;">
+  <em>A problem has occurred: Unfortunately, the connection between the two sites may be unreliable, but will never be down for more than a day.  Itâ€™s too cost prohibitive to upgrade the connection, and you&#8217;re asked if there&#8217;s anything you can do with the new service.  How would you design the system so a user can enter an order on a web page that will eventually get fulfilled by the warehouse?</em>
+</p>
+
+<p>I like this because not only does it talk about vanilla web services, it also hints on extensibility.  Here, the candidate is asked to lay out a web service design and come up with some schemas.  If they can boil this down to a simple client/server service, great.  If they come up with a complex two way communication system bad.  But, after they laid out the initial design, they&#8217;re confronted with a major issue.  What do they need to do to deal with this problem given what the original solution?</p>
+
+<p>The big kahuna question- everything rolled into one:</p>
+
+<p>This one is mostly geared towards senior level programmers.  I was asked this question once in an interview and loved it- it was very draining, but in the end, it allowed me to show the company I was worth it.  It essentially wraps up all kinds of role playing questions into one big one.  Be warned- it also takes a while to do thoroughly.</p>
+
+<p>Essentially, you, as the interviewer, sketch out a set of web pages on paper.  Do this before hand.  When I got asked the question it was an insurance site.  A CMS system, blog site, or project tracking system works well too.  For the insurance system, there were four pages: The account owner, with a bunch of the usual fields (name, address, city, SS#).  Then, there was a form for cars- an owner insured a car.  Make, model, year, etc.  Next, there was a form for insured drivers.  This could just be account owner, or members of their family.  Cars were linked to insured drivers, and offered a price for the insurance.  The owner could buy the insurance or not.  You need to have four or five hand drawn web pages, each with a form, all related.</p>
+
+<p>So you walk the candidate through the hand drawn forms and what needs to happen, and you have them do numerous things.  They need a data model.  They need to design the application- data tier, business objects, web pages, whatever classes they need- see what they come up with.  They need to figure out how to get from one page to another and maintain state.  Sometimes I throw in a curve ball- in order to figure out the quote price, you need to call a long web service which could take ten to twenty seconds.  What&#8217;s the user experience like? How do you deal with this?  Finally, you tell them they&#8217;re running a dev team, and ask how they would break up the work to the different developers.  See how they approach this- it will give you a sense of well they know how to delegate and run a team.</p>
+
+<p>**What You&#8217;re looking For</p>
+
+<p>**</p>
+
+<p>Remember, with the phone interview done, you should have a solid understanding of the technical ability of the candidate.  But that&#8217;s not the most important quality of a candidate.  Google will tell me how to use ThreadPool.QueueUserWorkItem for multithreaded programming.  The real quality is knowing when I need multithreaded programming and knowing the difference between the ThreadPool API and asynchronous delegates. That&#8217;s what you&#8217;re looking for in these answers- the meat, not the special sauce.</p>
+
+<p>You can also create your own questions depending on the work you do.  The point is to focus on a specific thing you&#8217;re looking for- data modelling,  SOA, application architecture, user interface design, business objects, or everything all in one- and try and stear the conversation in the general direction you want.  But let the candidate do most of the driving.</p>
+
+<p>With each question, have a specific area of focus.  See what their toolbox is like if you want to know about implementation or programming.  If it&#8217;s about requirements, see how well the analyze the problem and cover the bases.  You know the problems you need to solve- so set up sandbox environments to see if they have the skills to solve your problems in various areas.  You decide how specific to get- and whether these are one, five or 20 minute questions.</p>
+
+<p>If you&#8217;re not getting what they want, you may need to nudge them a little.  But be careful not to ask lead in questions.  If you set up a question like, &#8220;Okay, tell me how you would handle error in the MTA machine?&#8221; and they reply with, &#8220;Exceptions&#8221; they simply don&#8217;t get it.  If the struggle with the answer they probably don&#8217;t know what to do- you&#8217;ll easily spot this when you see it.</p>
+
+<p><strong>What&#8217;s Next</strong></p>
+
+<p>There&#8217;s a lot more to the in house interview- everything isn&#8217;t solved with open ended questions.  My next post will cover what else to ask- those personal, character building questions as well as how to structure the interview.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/best-comment-ever/">Best Comment Ever</a></h1>
+        <span class="post-date">Dec 5 2008</span>
+        <p>I found this when going through some code:</p>
+
+<p><span style="color: #008000;">//I have no idea what the following code does<br /> //but the ui seems to function better without it<br /> //except for when it crashes</span></p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/">Event Pooling with jQuery Using Bind and Trigger: Managing Complex Javascript</a></h1>
+        <span class="post-date">Dec 5 2008</span>
+        <p><strong>Managing Complexity in the UI</strong></p>
+
+<p>As everyone knows, the more dependencies you have in a system, the harder maintaining that system is.  Javascript is no exception- and orchestrating actions across complex user interfaces can be a nightmare if not done properly.</p>
+
+<p>Luckily, there&#8217;s a great pattern for orchestrating complex interaction in a disconnected way. No, it&#8217;s not the Observer pattern.  It&#8217;s a take on the Observer pattern called Event Pooling which is a piece of cake with jQuery&#8217;s <a href="http://docs.jquery.com/Events/bind" title="jQuery Bind">bind</a> and <a href="http://docs.jquery.com/Events/trigger" title="jQuery Trigger">trigger</a> functions.  <a title="jQuery bind and trigger example" href="http://www.michaelhamrah.com/blog/wp-content/uploads/jqueryEventPool/index.html" target="_blank">For the get to the code folks, here&#8217;s an example of using jQuery&#8217;s bind and trigger for event pooling</a>.</p>
+
+<p><strong>Problems with the Observer Pattern</strong></p>
+
+<p>The observer pattern is great for some things, but it still requires a dependency between the observer and the subject.  The publish/subscribe scenario creates a direct relationship between two objects- and makes orchestrating a lot of events difficult when you have to manage so many direct references.<figure id="attachment_56" style="width: 300px;" class="wp-caption aligncenter"></p>
+
+<p><a href="http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/observer.png"><img class="size-medium wp-image-56" title="observer pattern" src="http://i0.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/observer-300x91.png?resize=300%2C91" alt="observer pattern" data-recalc-dims="1" /></a><figcaption class="wp-caption-text">observer pattern</figcaption></figure></p>
+
+<p><strong>Event Pooling</strong></p>
+
+<p>Event pooling is simply a variation on the Observer pattern, where a &#8220;middle man&#8221; is used to orchestrate the publish/subscribe system.  First, an observer will register with the event pool by saying &#8220;I need to call this function when this event is fired&#8221;.  Next, the subject will tell the event pool &#8220;I&#8217;m firing this event&#8221;.  Finally, the event pool will call the function the observer registered on behalf of the subject.  The observer and subject only need to know about the event pool, not each other.<figure id="attachment_57" style="width: 300px;" class="wp-caption aligncenter"></p>
+
+<p><a href="http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/event-pool.png"><img class="size-medium wp-image-57" title="event-pool" src="http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/event-pool-300x147.png?resize=300%2C147" alt="Event Pool" data-recalc-dims="1" /></a><figcaption class="wp-caption-text">Event Pool</figcaption></figure></p>
+
+<p>This provides some cool functionality- especially because if you need to reference the subject (called the publisher), you can get a direct reference via the event pool.  This is similar to the object sender parameter in .NET&#8217;s event system.</p>
+
+<p><strong>Show me Code!</strong></p>
+
+<p>We are going to do two things: First, update a span tag to show an address when a user enters a name, city, or state.  Second, show some complex behavior by daisy changing events and binding a single function to multiple triggers. <a title="jQuery bind and trigger example" href="http://www.michaelhamrah.com/blog/wp-content/uploads/jqueryEventPool/index.html" target="_blank">Check out the example.</a></p>
+
+<p>We have an UpdateOutput() function that updates the span:</p>
+
+<pre class="syntax js">function UpdateOutput() {
+    var name = $('#txtName').val();
+    var address = $('#txtAddress').val();
+    var city = $('#txtCity').val();
+
+    $('#output').html(name + ' ' + address + ' ' + city);
+}
+</pre>
+
+<p>This is wired up via the bind function:</p>
+
+<pre class="syntax js">$(document).bind('NAME_CHANGE ADDRESS_CHANGE CITY_CHANGE', function() {
+    UpdateOutput();
+});
+</pre>
+
+<p>Notice how we&#8217;re wiring up multiple event names with a single function which calls UpdateOutput.  This allows us to encapsulate common functionality in a single function which could be called from various sources.</p>
+
+<p>We&#8217;re also binding and firing to $(document).  Document provides a global bucket all functionality has access to- a static class that can be referenced from anywhere, making pooling easy.</p>
+
+<p>We can also wire up another function with the NAME_CHANGE event without effecting any other logic:</p>
+
+<pre class="syntax js">$(document).bind('NAME_CHANGE', function(e) {
+    UpdateName();
+    UpdateOtherText(e);
+});
+</pre>
+
+<p>Here, NAME_CHANGE will also trigger UpdateName and UpdateOther.</p>
+
+<p>Firing an event is done with the trigger function:</p>
+
+<pre class="syntax js">$('#txtAddress').keyup(function() {
+    $(document).trigger('ADDRESS_CHANGE');
+});
+$('#txtCity').keyup(function() {
+    $(document).trigger('CITY_CHANGE');
+});
+</pre>
+
+<p>It can also be called directly from html:</p>
+
+<pre class="syntax html escaped">Name: &lt;input type="text" id="txtName" onkeyup="javascript:$(document).trigger('NAME_CHANGE');" /&gt;
+</pre>
+
+<p><strong>Advanced Functionality</strong></p>
+
+<p>There are two more things you can do with bind and trigger: Inspect who fired the trigger (this can be important if you&#8217;re wiring up a single function from multiple subjects) and pass data to the event.</p>
+
+<p>In our next example, our function definition takes in two parameters: e, which is the event&#8217;s sender, and data, a generic data bucket:</p>
+
+<pre class="syntax js">$(document).bind('FIRST_UPDATED', function(e, data) {
+    UpdateOtherText(e, data);
+});
+</pre>
+
+<p>The first parameter will always be the event&#8217;s sender.  You can wire up as many other parameters as you want.  You pass data as a comma delimited list between brackets [parm1,parm2] when calling trigger:</p>
+
+<pre class="syntax js">$(document).trigger('FIRST_UPDATED', [data]);
+</pre>
+
+<p>and from html:</p>
+
+<pre class="syntax js escaped">&lt;input type="text" id="txtData" onkeyup="javascript:$(document).trigger('DATA_CHANGED', [$(this).val()]);" /&gt;
+</pre>
+
+<p>The sender object has a couple of properties, but the most important is &#8216;type&#8217;, which let&#8217;s you know what triggered the event:</p>
+
+<pre class="syntax js">function UpdateOtherText(e, text) {
+var text;
+if (e.type == 'FIRST_UPDATED')
+ text = 'from first: ' + text;
+else
+ text = e.type;
+$('#eventFired').html(text);
+}
+</pre>
+
+<p>Check out my follow up article <a href="http://www.michaelhamrah.com/blog/index.php/2009/12/organizing-javascript-for-event-pooling-with-jquery/">Organizing Events for Event Pooling.</a></p>
+
+<p>[]<a href="http://www.michaelhamrah.com/blog/index.php/2009/12/organizing-javascript-for-event-pooling-with-jquery/">5</a></p>
+
+<p><a href="http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fevent-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript%2f"><img src="http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fevent-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript%2f&bgcolor=0000FF" border="0" alt="kick it on DotNetKicks.com" /></a></p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/adventures-in-agile-practical-scrum-intro/">Adventures in Agile: Practical Scrum (Intro)</a></h1>
+        <span class="post-date">Dec 3 2008</span>
+        <p><em>Disclaimer: I am not a certified scrummaster, nor have I taken any formal scrum classes.  I have, however, worked with scrum a great deal at my job, and wanted to share my experiences.</em></p>
+
+<p>Let&#8217;s face it: Scrum is a Utopian pipe dream.  The user stories, working in sprints, task estimations, no deadlines, uncommitted backlog, visibility, transparency, business buy-in, everyone&#8217;s happy, fast development, easily responding to change, everyone gets what they want, everybody gets it and works together- it&#8217;s all a hot air and completely unrealistic.</p>
+
+<p>Okay, so maybe that&#8217;s a little bit harsh.  How about this argument- real Scrum- true Scrum- ideal Scrum- is a Utopian dream.  It&#8217;s a never ending struggle for a more perfect union.  The essential problem is we, as humans, are incapable of living up to the requirements of ideal Scrum; and business mentality will never allow Scrum to work in the practical world.  It&#8217;s a round peg in a square hole.  But if you believe- and try- you can get partly there, and that, my friends, will be good enough.</p>
+
+<p><strong>Utopian</strong> <strong>Scrum</strong></p>
+
+<p>Scrum is dependent on the cohesion of too many disparate factors- mostly three sets of opposing forces.  First, the difference between practical feasibility and the unrealistic demands of requirements; second, the need for &#8220;When can I get it?&#8221; delivery dates from the business versus the complete impossibility of defining those dates accurately; and third, the need for a group of people to fluidly communicate and work together in a variety of situations.</p>
+
+<p>Scrum works- and delivers- when these three completely impossible scenarios are met.  Scrum simply sets groundrules on how these groups of people interact and manage their work.  But that requires disparate groups of people working and interacting effectively.  Unfortunately, most of the time, it&#8217;s doesn&#8217;t fully happen.  The business will never be satisfied with vague, long term deliverable goals.  The business wants concrete information so they can make decisions- they want to know when product &#8220;A&#8221; will be ready for launch so they can do x, y and z and estimate revenues.  An uncommitted backlog? Story points? WTF is that?  Nor will the business ever fully comprehend the cost/benefit analysis that goes into any sort of feature development.  What do you mean let&#8217;s wait and see? I want to know what it&#8217;s going to be like now! It needs to do x, y and z be be super simple to use- can&#8217;t we just have it do this other thing?  Why will that take so long? I want to tell you how to do it- and if you already do it, why would we change it? I know how it should work!</p>
+
+<p>My personal favorite is the working together part.  Do you really think it&#8217;s possible to get a group of introverts- all with their own egos and insecurities- to proactively communicate, share ideas, and work effectively as a team?  Heads down, opinionated, or really quiet developers?  This is the &#8220;this conversation is too simplistic for me&#8221; crowd! The &#8220;I talk in code&#8221; crowd!  And everyone on the team can operate without high level direction- and figure out requirements- and bring up impediments or issues when they arise- and ask questions- crowd?  Yeah, right! These are programmers!</p>
+
+<p><strong>Practical Scrum</strong></p>
+
+<p>Don&#8217;t worry- all is not lost.  The principals of Scrum are pretty solid and good ideas, and even if you only get half way there, you&#8217;re better off than with anything else.  Visibility and transparency are extremely important with any development group, and knowing where you stand with the big picture is solid information anyone can appreciate.  Most of the time the business doesn&#8217;t really care about when things happen, they just want an accurate estimate for planning.  Who wouldn&#8217;t want that?  When you hit your stride with Scrum, it may not be perfect- but both you, the development team, and the business- are all better off because everyone gets enough of what they need with a manageable amount of overhead.</p>
+
+<p>The main problem with Scrum is that in principal everything make sense.  It&#8217;s easy to see how it works- the backlog, the sprint, the scrum, the estimations- but when you try to do it, everything false apart. In practical terms, it&#8217;s impossible to make all the chips falls as they need to- to make everyone understand what they need to do- and to get everyone in the organization on the same page.  Most people either end up with a bastardization of the process, or worse give up out of frustration.</p>
+
+<p>Practical Scrum is that middle ground between where you are now and Utopian Scrum.  It&#8217;s the half way of making what you have work, and like Scrum, iterating to a better place one thing at a time.  Practical Scum is simply understanding how to implement Scrum to make your organization work effectively.  The key is not jumping into the deep end with Scrum hoping you know how to swim.  Hint: You&#8217;ll drown.</p>
+
+<p>I&#8217;ll delve into various aspects of Practical Scrum in future posts.  For now, it&#8217;s important to remember a couple of things:</p>
+
+<ol>
+<li>Don&#8217;t give up.  If it doesn&#8217;t work, don&#8217;t worry, it usually doesn&#8217;t.</li>
+<li>Scrum is easy in principal; in practicality, it&#8217;s extremely difficult.</li>
+<li>Like everything, you need to move in baby steps when adopting Scrum.</li>
+<li>Remember: If you do it, they will come. This simply means once your team is on Scrum, and you start delivering, people will recognize it works.</li>
+<li>The goal isn&#8217;t learning Scrum- or what Scrum is.  The goal is learning how to adopt scrum.  Like the principals of Scrum, go with the flow.  Iterate.  Make subtle improvements.  Get to where you need to be at a healthy pace.</li>
+<li>Don&#8217;t rush it.</li>
+</ol>
+
+<p>I&#8217;ll dig into how you get to where you need to be in Scrum in future posts.  I&#8217;ve been on the brink of giving up too, but am happy I&#8217;ve stuck with it.  Now we&#8217;re starting to hit our stride, and it&#8217;s great.  Yes, it&#8217;s still rough around the edges, but that&#8217;s a fact of life with everything.</p>
+
+<p>Getting there isn&#8217;t half the battle- it is the battle.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2008/12/how-to-hire-a-software-developer-the-phone-interview/">How to Hire a Software Developer: The Phone Interview</a></h1>
+        <span class="post-date">Dec 1 2008</span>
+        <p style="text-align: left;">
+  <em>Note: This is part of a series on hiring software developers.  See <a title="Interview" href="http://www.michaelhamrah.com/blog/index.php/tag/interview/" target="_self">articles tagged with interview for the series</a>. </em>
+</p>
+
+<p style="text-align: left;">
+  <em></em><span><strong><span>The Phone Interview</span></strong></span>
+</p>
+
+<p><span>The purpose of the phone interview is twofold.  First, a simple baseline for communication is established.  Communication is the most important quality a candidate can have.  You can always learn new technology, but if you can&#8217;t communicate clearly- your ideas, your work, and your ability- you probably won&#8217;t work well in a collaborative environment.  Secondly, the phone interview provides a benchmark for technical ability.  This is usually a list of straightforward programming questions in the particular language most important to the job. <a title=".NET Questions" href="http://www.michaelhamrah.com/blog/index.php/net-interview-questions/" target="_self">I use this list of .NET questions to get a sense of surface area and depth</a>.</span></p>
+
+<p><strong><span>Communication</span></strong></p>
+
+<p><span>How do you know a candidate is a good communicator? A two prong approach works best: first, have them go over their resume.<span> </span>Ask about the projects theyâ€™ve worked on, and what they did on those projects.<span> </span>How good are their answers? Do you have an understanding of the work they did?<span> </span>Did they ramble on too much, or not provide enough depth, or repeat themselves?<span> </span>If you asked any questions did they give a direct answer?</span></p>
+
+<p><span>Second, find out how well they answer technical questions.<span> </span>This isnâ€™t an issue of right and wrong, itâ€™s about complexity.<span> </span>Did they provide a clear explanation of the answer? Were they concise and confident they knew what they were talking about? Was there a hint of ego in their response? The more you phone interview the more you can tell someone who is good or bad at communication.<span> </span>Itâ€™s that â€œthingâ€ that makes you say, â€œTell me more!â€</span></p>
+
+<p><strong><span>Technical Questions</span></strong></p>
+
+<p><span>There are plenty of sites out there for programming type questions- whether C#, PHP, Java, etc.  You know the technology you work with- so ask the candidate if they know it too.  Be flexible on this, we often interview people without any knowledge of the programming language we use.  If you&#8217;re an expert in one language, you can probably pick up another pretty well.  Try and figure out how well the candidate has dug into their craft.  This will also give you the opportunity to rank a candidate as junior, mid-level, or senior.  It also lets you know how much they&#8217;ve hyped up their ability (if you have the audacity to list php, .NET, java, perl, cobol and fortan as your &#8220;expert languages&#8221;, I&#8217;m calling you out on it).</span></p>
+
+<p><span>Break up technical questions into a standard set of categories.<span> </span>This includes SQL/Database work, class design/architecture, web programming, web services, html, javascript, language/framework how-toâ€™s. Go in with more than you can possibly fit into the allotted time: this will allow you to maneuver during the technical interview. <span> </span>It doesnâ€™t make any sense to ask a candidate who has no sql experience a bunch of sql questions.<span> </span>Instead, focus on their stronger skills or go for more surface area.</span></p>
+
+<p><span>How many questions to ask? Thatâ€™s easy: ask until they get something wrong.<span> </span>This is important, because it allows you to see how they handle themselves when they donâ€™t know something.<span> </span>Theyâ€™ll either flat out admit they donâ€™t know it, make an educated guess (hint: theyâ€™ll have a good sense of reasoning skills), or lie.<span> </span>I prefer going for surface area then depth.<span> </span>First, find out how much they know about different things.<span> </span>Second, pick some of the most important areas youâ€™re looking for and go for depth: see how much they know in that area.</span></p>
+
+<p><span><a title=".NET Questions" href="http://www.michaelhamrah.com/blog/index.php/net-interview-questions/" target="_self">Here are some questions I use for the phone interview, or the in house interview if needed</a>.<span> </span>Note, Iâ€™m not going for detailed how-toâ€™s.<span> </span>I like to keep things high level, as I believe itâ€™s important to know concepts.<span> </span>Google will tell me how to expire cache after ten minutes.</span></p>
+
+<p><strong><span>Divide and Conquer</span></strong></p>
+
+<p><span>Usually, the phone interview is handed out to a lot of different people, as itâ€™s somewhat time consuming and very hit or miss.<span> </span>Some prefer to have one person do the phone interview so they can easily compare candidates to make it to the next round.<span> </span>Either way, itâ€™s important to make a checklist.<span> </span>A checklist lets you remember the differences between candidates, and allows other developers to easily summarize their phone interviews.<span> </span>Iâ€™ve gotten a lot of blank stares and â€œHow do I do this?â€ after asking developers to do phone interviews.<span> </span>Give them a set of questions- and a checklist for them to fill out- will make your and their lives easier.<span> </span>If you canâ€™t into trouble (i.e. sued) for not bringing somebody in, a checklist will also give you cover.</span></p>
+
+<p><strong><span>Conclusion</span></strong></p>
+
+<p><span>The most important thing for you to know is donâ€™t worry about ending the interview early.<span> </span>If clearly you donâ€™t like them, you just say any number of things:</span></p>
+
+<p><span><span>1)<span> </span></span></span><span>â€œIâ€™m sorry; weâ€™re looking for someone with more experience. Thank you for applying.â€<span> </span></span></p>
+
+<p><span><span>2)<span> </span></span></span><span>â€œThank you for your time.<span> </span>Unfortunately, we wonâ€™t be able to move forward.â€</span></p>
+
+<p><span><span>3)<span> </span></span></span><span>If you want to postpone the face to face, thereâ€™s always â€œWeâ€™re in the process of interviewing candidates now and will let you know about the next round in XX days.â€<span> </span>Then, e-mail them no in XX days. This works if someone else is doing the phone interview, or you want to mull it over. Giving them an e-mail date prevents them from living in limbo when youâ€™ll get back to them.<span> </span>Itâ€™s simple respect.</span></p>
+
+<p><span>You can even add in â€œWeâ€™ll keep your resume on fileâ€ if you feel guilty.<span> </span>My point is, be respectful: if you know theyâ€™re a no, donâ€™t waste their time or yours.</span></p>
+
+<p><span>How do you decide you makes it or who doesnâ€™t? Simple: if they impress you and you want to know more, invite them in.<span> </span>Your gut check should be, â€œThis person has potential.â€ If not, donâ€™t move forward.<span> </span>If youâ€™re on the fence, put them on hold until you seriously would want to hire them.<span> </span>Donâ€™t bring them in for the sake of bringing them in- the in house interview should take some time, and if youâ€™re not serious about them, donâ€™t have them put on a suit, take time away from their current job/life, and make them travel just to use as a benchmark for something else.<span> </span>Itâ€™s not right.</span></p>
+
+<p><span>Ideally, 15% of your applicant pool you want to do a phone interview with.  Maybe 25% if you are in a tight technical market like NYC.</span></p>
+
+<p><p class="MsoNormal"></p>
+
+    </div>
+  
+</div>
+
+<div class="pagination">
+  
+  <a class="pagination-item older" href="http://blog.michaelhamrah.com/page/10/">Older</a>
+  
+
+  
+  <a class="pagination-item newer" href="http://blog.michaelhamrah.com/page/8/">Newer</a>
+  
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

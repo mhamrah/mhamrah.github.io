@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Prevent Js and Css Browser Caching Issues with ASP.NET &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Prevent Js and Css Browser Caching Issues with ASP.NET</h1>
+  <span class="post-date">Mar 2 2009</span>
+  <p>You&#8217;ve seen this problem before- you deploy a new version of your website but the style is off and you&#8217;re getting weird javascript errors. You know the issue: Firefox or IE is caching and old version of the css/js file and it&#8217;s screwing up the web app. The user needs to clear the cache so the latest version is pulled. The solution: versionstamp your include files!</p>
+
+<p>Take a lesson from Rails and create a helper which appends a stamp to your include files (and takes care of the other required markup). It&#8217;s simple- embed the following code in your views:</p>
+
+<pre class="brush: csharp; title: ; notranslate" title="">&lt;%=SiteHelper.JsUrl("global.js") %&gt;
+</pre>
+
+<p>will render</p>
+
+<pre class="brush: xml; title: ; notranslate" title="">&lt;script type="text/javascript" src="http://blog.michaelhamrah.com/content/js/global.js?33433651"&gt;&lt;/script&gt;
+</pre>
+
+<p>The browser will invalidate the cache because of the new query string and you&#8217;ll be problem free. Version stamps are better than timestamps because the version will only change if you redeploy your site.</p>
+
+<p>Here&#8217;s the code, which is based on the AppHelper for Rob Conery&#8217;s Storefront MVC:</p>
+
+<pre class="brush: csharp; title: ; notranslate" title="">using System.Reflection;
+using System.Web.Mvc;
+
+namespace ViewSample
+{
+public static class SiteHelper
+{
+private static readonly string _assemblyRevision = Assembly.GetExecutingAssembly().GetName().Version.Build.ToString() + Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString();
+
+/// &lt;summary&gt;
+/// Returns an absolute reference to the Content directory
+/// &lt;/summary&gt;
+public static string ContentRoot
+{
+get
+{
+return "/content";
+}
+}
+
+/// &lt;summary&gt;
+/// Builds a CSS URL with a versionstamp
+/// &lt;/summary&gt;
+/// &lt;param name="cssFile"&gt;The name of the CSS file&lt;/param&gt;
+public static string CssUrl(string cssFile)
+{
+
+string result = string.Format("&lt;link rel='Stylesheet' type='text/css' href='{0}/css/{1}?{2}' /&gt;", ContentRoot, cssFile, _assemblyRevision);
+return result;
+}
+/// &lt;summary&gt;
+/// Builds a js URL with a versionstamp
+/// &lt;/summary&gt;
+/// &lt;param name="cssFile"&gt;The name of the CSS file&lt;/param&gt;
+public static string JsUrl(string jsPath)
+{
+return string.Format("&lt;script type='text/javascript' src='{0}/js/{1}?{2}'&gt;&lt;/script&gt;", ContentRoot, jsPath, _assemblyRevision);
+}
+
+}
+}
+
+</pre>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

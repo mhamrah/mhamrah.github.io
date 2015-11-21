@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Akka Clustering with SBT-Docker and SBT-Native-Packager &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Akka Clustering with SBT-Docker and SBT-Native-Packager</h1>
+  <span class="post-date">Jun 19 2014</span>
+  
+
+<p>Since my last post on <a href="http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/">akka clustering with docker containers</a> a new plugin, <a href="https://github.com/marcuslonnberg/sbt-docker">SBT-Docker</a>, has emerged which allows you to build docker containers directly from SBT. I&#8217;ve updated my <a href="https://github.com/mhamrah/akka-docker-cluster-example">akka-docker-cluster-example</a> to leverage these two plugins for a smoother docker build experience.</p>
+
+<h2 id="one-step-build:9dc58615474f52923afa41a9d5040e47">One Step Build</h2>
+
+<p>The approach is basically the same as the previous example: we use SBT Native Packager to gather up the appropriate dependencies, upload them to the docker container, and create the entrypoint. I decided to keep the start script approach to &#8220;prep&#8221; any environment variables required before launching. With SBT Docker linked to Native Packager all you need to do is fire</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">docker
+</pre>
+
+<p>from sbt and you have a docker container ready to launch or push.</p>
+
+<h2 id="understanding-the-build:9dc58615474f52923afa41a9d5040e47">Understanding the Build</h2>
+
+<p>SBT Docker requires a dockerfile defined in your build. I want to pass in artifacts from native packager to docker. This allows native packager to focus on application needs while docker is focused on docker. Docker turns into just another type of package for your app.</p>
+
+<p>We can pass in arguments by mapping the appropriate parameters to a function which returns the Dockerfile. In build.spt:</p>
+
+<pre class="syntax scala">// Define a dockerfile, using parameters from native-packager
+dockerfile in docker &lt;&lt;= (name, stagingDirectory in Universal) map {
+  case(appName, stageDir) =>
+    val workingDir = s"/opt/${appName}"
+    new Dockerfile {
+      //use java8 base box
+      from("relateiq/oracle-java8")
+      maintainer("Michael Hamrah")
+      //expose our akka port
+      expose(1600)
+      //upload native-packager staging directory files
+      add(stageDir, workingDir)
+      //make files executable
+      run("chmod", "+x", s"/opt/${appName}/bin/${appName}")
+      run("chmod", "+x", s"/opt/${appName}/bin/start")
+      //set working directory
+      workDir(workingDir)
+      //entrypoint into our start script
+      entryPointShell(s"bin/start", appName, "$@")
+    }
+}
+</pre>
+
+<h3 id="linking-sbt-docker-to-sbt-native-packager:9dc58615474f52923afa41a9d5040e47">Linking SBT Docker to SBT Native Packager</h3>
+
+<p>Because we&#8217;re relying on Native Packager to assemble our runtime dependencies we need to ensure the native packager files are &#8220;staged&#8221; before docker tries to upload them. Luckily it&#8217;s easy to create dependencies with SBT. We simply have docker depend on the native packager&#8217;s stage task:</p>
+
+<pre class="syntax scala">docker &lt;&lt;= docker.dependsOn(com.typesafe.sbt.packager.universal.Keys.stage.in(Compile))
+</pre>
+
+<h3 id="adding-additional-files:9dc58615474f52923afa41a9d5040e47">Adding Additional Files</h3>
+
+<p>The last step is to add our start script to the native packager build. Native packager has a <code>mappings</code> key where we can add files to our package. I kept the start script in the docker folder and I want it in the bin directory within the docker container. Here&rsquo;s the mapping:</p>
+
+<pre class="syntax scala">mappings in Universal += baseDirectory.value / "docker" / "start" -> "bin/start"
+</pre>
+
+<p>With this setting everything will be assembled as needed and we can package to any type we want. Setting up a cluster with docker is <a href="http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/">the same as before</a>:</p>
+
+<pre class="syntax bash">docker run --name seed -i -t clustering
+docker run --name c1 -link seed:seed -i -t clustering
+</pre>
+
+<p>It&rsquo;s interesting to note SBT Native Packager also has docker support, but it&rsquo;s undocumented and doesn&rsquo;t allow granular control over the Dockerfile output. Until SBT Native Packager fully supports docker output the SBT Docker plugin is a nice tool to package your sbt-based apps.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

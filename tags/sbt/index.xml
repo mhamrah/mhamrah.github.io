@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/sbt/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2014-12-07 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Go Style Directory Layout for Scala with SBT</title>
+          <link>http://blog.michaelhamrah.com/2014/12/go-style-directory-layout-for-scala-with-sbt/</link>
+          <pubDate>Sun, 07 Dec 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/12/go-style-directory-layout-for-scala-with-sbt/</guid>
+          <description>&lt;p&gt;I&amp;#8217;ve come to appreciate Go&amp;#8217;s directory layout where &lt;em&gt;test&lt;/em&gt; and &lt;em&gt;build&lt;/em&gt; files are located side-by-side. This promotes a conscience testing priority. It also enables easy navigation to usage of a particular class/trait/object along with the implementation. After reading through the &lt;a href=&#34;http://www.scala-sbt.org/0.13.2/docs/Howto/defaultpaths.html&#34;&gt;getting-better-every-day sbt documentation&lt;/a&gt; I noticed you can easily change default directories for sources, alleviating the folder craziness of default projects. Simply add a few lines to your build.sbt:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax scala&#34;&gt;//Why do I need a Scala folder? I don&#39;t!
+//Set the folder for Scala sources to the root &#34;src&#34; folder
+scalaSource in Compile := baseDirectory.value / &#34;src&#34;
+
+//Do the same for the test configuration. 
+scalaSource in Test := baseDirectory.value / &#34;src&#34;
+
+//We&#39;ll suffix our test files with _test, so we can exclude
+//then from the main build, and keep the HiddenFileFilter
+excludeFilter in (Compile, unmanagedSources) := HiddenFileFilter || &#34;*_test.scala&#34;
+
+//And we need to re-include them for Tests 
+excludeFilter in (Test, unmanagedSources) := HiddenFileFilter
+&lt;/pre&gt;
+
+&lt;p&gt;Although breaking from the norm of java-build tools may cause confusion, if you like the way something works, go for it; don&amp;#8217;t chain yourself to past practices. I never understood the class-to-file relationship of java sources, and I absolutely &lt;em&gt;hate&lt;/em&gt; navigating one-item folders. Thankfully Scala improved the situation, but the sbt maven-like defaults are still folder-heavy. IDEs make the situation easier, but I prefer simple text editors; and to paraphrase Dan North, &amp;#8220;Your fancy IDE is a painkiller for your shitty language&amp;#8221;.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Clustering Akka Applications with Docker — Version 3</title>
+          <link>http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/</link>
+          <pubDate>Thu, 27 Nov 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/</guid>
+          <description>&lt;p&gt;The SBT Native Packager plugin now offers first-class Docker support for building Scala based applications. My last post involved combining SBT Native Packager, SBT Docker, and a custom start script to launch our application. We can simplify the process in two ways:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Although the SBT Docker plugin allows for better customization of Dockerfiles it&amp;#8217;s unnecessary for our use case. SBT Native Packager is enough.&lt;/li&gt;
+&lt;li&gt;A separate start script was required for IP address inspection so TCP traffic can be routed to the actor system. I recently contributed an update for &lt;a href=&#34;https://github.com/sbt/sbt-native-packager/pull/411&#34;&gt;better ENTRYPOINT support within SBT Native Packager&lt;/a&gt; which gives us options for launching our app in a container.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;With this PR we can now add our IP address inspection snippet to our build removing the need for extraneous files. We could have added this snippet to &lt;code&gt;bashScriptExtraDefines&lt;/code&gt; but that is a global change, requiring &lt;code&gt;/sbin/ifconfig eth0&lt;/code&gt; to be available wherever the application is run. This is definitely infrastructure bleed-out and must be avoided.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/mhamrah/akka-docker-cluster-example&#34;&gt;The new code, on GitHub,&lt;/a&gt; uses a shell with ENTRYPOINT exec mode to set our environment variable before launching the application:&lt;/p&gt;
+
+&lt;pre class=&#34;code scala&#34;&gt;dockerExposedPorts in Docker := Seq(1600)
+
+dockerEntrypoint in Docker := Seq(&#34;sh&#34;, &#34;-c&#34;, &#34;CLUSTER_IP=`/sbin/ifconfig eth0 | grep &#39;inet addr:&#39; | cut -d: -f2 | awk &#39;{ print $1 }&#39;` bin/clustering $*&#34;)
+&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;$*&lt;/code&gt; allows for command-line parameters to be honored when launching the container. Because the app leverages the Typesafe Config library we can also set via Java system properties:&lt;/p&gt;
+
+&lt;pre class=&#34;code bash&#34;&gt;docker run --rm -i -t --name seed mhamrah/clustering:0.3 -Dclustering.cluster.name=example-cluster
+&lt;/pre&gt;
+
+&lt;p&gt;Launching the cluster is exactly as before:&lt;/p&gt;
+
+&lt;pre class=&#34;code bash&#34;&gt;docker run --rm -d --name seed mhamrah/clustering:0.3
+docker run --rm -d --name member1 --link seed:seed mhamrah/clustering:0.3
+&lt;/pre&gt;
+
+&lt;p&gt;For complex scripts it may be too messy to overload the ENTRYPOINT sequence. For those cases simply bake your own docker container as a base and use the ENTRYPOINT approach to call out to your script. SBT Native Packager will still upload all your dependencies and its bash script to &lt;code&gt;/opt/docker/bin/&amp;lt;your app&amp;gt;&lt;/code&gt;. The Docker &lt;code&gt;WORKDIR&lt;/code&gt; is set to &lt;code&gt;/opt/docker&lt;/code&gt; so you can drop the &lt;code&gt;/opt/docker&lt;/code&gt; as above.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Accelerate Team Development with your own SBT Plugin Defaults</title>
+          <link>http://blog.michaelhamrah.com/2014/10/accelerate-team-development-with-your-own-sbt-plugin-defaults/</link>
+          <pubDate>Mon, 13 Oct 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/10/accelerate-team-development-with-your-own-sbt-plugin-defaults/</guid>
+          <description>
+
+&lt;p&gt;My team manages several Scala services built with SBT. The setup of these projects are very similar, from included plugins, dependencies, and build-and-deploy configurations. At first we simply copied and paste these settings across projects but as the number of services increased the hunt-and-change strategy became laborious. Time to optimize.&lt;/p&gt;
+
+&lt;p&gt;I heard of a few teams that created their own sbt plugins for default settings but couldn&amp;#8217;t find information on how this looked. The recent change to &lt;a href=&#34;http://www.scala-sbt.org/0.13/docs/Plugins.html&#34;&gt;AutoPlugins&lt;/a&gt; also didn&amp;#8217;t help existing documentation. I found Will Sargent&amp;#8217;s excellent post on &lt;a href=&#34;tersesystems.com/2014/06/24/writing-an-sbt-plugin&#34;&gt;writing an sbt plugin&lt;/a&gt; helpful but it wasn&amp;#8217;t what I was looking for. I want a plugin which included other plugins and set defaults for those plugins. The goal is to &amp;#8220;drop in&amp;#8221; this plugin and automatically have a set of defaults: using &lt;a href=&#34;https://github.com/sbt/sbt-native-packager&#34;&gt;sbt-native-packager&lt;/a&gt;, a configured &lt;a href=&#34;https://github.com/sbt/sbt-release&#34;&gt;sbt-release&lt;/a&gt; and our nexus artifact server good-to-go.&lt;/p&gt;
+
+&lt;h2 id=&#34;file-locations:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;File Locations&lt;/h2&gt;
+
+&lt;p&gt;As an sbt refresher anything in the &lt;code&gt;project/&lt;/code&gt; folder relates to the build. If you want to develop your own plugin just for the current project you can simply add your .scala files to &lt;code&gt;project/&lt;/code&gt;. If you want to develop your own plugin as a standalone project you put those files in the &lt;code&gt;src/&lt;/code&gt; directory as usual. I mistakenly thought an sbt plugin project only required files in the &lt;code&gt;project/&lt;/code&gt; folder. Silly me.&lt;/p&gt;
+
+&lt;h2 id=&#34;sbt-builds:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;SBT Builds&lt;/h2&gt;
+
+&lt;p&gt;It&amp;#8217;s important to note that the project folder&amp;#8211;and the build itself&amp;#8211;is separate from how your source code is built. SBT uses Scala 2.10, so anything in the &lt;code&gt;project/&lt;/code&gt; folder will be built against 2.10 even if your project is set to 2.11. Thus when developing your plugin use Scala 2.10 to match sbt.&lt;/p&gt;
+
+&lt;h2 id=&#34;dependencies:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;Dependencies&lt;/h2&gt;
+
+&lt;p&gt;Usually when you include a plugin you specify it in the &lt;code&gt;project/plugins.sbt&lt;/code&gt;, right? But what if you&amp;#8217;re developing a plugin that uses other plugins? Your code is in &lt;code&gt;src/&lt;/code&gt; so it won&amp;#8217;t pick up anything in &lt;code&gt;project/&lt;/code&gt; as that only relates to your build. So you need to add whatever plugin you want as a &lt;code&gt;dependency&lt;/code&gt; in your build so its available in within your project, just like any other dependency. But there&amp;#8217;s a trick with sbt plugins. Originally I had the usual in &lt;code&gt;build.sbt&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;libraryDependencies += &amp;quot;com.typesafe.sbt&amp;quot; % &amp;quot;sbt-native-packager&amp;quot; % &amp;quot;0.8.0-M2&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;but kept getting unresolved dependency errors. This made no sense to me as the plugin is clearly available. It turns out if you want to include an sbt plugin as a project dependency you need to specify it in a special way, explicitly setting the sbt and scala version you want:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;libraryDependencies += sbtPluginExtra(&amp;quot;com.typesafe.sbt&amp;quot; % &amp;quot;sbt-native-packager&amp;quot; % &amp;quot;0.8.0-M2&amp;quot;, sbtV = &amp;quot;0.13&amp;quot;, scalaV = &amp;quot;2.10&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With that, your dependency will resolve and you can use include anything under sbt-native-packager when developing your plugin.&lt;/p&gt;
+
+&lt;h2 id=&#34;specifying-your-plugin-defaults:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;Specifying your Plugin Defaults&lt;/h2&gt;
+
+&lt;p&gt;With your separate project and dependencies satisfied you can now create your plugin which uses other plugins and defaults settings specific to you. This part is easy and follows the usual documentation. Declare an object which extends AutoPlugin and override &lt;code&gt;projectSettings&lt;/code&gt; or &lt;code&gt;buildSettings&lt;/code&gt;. This class looks exactly like it would if you were setting things manually in your build.&lt;/p&gt;
+
+&lt;p&gt;For instance, here&amp;#8217;s how we&amp;#8217;d set the &lt;code&gt;java_server&lt;/code&gt; archetype as the default in our plugin:&lt;/p&gt;
+
+&lt;pre class=&#34;code scala&#34;&gt;package com.hamrah.plugindefaults
+
+import sbt._
+import Keys._
+import com.typesafe.sbt.SbtNativePackager._
+
+object PluginDefaults extends AutoPlugin {
+ override lazy val projectSettings = packageArchetype.java_server
+}
+&lt;/pre&gt;
+
+&lt;p&gt;You can concatenate any other settings you want to project settings, like scalaVersion, scalacOptions, etc.&lt;/p&gt;
+
+&lt;h2 id=&#34;using-the-plugin:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;Using the Plugin&lt;/h2&gt;
+
+&lt;p&gt;You can build and publish your plugin to a repo and include it like you would any other plugin. Or you can include it locally for testing by putting this in your sbt file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lazy val root = project.in( file(&amp;quot;.&amp;quot;) ).dependsOn( defaultPluginSettings )
+lazy val defaultPluginSettings = uri(&amp;quot;file:///&amp;lt;full path to your plugin directory&amp;gt;&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Your default settings can be explicitly added to your project if not automatically imported with a simple:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;PluginDefaults.projectSettings
+//or
+settings = PluginDefaults.projectSettings // in a .scala file
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;in-closing:abbf4ae7a81d9cf247973d7e1dba3596&#34;&gt;In Closing&lt;/h2&gt;
+
+&lt;p&gt;As an FYI there could be better ways to do this. A lot of the above was trial and error, but works. If you have feedback or better suggestions please leave a comment!&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Akka Clustering with SBT-Docker and SBT-Native-Packager</title>
+          <link>http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/</link>
+          <pubDate>Thu, 19 Jun 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/</guid>
+          <description>
+
+&lt;p&gt;Since my last post on &lt;a href=&#34;http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/&#34;&gt;akka clustering with docker containers&lt;/a&gt; a new plugin, &lt;a href=&#34;https://github.com/marcuslonnberg/sbt-docker&#34;&gt;SBT-Docker&lt;/a&gt;, has emerged which allows you to build docker containers directly from SBT. I&amp;#8217;ve updated my &lt;a href=&#34;https://github.com/mhamrah/akka-docker-cluster-example&#34;&gt;akka-docker-cluster-example&lt;/a&gt; to leverage these two plugins for a smoother docker build experience.&lt;/p&gt;
+
+&lt;h2 id=&#34;one-step-build:9dc58615474f52923afa41a9d5040e47&#34;&gt;One Step Build&lt;/h2&gt;
+
+&lt;p&gt;The approach is basically the same as the previous example: we use SBT Native Packager to gather up the appropriate dependencies, upload them to the docker container, and create the entrypoint. I decided to keep the start script approach to &amp;#8220;prep&amp;#8221; any environment variables required before launching. With SBT Docker linked to Native Packager all you need to do is fire&lt;/p&gt;
+
+&lt;pre class=&#34;brush: plain; title: ; notranslate&#34; title=&#34;&#34;&gt;docker
+&lt;/pre&gt;
+
+&lt;p&gt;from sbt and you have a docker container ready to launch or push.&lt;/p&gt;
+
+&lt;h2 id=&#34;understanding-the-build:9dc58615474f52923afa41a9d5040e47&#34;&gt;Understanding the Build&lt;/h2&gt;
+
+&lt;p&gt;SBT Docker requires a dockerfile defined in your build. I want to pass in artifacts from native packager to docker. This allows native packager to focus on application needs while docker is focused on docker. Docker turns into just another type of package for your app.&lt;/p&gt;
+
+&lt;p&gt;We can pass in arguments by mapping the appropriate parameters to a function which returns the Dockerfile. In build.spt:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax scala&#34;&gt;// Define a dockerfile, using parameters from native-packager
+dockerfile in docker &amp;lt;&amp;lt;= (name, stagingDirectory in Universal) map {
+  case(appName, stageDir) =&gt;
+    val workingDir = s&#34;/opt/${appName}&#34;
+    new Dockerfile {
+      //use java8 base box
+      from(&#34;relateiq/oracle-java8&#34;)
+      maintainer(&#34;Michael Hamrah&#34;)
+      //expose our akka port
+      expose(1600)
+      //upload native-packager staging directory files
+      add(stageDir, workingDir)
+      //make files executable
+      run(&#34;chmod&#34;, &#34;+x&#34;, s&#34;/opt/${appName}/bin/${appName}&#34;)
+      run(&#34;chmod&#34;, &#34;+x&#34;, s&#34;/opt/${appName}/bin/start&#34;)
+      //set working directory
+      workDir(workingDir)
+      //entrypoint into our start script
+      entryPointShell(s&#34;bin/start&#34;, appName, &#34;$@&#34;)
+    }
+}
+&lt;/pre&gt;
+
+&lt;h3 id=&#34;linking-sbt-docker-to-sbt-native-packager:9dc58615474f52923afa41a9d5040e47&#34;&gt;Linking SBT Docker to SBT Native Packager&lt;/h3&gt;
+
+&lt;p&gt;Because we&amp;#8217;re relying on Native Packager to assemble our runtime dependencies we need to ensure the native packager files are &amp;#8220;staged&amp;#8221; before docker tries to upload them. Luckily it&amp;#8217;s easy to create dependencies with SBT. We simply have docker depend on the native packager&amp;#8217;s stage task:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax scala&#34;&gt;docker &amp;lt;&amp;lt;= docker.dependsOn(com.typesafe.sbt.packager.universal.Keys.stage.in(Compile))
+&lt;/pre&gt;
+
+&lt;h3 id=&#34;adding-additional-files:9dc58615474f52923afa41a9d5040e47&#34;&gt;Adding Additional Files&lt;/h3&gt;
+
+&lt;p&gt;The last step is to add our start script to the native packager build. Native packager has a &lt;code&gt;mappings&lt;/code&gt; key where we can add files to our package. I kept the start script in the docker folder and I want it in the bin directory within the docker container. Here&amp;rsquo;s the mapping:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax scala&#34;&gt;mappings in Universal += baseDirectory.value / &#34;docker&#34; / &#34;start&#34; -&gt; &#34;bin/start&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;With this setting everything will be assembled as needed and we can package to any type we want. Setting up a cluster with docker is &lt;a href=&#34;http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/&#34;&gt;the same as before&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;docker run --name seed -i -t clustering
+docker run --name c1 -link seed:seed -i -t clustering
+&lt;/pre&gt;
+
+&lt;p&gt;It&amp;rsquo;s interesting to note SBT Native Packager also has docker support, but it&amp;rsquo;s undocumented and doesn&amp;rsquo;t allow granular control over the Dockerfile output. Until SBT Native Packager fully supports docker output the SBT Docker plugin is a nice tool to package your sbt-based apps.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

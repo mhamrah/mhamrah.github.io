@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/fleet/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2015-04-10 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Easy Scaling with Fleet and CoreOS</title>
+          <link>http://blog.michaelhamrah.com/2015/04/easy-scaling-with-fleet-and-coreos/</link>
+          <pubDate>Fri, 10 Apr 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/04/easy-scaling-with-fleet-and-coreos/</guid>
+          <description>&lt;p&gt;One element of a successful production deployment is the ability to easily scale the number of instances your process is running. Many cloud providers, both on the PaaS and IaaS front, offer such functionality: AWS Auto Scaling Groups, Heroku&amp;#8217;s process size, Marathon&amp;#8217;s instance count. I was hoping for something similar in the CoreOS world. &lt;a href=&#34;http://deis.io&#34;&gt;Deis&lt;/a&gt;, the PaaS-on-CoreOS service, offers Heroku-like scaling, but I don&amp;#8217;t want to commit to the Deis layer nor its build pack approach (for no other reason than personal preference). Fleet, CoreOS&amp;#8217;s distributed systemd service, offers service templating, but you cannot say &amp;#8220;now run three instances of service x&amp;#8221;. Being programmers we can do whatever we want, and luckily, we&amp;#8217;re only a little bash script away from replicating the &amp;#8220;scale to x instances&amp;#8221; functionality of popular providers.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://blog.michaelhamrah.com/2015/03/deploying-docker-containers-on-coreos-with-the-fleet-api/&#34;&gt;You&amp;#8217;ll want to enable the Fleet HTTP Api&lt;/a&gt; for this script to work. You can easily port this to the Fleet CLI, but I much prefer the http api because it doesn&amp;#8217;t involve ssh, and provides more versatility into how and where you run the script.&lt;/p&gt;
+
+&lt;p&gt;Conceptually the flow is straightforward:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Given a process we want to set the number of running instances to some &lt;code&gt;desired_count&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;If &lt;code&gt;desired_count&lt;/code&gt; is less than &lt;code&gt;current_count&lt;/code&gt;, scale down.&lt;/li&gt;
+&lt;li&gt;If &lt;code&gt;desired_count&lt;/code&gt; is more than &lt;code&gt;current_count&lt;/code&gt;, scale up.&lt;/li&gt;
+&lt;li&gt;If they are the same, do nothing.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Fleet offers service templating so you can have a service unit named &lt;code&gt;my_awesome_app@.service&lt;/code&gt; with specific copies named &lt;code&gt;my_awesome_app@1, my_awesome_app@2, my_awesome_app@N&lt;/code&gt; representing specific running instances. Currently Fleet doesn&amp;#8217;t offer a way to group these related services together but we can easily pattern match on the service name to control specific running instances. The steps are straightforward:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Query the Fleet API for all instances&lt;/li&gt;
+&lt;li&gt;Filter by all services matching the specified name&lt;/li&gt;
+&lt;li&gt;See how many instances we have running for the given service&lt;/li&gt;
+&lt;li&gt;Destroy or create instances using specific service names until we match the &lt;code&gt;desired_size&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All of these steps are easily achievable with Fleet&amp;#8217;s HTTP Api (or fleetctl) and a little bash. To give our script some context, let&amp;#8217;s start with how we want to use the script. Ideally it will look like this:&lt;/p&gt;
+
+&lt;pre class=&#34;toolbar-overlay:false syntax bash&#34;&gt;./scale-fleet my_awesome_app 5
+&lt;/pre&gt;
+
+&lt;p&gt;First, let&amp;#8217;s set up our script &lt;code&gt;scale-fleet&lt;/code&gt; and set the command line arguments:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;#!/bin/bash
+
+FLEET_HOST=&amp;lt;YOUR FLEET API HOST&gt;
+
+# You may want to consider cli flags 
+SERVICE_NAME=$1
+DESIRED_SIZE=$2
+&lt;/pre&gt;
+
+&lt;p&gt;Next we want to query the Fleet API and filter on all units with a prefix of &lt;code&gt;SERVICE_NAME&lt;/code&gt; which have a process number. This will give us an array of units matching &lt;code&gt;my_awesome_app@1.service&lt;/code&gt;, not the base template of &lt;code&gt;my_awesome_app@.service&lt;/code&gt;. These are the units we will either add to or destroy as appropriate. The latest 1.5 version of jq supports regex expressions, but as of this writing 1.4 is the common release version, so we&amp;#8217;ll parse the json response with jq, and then filter with grep. Finally some bash trickery will parse the result into an array we can loop through later.&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;# Curls the API and filter on a specific pattern, storing results in an array
+INSTANCES=($(curl -s $FLEET_HOST/fleet/v1/units | jq &#34;.units[].name | select(startswith(\&#34;$SERVICE@\&#34;))&#34; | grep &#39;\w@\d\.service&#39;))
+
+# A bash trick to get size of array
+CURRENT_SIZE=${#INSTANCES[@]}
+echo &#34;Current instance count for $SERVICE is: $CURRENT_SIZE&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;Next let&amp;#8217;s scaffold the various scenarios for matching &lt;code&gt;CURRENT_SIZE&lt;/code&gt; with &lt;code&gt;DESIRED_SIZE&lt;/code&gt;, which boils down to some if statements.&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;if [[ $DESIRED_SIZE = $CURRENT_SIZE ]]; then
+  echo &#34;doing nothing, current size is equal desired size&#34;
+elif [[ $DESIRED_SIZE &amp;lt; $CURRENT_SIZE ]]; then
+  echo &#34;going to scale down instance $CURRENT_SIZE&#34;
+  # More stuff here
+else 
+  echo &#34;going to scale up to $DESIRED_SIZE&#34;
+  # More stuff here
+fi
+&lt;/pre&gt;
+
+&lt;p&gt;When the desired size equals the current size we don&amp;rsquo;t need to do anything. Scaling down is easy, we simply loop, deleting the specific instance, until the desired and current states match. You can drop in the following snippet for scaling down:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;until [[ $DESIRED_SIZE = $CURRENT_SIZE ]]; do
+    curl -X DELETE $FLEET_HOST/fleet/v1/units/${SERVICE}@${CURRENT_SIZE}.service
+
+    let CURRENT_SIZE = CURRENT_SIZE-1
+  done
+  echo &#34;new instance count is $CURRENT_SIZE&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;Scaling up is a bit trickier. Unfortunately you can&amp;rsquo;t simply create a new unit from a template like you can with the fleetctl CLI. But you can do exactly what the fleetctl does: copy the body from the base template and create a new one with the specific full unit name. With the body we can loop, creating instances, until our current size matches the desired size. Let&amp;rsquo;s walk it through step-by-step:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;echo &#34;going to scale up to $desired_size&#34;
+ # Get payload by parsing the options field from the base template
+ # And build our new payload for PUTing later
+ payload=`curl -s $FLEET_HOST/fleet/v1/units/${SERVICE}@.service | jq &#39;. | { &#34;desiredState&#34;:&#34;launched&#34;, &#34;options&#34;: .options }&#39;`
+
+ #Loop, PUTing our new template with the appropriate name
+ until [[ $DESIRED_SIZE = $CURRENT_SIZE ]]; do
+   let current_size=current_size+1
+
+   curl -X PUT -d &#34;${payload}&#34; -H &#39;Content-Type: application/json&#39; $FLEET_HOST/fleet/v1/units/${SERVICE}@${CURRENT_SIZE}.service 
+ done
+ echo &#34;new instance count is $CURRENT_SIZE&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;With our script in place we can scale away:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;# Scale up to 5 instances
+$ ./scale-fleet my_awesome_app 5
+
+# Scale down
+$ ./scale-fleet my_awesome_app 3
+&lt;/pre&gt;
+
+&lt;p&gt;Because this all comes down to a simple bash script you can easily run it from a variety of places. It can be part of a parameterized Jambi job to scale manually with a UI, part of an &lt;a href=&#34;http://github.com/hashicorp/envconsul&#34;&gt;envconsul&lt;/a&gt; setup with a key set in &lt;a href=&#34;consul.io&#34;&gt;Consul&lt;/a&gt;, or it can fit into a larger script that reads performance characteristics from some monitoring tool and reacts accordingly. You can also combine this with AWS Cloudformation or another cloud provider: if you&amp;rsquo;re CPU&amp;rsquo;s hit a certain threshold, you can scale the specific worker role running your instances, and have your &lt;code&gt;desired_size&lt;/code&gt; be some factor of that number.&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ve been on a bash kick lately. It&amp;rsquo;s a versatile scripting language that easily portable. The syntax can be somewhat mystic, but as long as you have a shell, you have all you need to run your script.&lt;/p&gt;
+
+&lt;p&gt;The final, complete script is here:&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Deploying Docker Containers on CoreOS with the Fleet API</title>
+          <link>http://blog.michaelhamrah.com/2015/03/deploying-docker-containers-on-coreos-with-the-fleet-api/</link>
+          <pubDate>Tue, 17 Mar 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/03/deploying-docker-containers-on-coreos-with-the-fleet-api/</guid>
+          <description>
+
+&lt;p&gt;I&amp;#8217;ve been spending a lot more time with CoreOS in search of a docker-filled utopian PaaS dreams. I haven&amp;#8217;t found quite what I&amp;#8217;m looking for, but with some bash scripting, a little http, good tools and a lotta love I&amp;#8217;m coming close. There are no shortage of solutions to this problem, and honestly, nobody&amp;#8217;s really figured this out yet in an easy, fluid, turn-key type of way. You&amp;#8217;ve probably read about CoreOS, Mesos, Marathon, Kubernetes&amp;#8230; maybe even dug into Deis, Flynn, Shipyard. You&amp;#8217;ve spun up a cluster, and are like&amp;#8230; This is great, now what.&lt;/p&gt;
+
+&lt;p&gt;What I want is to go from an app on my laptop to running in a production environment with minimal fuss. I don&amp;#8217;t want to re-invent the wheel; there are too many people solving this problem in a similar way. I like CoreOS because it provides a bare-bones docker runtime with a solid set of low-level tools. Plus, a lot of people I&amp;#8217;m close with have been using it, so the cross-pollination of ideas helps overcome some hurdles.&lt;/p&gt;
+
+&lt;p&gt;One of these hurdles is how you launch containers on a cluster. I really like &lt;a href=&#34;https://github.com/mesosphere/marathon&#34;&gt;Marathon&amp;#8217;s&lt;/a&gt; http api for Mesos, but I also like the simplicity of CoreOS as a platform. CoreOS&amp;#8217;s distributed init system is &lt;a href=&#34;https://github.com/coreos/fleet&#34;&gt;Fleet&lt;/a&gt;, which leverages systemd for running a process on a CoreOS node (it doesn&amp;#8217;t have to be a container). It has some nice features, but having to constantly write similar systemd files and run fleetctl to manage containers is somewhat annoying.&lt;/p&gt;
+
+&lt;p&gt;Turns out, &lt;a href=&#34;https://github.com/coreos/fleet/blob/master/Documentation/api-v1.md&#34;&gt;Fleet has an http API&lt;/a&gt;. It&amp;#8217;s not quite as nice as Marathon&amp;#8217;s; you can&amp;#8217;t easily scale to N number of instances, but it does come close. There are a few examples of using the API to launch containers, but I wanted a more end-to-end solution that eliminated boilerplate.&lt;/p&gt;
+
+&lt;h2 id=&#34;activate-the-fleet-api:f1075c253a77011bd480830af8403bf8&#34;&gt;Activate the Fleet API&lt;/h2&gt;
+
+&lt;p&gt;The Fleet API isn&amp;#8217;t enabled out-of-the-box. That makes sense as the API is currently unsecured, so you shouldn&amp;#8217;t enable it unless you have the proper VPC set up. &lt;a href=&#34;https://coreos.com/docs/launching-containers/config/fleet-deployment-and-configuration/&#34;&gt;CoreOS has good documentation on getting the API running&lt;/a&gt;. For a quick start you can drop the following yaml snippet into your cloudconfig&amp;#8217;s units section:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax yaml&#34;&gt;- name: fleet.socket
+  drop-ins:
+    - name: 30-ListenStream.conf
+      content: |
+        [Socket]
+        ListenStream=8080
+        Service=fleet.service
+        [Install]
+        WantedBy=sockets.target
+&lt;/pre&gt;
+
+&lt;h2 id=&#34;exploring-the-api:f1075c253a77011bd480830af8403bf8&#34;&gt;Exploring the API&lt;/h2&gt;
+
+&lt;p&gt;With the API enabled, it&amp;#8217;s time to get to work. The &lt;a href=&#34;https://github.com/coreos/fleet/blob/master/Documentation/api-v1.md&#34;&gt;API has some simple documentation&lt;/a&gt; but offers enough to get started. I personally like the minimal approach, although I wish it was more feature-rich (it is v1, and better than nothing).&lt;/p&gt;
+
+&lt;p&gt;You can do a lot with curl, bash and jq. First, let&amp;#8217;s see what&amp;#8217;s running. All these examples assume you have a FLEET_ENDPOINT environment variable set with the host and port:&lt;/p&gt;
+
+&lt;p&gt;On a side note, environment variables are key to reuse the same functionality across environments. In my opinion, they aren&amp;#8217;t used nearly enough. Check out the &lt;a href=&#34;http://12factor.net/config&#34;&gt;twelve-factor app&amp;#8217;s config section&lt;/a&gt; to understand the importance of environment variables.&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -s $FLEET_ENDPOINT/fleet/v1/units | jq &#39;.units[] | { name: .name, currentState: .currentState}&#39;
+&lt;/pre&gt;
+
+&lt;p&gt;Sure, you can get the same data by running &lt;code&gt;fleetctl list-units&lt;/code&gt;, but the http command doesn&amp;#8217;t involve ssh, which can be a plus if you have a protected network, are are running from an application or CI server.&lt;/p&gt;
+
+&lt;h2 id=&#34;creating-containers:f1075c253a77011bd480830af8403bf8&#34;&gt;Creating Containers&lt;/h2&gt;
+
+&lt;p&gt;Instead of crafting a fleet template and running &lt;code&gt;fleetctl start sometemplate&lt;/code&gt; , we want to launch new units via http. This involves PUTting a resource to the /units/ endpoint under the name of your unit (it&amp;#8217;s actually /fleet/v1/units, it took me forever to find the path prefix). The Fleet API will build a corresponding systemd unit from the json payload, and the content closely corresponds to what you can do with &lt;a href=&#34;https://coreos.com/docs/launching-containers/launching/fleet-unit-files/&#34;&gt;a fleet unit file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The schema takes in a &lt;code&gt;desiredState&lt;/code&gt; and an array of &lt;code&gt;options&lt;/code&gt; which specify the &lt;code&gt;section&lt;/code&gt;, &lt;code&gt;name&lt;/code&gt;, and &lt;code&gt;value&lt;/code&gt; for each line. Most Fleet templates follow a similar pattern as exemplified with &lt;a href=&#34;https://coreos.com/docs/launching-containers/launching/launching-containers-fleet/&#34;&gt;the launching containers with Fleet guide&lt;/a&gt;:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Cleanup potentially running containers&lt;/li&gt;
+&lt;li&gt;Pull the container&lt;/li&gt;
+&lt;li&gt;Run the container&lt;/li&gt;
+&lt;li&gt;Define X-Fleet parameters, like conflicts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Again we&amp;#8217;ll use curl, but writing json on the command line is really annoying. So let&amp;#8217;s create a &lt;code&gt;unit.json&lt;/code&gt; for our payload defining the tasks for CoreOS&amp;#8217;s apache container:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;{
+  &#34;desiredState&#34;: &#34;launched&#34;,
+  &#34;options&#34;: [
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;-/usr/bin/docker kill %p-i%&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;-/usr/bin/docker rm %p-%i&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker pull coreos/%p&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStart&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker run --rm --name %pi-%i -p 80 coreos/%p /usr/sbin/apache2ctl -D FOREGROUND&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStop&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker stop %p-%i&#34;
+    },
+    {
+      &#34;section&#34;: &#34;X-Fleet&#34;,
+      &#34;name&#34;: &#34;Conflicts&#34;,
+      &#34;value&#34;: &#34;%p@*.service&#34;
+    }
+  ]
+}
+&lt;/pre&gt;
+
+&lt;p&gt;There&amp;#8217;s a couple of things of note in this snippet:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We&amp;#8217;re adding a &amp;#8220;-&amp;#8221; in front of the docker kill and docker rm commands of the ExecStartPre tasks. This tells to Fleet to continue if there&amp;#8217;s an error; these tasks are precautionary to remove an existing phantom container if it will conflict with the newly launched one.&lt;/li&gt;
+&lt;li&gt;We&amp;#8217;re using Fleet&amp;#8217;s systemd placeholders %p and %i to replace actual values in our template with values from the template name. This provides a level of agnosticism in our template; we can easily reuse this template to launch different containers by changing the name. Unfortunately this doesn&amp;#8217;t quite work in our example because it&amp;#8217;s apache specific, but if you were running a container with an entry point command specified, it would work fine. You&amp;#8217;ll also want to manage containers under your own namespace, either in a private or public registry.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We can launch this file with curl:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -d @unit.json -w &#34;%{http_code}&#34; -H &#39;Content-Type: application/json&#39; $FLEETCTL_ENDPOINT/fleet/v1/units/apache@1.service
+&lt;/pre&gt;
+
+&lt;p&gt;If all goes well you&amp;#8217;ll get back a &lt;code&gt;201 Created&lt;/code&gt; response. Try running the &lt;code&gt;list units&lt;/code&gt; curl command to see your container task.&lt;/p&gt;
+
+&lt;p&gt;We can run &lt;code&gt;fleetctl cat apache@1&lt;/code&gt; to view the generated systemd unit:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;[Service]
+ExecStartPre=-/usr/bin/docker kill %p-%I
+ExecStartPre=-/usr/bin/docker rm %p-%i
+ExecStartPre=/usr/bin/docker pull coreos/%p
+ExecStart=/usr/bin/docker run --rm --name %pi-%i -p 80 coreos/%p /usr/sbin/apache2ctl -D FOREGROUND
+ExecStop=/usr/bin/docker stop %p-%i
+
+[X-Fleet]
+Conflicts=%p@*.service
+&lt;/pre&gt;
+
+&lt;p&gt;Want to launch a second task? Just post again, but change the instance number from 1 to 2:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -d @unit.json -w &#34;%{http_code}&#34; -H &#39;Content-Type: application/json&#39; $FLEETCTL_ENDPOINT/fleet/v1/units/apache@2.service
+&lt;/pre&gt;
+
+&lt;p&gt;When you&amp;#8217;re done with your container, you can simple issue a delete command to tear it down:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -X DELETE -w &#34;%{http_code}&#34; $FLEET_ENDPOINT/fleet/v1/units/apache@1.service
+&lt;/pre&gt;
+
+&lt;h2 id=&#34;deploying-new-versions:f1075c253a77011bd480830af8403bf8&#34;&gt;Deploying New Versions&lt;/h2&gt;
+
+&lt;p&gt;Launching individual containers is great, but for continuous delivery, you need deploy new versions with no downtime. The example above used systemd&amp;#8217;s placeholders for providing the name of the container, but left the apache commands in place. Let&amp;#8217;s use another CoreOS example container from the &lt;a href=&#34;https://coreos.com/blog/zero-downtime-frontend-deploys-vulcand/&#34;&gt;zero downtime frontend deploys&lt;/a&gt; blog post. This &lt;code&gt;coreos/example&lt;/code&gt; container uses an entrypoint and tagged docker versions to go from a v1 to a v2 version of the app. Instead of creating multiple, similar, fleet unit files like that blog post, can we make an agnostic http call that works across versions? Yes we can.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s conceptually figure out how this would work. We don&amp;#8217;t want to change the json payload across versions, so the body must be static. We could use some form of templating or find-and-replace, but let&amp;#8217;s try and avoid that complexity for now. Can we make due with the options provided us? We know that the %p parameter lets us pass in the template name to our body. So if we can specify the name and version of the container we want to launch in the name of the unit file we PUT, we&amp;#8217;re good to go.&lt;/p&gt;
+
+&lt;p&gt;So we want to:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -d @unit.json -w &#34;%{http_code&#34;} -H &#39;Content-Type: application/json&#39; $FLEETCTL_ENDPOINT/fleet/v1/units/example:1.0.0@1.service
+&lt;/pre&gt;
+
+&lt;p&gt;I tried this with the above snippet, but replaced the pull and run commands above with the following:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;{
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStart&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker run --rm --name %p-%i -p 80 coreos/%p&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStop&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker stop %p-%i&#34;
+    },
+&lt;/pre&gt;
+
+&lt;p&gt;Unfortunately, this didn&amp;#8217;t work because the colon, :, in example:1.0.0 make the name invalid for a container. I could forego the name, but then I wouldn&amp;#8217;t be able to easily stop, kill or rm the container. So we need to massage the %p parameter a little bit. Luckily, bash to the rescue.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, systemd is a little wonky when it comes to scripting in a unit file. It&amp;#8217;s relatively hard to create and access environment variables, you need fully-qualified paths, and multiple lines for arbitrary scripts are discouraged. After googling how exactly to do bash scripting in a systemd file, or why an environment variable wasn&amp;#8217;t being set, I began to understand the frustration in the community on popular distros switching to systemd. But we can still make do with what we have by launching a &lt;code&gt;/bin/bash&lt;/code&gt; command instead of the vanilla &lt;code&gt;/usr/bin/docker&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;{
+  &#34;desiredState&#34;: &#34;launched&#34;,
+  &#34;options&#34;: [
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;-/bin/bash -c \&#34;APP=`/bin/echo %p | sed &#39;s/:/-/&#39;`; /usr/bin/docker kill $APP-%i\&#34;&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;-/bin/bash -c \&#34;APP=`/bin/echo %p | sed &#39;s/:/-/&#39;`; /usr/bin/docker rm $APP-%i\&#34;&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStartPre&#34;,
+      &#34;value&#34;: &#34;/usr/bin/docker pull coreos/%p&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStart&#34;,
+      &#34;value&#34;: &#34;/bin/bash -c \&#34;APP=`/bin/echo %p | sed &#39;s/:/-/&#39;`; /usr/bin/docker run --name $APP-%i -h $APP-%i -p 80 --rm coreos/%p\&#34;&#34;
+    },
+    {
+      &#34;section&#34;: &#34;Service&#34;,
+      &#34;name&#34;: &#34;ExecStop&#34;,
+      &#34;value&#34;: &#34;/bin/bash -c \&#34;APP=`/bin/echo %p | sed &#39;s/:/-/&#39;`; /usr/bin/docker stop $APP-%i&#34;
+    },
+    {
+      &#34;section&#34;: &#34;X-Fleet&#34;,
+      &#34;name&#34;: &#34;Conflicts&#34;,
+      &#34;value&#34;: &#34;%p@*.service&#34;
+    }
+  ]
+}
+&lt;/pre&gt;
+
+&lt;p&gt;and we can submit with:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -X PUT -d @unit.json -H &#39;Content-Type: application/json&#39;  $FLEET_ENDPOINT/fleet/v1/units/example:1.0.0@1.service
+&lt;/pre&gt;
+
+&lt;p&gt;More importantly, we can easily launch multiple containers of version two simultaneously:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -X PUT -d @unit.json -H &#39;Content-Type: application/json&#39;  $FLEET_ENDPOINT/fleet/v1/units/example:2.0.0@1.service
+curl -X PUT -d @unit.json -H &#39;Content-Type: application/json&#39;  $FLEET_ENDPOINT/fleet/v1/units/example:2.0.0@2.service
+&lt;/pre&gt;
+
+&lt;p&gt;and then destroy version one:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -X DELETE -w &#34;%{http_code}&#34; $FLEET_ENDPOINT/fleet/v1/units/example:1.0.0@1.service
+&lt;/pre&gt;
+
+&lt;h2 id=&#34;more-jq-and-bash-fun:f1075c253a77011bd480830af8403bf8&#34;&gt;More jq and bash fun&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;#8217;s say you do start multiple containers, and you want to cycle them out and delete them. In our above example, we&amp;#8217;ve started two containers. How will we easily go from v2 to v3, and remove the v3 nodes? The marathon API has a simple &amp;#8220;scale&amp;#8221; button which does just that. Can we do the same for CoreOS? Yes we can.&lt;/p&gt;
+
+&lt;p&gt;Conceptually, let&amp;#8217;s think about what we want. We want to select all containers running a specific version, grab the full unit file name, and then curl a DELETE operation to that endpoint. We can use the Fleet API to get our information, jq to parse the response, and the bash pipe operator with xargs to call our curl command.&lt;/p&gt;
+
+&lt;p&gt;Stringing this together like so:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;curl -s $FLEET_ENDPOINT/fleet/v1/units | jq &#39;.units[] | .name | select(startswith(&#34;example:1.0.0&#34;))&#39; | xargs -t -I{} curl -s -X DELETE $FLEET_ENDPOINT/fleet/v1/units/{}
+&lt;/pre&gt;
+
+&lt;p&gt;jq provides some very powerful json processing. We are pulling out the name field, and only selecting elements which start with our specific app and version, and then piping that to xargs. The -I{} flag for xargs is a substitution trick I learned. This allows you to do string placements rather than pass the field as an argument.&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion:f1075c253a77011bd480830af8403bf8&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I can pretty much guarantee no matter what you pick to run your Docker PaaS, it won&amp;#8217;t do exactly what you want. I can also guarantee that there will be a lot to learn: new apis, new commands, new tools. It&amp;#8217;s going to feel like pushing a round peg in a square hole. But that&amp;#8217;s okay; part of the experience is formulating opinions on how you want things to work. It&amp;#8217;s a blend of learning the patterns and practices of a tool versus configuring it to work the way you want. Always remember a few things:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Keep It Simple&lt;/li&gt;
+&lt;li&gt;Think about how it should work conceptually&lt;/li&gt;
+&lt;li&gt;You can do a lot with command line.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;With an API-enabled CoreOS cluster, you can easily plug deployment of containers to whatever build flow you use: your laptop, a github web hook, jenkins, or whatever flow you wish. Because all the above commands are bash, you can replace any part with a bash variable and execute appropriately. This makes parameterizing these commands into functions easy.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

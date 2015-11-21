@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/configuration/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2014-02-23 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Using Typesafe’s Config for Scala (and Java) for Application Configuration</title>
+          <link>http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/</link>
+          <pubDate>Sun, 23 Feb 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/</guid>
+          <description>
+
+&lt;p&gt;I recently leveraged &lt;a href=&#34;https://github.com/typesafehub/config&#34;&gt;Typesafe&amp;#8217;s Config&lt;/a&gt; library to refactor configuration settings for a project. I was very pleased with the API and functionality of the library.&lt;/p&gt;
+
+&lt;p&gt;The documentation is pretty solid so there&amp;#8217;s no need to go over basics. One feature I like is the clear hierarchy when specifying configuration values. I find it helpful to put as much as possible in a reference.conf file in the /resources directory for an application or library. These can get overridden in a variety of ways, primarily by adding an application.conf file to the bundled output&amp;#8217;s classpath. The &lt;a href=&#34;https://github.com/sbt/sbt-native-packager&#34;&gt;sbt native packager&lt;/a&gt;, helpful for deploying applications, makes it easy to attach a configuration file to an output. This is helpful if you have settings which you normally wouldn&amp;#8217;t want to use during development, say using remote actors with akka. I find placing a reasonable set of defaults in a reference.conf file allows you to easily transport a configuration around while still overriding it as necessary. Otherwise you can get into copy and paste hell by duplicating configurations across multiple files for multiple environments.&lt;/p&gt;
+
+&lt;h2 id=&#34;alternative-overrides:25b0f7af66c88453ba07c790c20bec8d&#34;&gt;Alternative Overrides&lt;/h2&gt;
+
+&lt;p&gt;There are two other interesting ways you can override configuration settings: using environment variables or java system properties. The environment variable approach comes in very handy when pushing to cloud environments where you don&amp;#8217;t know what a configuration is beforehand. Using the ${?VALUE} pattern a property will only be set if a value exists. This allows you to provide an option for overriding a value without actually having to specify one.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s an example in a conf file using substitution leveraging this technique:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http {
+ port = 8080
+ port = ${?HTTP_PORT}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;#8217;re setting a default port of 8080. If the configuration can find a valid substitute it will replace the port value with the substitute; otherwise, it will keep it at 8080. The configuration library will look up its hierarchy for an HTTP_PORT value, checking other configuration files, Java system properties, and finally environment variables. Environment variables aren&amp;#8217;t perfect, but they&amp;#8217;re easy to set and leveraged in a lot of places. If you leave out the ? and just have ${HTTP_PORT} then the application will throw an exception if it can&amp;#8217;t find a value. But by using the ? you can override as many times as you want. This can be helpful when running apps on Heroku where environment variables are set for third party services.&lt;/p&gt;
+
+&lt;h3 id=&#34;using-java-system-properties:25b0f7af66c88453ba07c790c20bec8d&#34;&gt;Using Java System Properties&lt;/h3&gt;
+
+&lt;p&gt;Java system properties provide another option for setting config values. The shell script created by sbt-native-packager supports java system properties, so you can also set the http port via the command line using the -D flag:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/bash_script_from_native_packager -Dhttp.port=8081
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This can be helpful if you want to run an akka based application with a different log level to see what&amp;#8217;s going on in production:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/some_akka_app_script -Dakka.loglevel=debug
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Unfortunately sbt run doesn&amp;#8217;t support java system properties so you can&amp;#8217;t tweak settings with the command line when running sbt. The &lt;a href=&#34;https://github.com/spray/sbt-revolver&#34;&gt;sbt-revolver&lt;/a&gt; plugin, which allows you to run your app in a forked JVM, does allow you to pass java arguments using the command line. Once you&amp;#8217;re set up with this plugin you can change settings by adding your Java overrides after &lt;code&gt;---&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;re-start --- -Dhttp.port=8081
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;with-c3p0:25b0f7af66c88453ba07c790c20bec8d&#34;&gt;With c3p0&lt;/h3&gt;
+
+&lt;p&gt;I was really excited to see that the &lt;a href=&#34;http://www.mchange.com/projects/c3p0/#c3p0_conf&#34;&gt;c3p0 connection pool library also supports Typesafe Config&lt;/a&gt;. So you can avoid those annoying xml-based files and merge your c3p0 settings directly with your regular configuration files. I&amp;#8217;ve migrated an application to a &lt;a href=&#34;docker.io&#34;&gt;docker&lt;/a&gt; based development environment and used this c3p0 feature with &lt;a href=&#34;http://docs.docker.io/en/latest/use/working_with_links_names/&#34;&gt;docker links&lt;/a&gt; to set mysql settings:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;app {
+ db {
+  host = localhost
+  host = ${?DB_PORT_3306_TCP_ADDR}
+  port = &amp;quot;3306&amp;quot;
+  port = ${?DB_PORT_3306_TCP_PORT}
+ }
+}
+
+c3p0 {
+ named-configs {
+  myapp {
+      jdbcUrl = &amp;quot;jdbc:mysql://&amp;quot;${app.db.host}&amp;quot;:&amp;quot;${app.db.port}&amp;quot;/MyDatabase&amp;quot;
+  }
+ }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When I link a mysql container to my app container with &lt;code&gt;--link mysql:db&lt;/code&gt; Docker will inject the DB_PORT_3306_TCP_* environment variables which are pulled by the above settings.&lt;/p&gt;
+
+&lt;h3 id=&#34;accessing-values-from-code:25b0f7af66c88453ba07c790c20bec8d&#34;&gt;Accessing Values From Code&lt;/h3&gt;
+
+&lt;p&gt;One other practice I like is having a single &amp;#8220;Config&amp;#8221; class for an application. It can be very tempting to load a configuration node from anywhere in your app but that can get messy fast. Instead, create a config class and access everything you need through that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;object MyAppConfig {
+  private val config =  ConfigFactory.load()
+
+  private lazy val root = config.getConfig(&amp;quot;my_app&amp;quot;)
+
+  object HttpConfig {
+    private val httpConfig = config.getConfig(&amp;quot;http&amp;quot;)
+
+    lazy val interface = httpConfig.getString(&amp;quot;interface&amp;quot;)
+    lazy val port = httpConfig.getInt(&amp;quot;port&amp;quot;)
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Type safety, Single Responsibility, and no strings all over the place.&lt;/p&gt;
+
+&lt;h3 id=&#34;conclusion:25b0f7af66c88453ba07c790c20bec8d&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;When dealing with configuration think about what environments you have and what the actual differences are between those environments. Usually this is a small set of differing values for only a few properties. Make it easy to change just those settings without changing&amp;#8211;or duplicating&amp;#8211;anything else. This could done via environment variables, command line flags, even loading configuration files from a url. Definitely avoid copying the same value across multiple configurations: just distill that value down to a lower setting in a hierarchy. By minimizing configuration files you&amp;#8217;ll be making your life a lot easier.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;re developing an app for distribution, or writing a library, providing a well-documented configuration file (&lt;a href=&#34;https://github.com/spray/spray/blob/master/spray-can/src/main/resources/reference.conf&#34;&gt;spray&amp;#8217;s spray-can reference.conf is an excellent example&lt;/a&gt;) you can allow users to override defaults easily in a manner that is suitable for them and their runtimes.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

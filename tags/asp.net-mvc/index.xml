@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/asp/index.net-mvc/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2011-03-21 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Updated MVC3 Html5 Boilerplate Template: Now with Twitter and Facebook</title>
+          <link>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</link>
+          <pubDate>Mon, 21 Mar 2011 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</guid>
+          <description>&lt;p&gt;I pushed a major update to the MVC3/Html5 Boilerplate Template found on the &lt;a href=&#34;https://github.com/mhamrah/Html5OpenIdTemplate&#34;&gt;github&lt;/a&gt; page. The new update includes the latest boilerplate code and uses the DotnetOpenAuth CTP for logging in via Twitter and Facebook. Thanks to &lt;a href=&#34;http://www.twitter.com/jacob4u2&#34;&gt;@jacob4u2&lt;/a&gt; for making some necessary web.config changes (he has an alternate template on his &lt;a href=&#34;https://bitbucket.org/jacob4u2/mothereffin-html5-site&#34;&gt;bitbucket&lt;/a&gt; site you should also check out.&lt;/p&gt;
+
+&lt;p&gt;Your best option is to &lt;code class=&#34;syntax bash&#34;&gt;git clone git@github.com:mhamrah/Html5OpenIdTemplate.git&lt;/code&gt; the template with your own app. That way you&amp;#8217;ll get the latest nu-get packages with the bundle. You can also use the template, but you&amp;#8217;ll need to manually pull &lt;a href=&#34;http://sourceforge.net/projects/dnoa/files/CTP/OAuth2/&#34;&gt;the latest CTP for DotNetOpenAuth&lt;/a&gt; to get the latest dlls.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Expressions and Lambdas: Oh My!</title>
+          <link>http://blog.michaelhamrah.com/2010/11/expressions-and-lambdas-oh-my/</link>
+          <pubDate>Sat, 13 Nov 2010 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2010/11/expressions-and-lambdas-oh-my/</guid>
+          <description>&lt;p&gt;I&amp;#8217;ve been working on a toolkit called &lt;a href=&#34;https://github.com/mhamrah/Redaculous&#34;&gt;Redaculous&lt;/a&gt;&amp;#8211; it&amp;#8217;s a .NET Library for the really cool key/value store &lt;a href=&#34;http://code.google.com/p/redis/&#34;&gt;Redis&lt;/a&gt;.  It&amp;#8217;s built on top of the &lt;a href=&#34;http://code.google.com/p/servicestack/wiki/ServiceStackRedis&#34;&gt;ServiceStack.Redis&lt;/a&gt; library, which provides various .NET clients for Redis.  Redaculous is meant to make aggregating Redis commands a little easier- but don&amp;#8217;t get too excited.  The project __is in its infancy, and will undergo many changes, if it even gets off the ground.  This post isn&amp;#8217;t about Redis nor Redaculous- it&amp;#8217;s about how parts of Redaculous leverage &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb506649.aspx&#34;&gt;Expressions&lt;/a&gt; and &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Lambdas&lt;/a&gt; to drive a lot of the functionality Redaculous is meant to provide, and how you can leverage Expressions to make your programming life easier.  ASP.NET MVC and lots of other great frameworks do it, so why can&amp;#8217;t you?&lt;/p&gt;
+
+&lt;p&gt;The problem was simple:  I have a class, with a bunch of properties, and those properties have values.  In order to put them into Redis, I need to know the property name and the value it contains.  I need to know, at runtime, that myObj.SomeProperty has a property called &amp;#8220;SomeProperty&amp;#8221; and the value of that property.  This is a problem shared with most serialization tools and ORM mappers:  how does a &amp;#8220;SomeProperty&amp;#8221; make it to a column in table in a database, or make it to a node in xml?&lt;/p&gt;
+
+&lt;p&gt;This problem can (and has been) solved in a variety of ways.  The most common was attributes to decorate classes and properties- which is how WCF constructs contracts or how some ORM toolkits work.  But that&amp;#8217;s extremely intrusive, in this pseudo example which combines WCF and DataAccess :&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;[Table(&#34;DtoTb&#34;)]
+[DataContract]
+public class Dto
+{
+     [PrimaryKey]
+     [DataMember]
+     public int Id { get; set; }
+
+     [ColumnName(&#34;Name&#34;)]
+     [DataMember]
+     public string Name { get; set; }
+}
+&lt;/pre&gt;
+
+&lt;p&gt;There&amp;#8217;s a weird combination of data storage and data definition which goes on in toolkits which use that approach.  It&amp;#8217;s not really a smooth way to operate- and the approach falls out when the model greatly diverages from the underlying table, or when a class has numerous other complex types.  Worse, when we want to also expose that class via WCF, we&amp;#8217;re essentially tacking on both data access description and web service schema description.  How many attributes can you tack on there? Validation attributes, too?&lt;/p&gt;
+
+&lt;p&gt;Another approach is to use code-generation.  This is essentially what Linq-to-Sql does; it provides the underlying property descriptions at design time, saving a lot of manual typing.  I&amp;#8217;m not a big fan of code generators; they have their place, but you lose a lot of control in defining explicit functionality.  You&amp;#8217;re boxed into what is generated and most customizations usually don&amp;#8217;t fit in well: when you stray outside of what the code generator provides (or even outside of what the core generation is focused on) you find yourself trying to shove a square peg in a round hole.&lt;/p&gt;
+
+&lt;p&gt;The best approach is to do what great tools like &lt;a href=&#34;https://github.com/atheken/NoRM&#34;&gt;Norm&lt;/a&gt;, &lt;a href=&#34;http://fluentnhibernate.org/&#34;&gt;Fluent NHibernate,&lt;/a&gt; &lt;a href=&#34;http://automapper.codeplex.com/&#34;&gt;AutoMapper&lt;/a&gt;, and .MVC&amp;#8217;s Html helpers do: they use &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Expressions&lt;/a&gt;.  Most often the configuration is offloaded to separate classes which rely heavily on Expressions for property introspection.  This allows an end user to write code like:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;//For MVC:
+Html.TextBoxFor(m =&amp;gt; m.ProductName);
+//Or for Fluent NHibernate:
+Id(x =&amp;gt; x.ImageId);
+&lt;/pre&gt;
+
+&lt;p&gt;The TextBoxFor creates an input html element with a name=&amp;#8221;ProductName&amp;#8221; attribute; the Id() says NHIbernate should use a class&amp;#8217;s ImageId Property as the Id for the table.&lt;/p&gt;
+
+&lt;p&gt;Expressions where introduced in .NET 3.5, and have been heavily leveraged ever since to provide a level of meta-programming which previously didn&amp;#8217;t exist in the .NET world.   Expressions greatly differ from Reflection by the fact Expressions are code which has been parsed into a set of various descriptive classes, while Reflection is compiled code which has been deconstructed into a descriptive semantic. An Expression statement will not actually &amp;#8220;do&amp;#8221; anything.  It can, however, be compiled into a callable function- which is the core advantage over Reflection.  With Expressions, you can have both the description of code and the actual, runnable code together.  Most frameworks create a package or container around the two as a performance optimization- it prevents an application from having to compile the expression multiple times.  The performance is much greater than using reflection to dynamically invoke or inspect properties.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;How It Works&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Expressions and Lambdas go hand-in-hand, and can often be confused with one another. Let&amp;#8217;s take a look at the following code:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;Expression&amp;lt;Func&amp;lt;SomeDto, string&amp;gt;&amp;gt; expressionLambda = m =&amp;gt; m.SomeStringProp;
+Func&amp;lt;SomeDto, string&amp;gt;&amp;gt; funcLambda = m =&amp;gt; m.SomeStringProp;
+&lt;/pre&gt;
+
+&lt;p&gt;What&amp;#8217;s the difference between the two?  It&amp;#8217;s the same value, right?  Well, running that snippet in Visual Studio, and viewing the debugger properties, you&amp;#8217;ll find two different results for the m=&amp;gt;m.SomeStringProp statement. m=&amp;gt;m.SomeStringProp is the lambda: it&amp;#8217;s simply an alternative way of writing C# for various purposes. Usually, Lambdas are either Func or Action statements used as an alternative for delegate methods. The compiler will generate runnable IL code for the m =&amp;gt; m.SomeStringProp statement and create a callable method expecting an instance of SomeDto as the input. In the above example, you could get the value of a SomeStringProp using funcLambda like so:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;var dto = new SomeDto() { SomeStringProp = &#34;Hell Yeah!&#34; };
+funcLambda(dto); //Returns &#34;Hell Yeah!&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;This can provide a level of agnosticism by passing around logic as variables in a much easier way than vanilla delegates.&lt;/p&gt;
+
+&lt;p&gt;Expressions, on the other hand, don&amp;#8217;t compile into runnable IL code.  You can&amp;#8217;t write &lt;em&gt;funcExpression(dto)&lt;/em&gt; in the same was a normal lambda.  The compiler does something different: it actually parses the m=&amp;gt;m.SomeStringProp into various expression components which can be traversed, manipulated, rearranged and even compiled into a callable action, as if it were a Func all along. The [I&amp;#8217;ve been working on a toolkit called &lt;a href=&#34;https://github.com/mhamrah/Redaculous&#34;&gt;Redaculous&lt;/a&gt;&amp;#8211; it&amp;#8217;s a .NET Library for the really cool key/value store &lt;a href=&#34;http://code.google.com/p/redis/&#34;&gt;Redis&lt;/a&gt;.  It&amp;#8217;s built on top of the &lt;a href=&#34;http://code.google.com/p/servicestack/wiki/ServiceStackRedis&#34;&gt;ServiceStack.Redis&lt;/a&gt; library, which provides various .NET clients for Redis.  Redaculous is meant to make aggregating Redis commands a little easier- but don&amp;#8217;t get too excited.  The project __is in its infancy, and will undergo many changes, if it even gets off the ground.  This post isn&amp;#8217;t about Redis nor Redaculous- it&amp;#8217;s about how parts of Redaculous leverage &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb506649.aspx&#34;&gt;Expressions&lt;/a&gt; and &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Lambdas&lt;/a&gt; to drive a lot of the functionality Redaculous is meant to provide, and how you can leverage Expressions to make your programming life easier.  ASP.NET MVC and lots of other great frameworks do it, so why can&amp;#8217;t you?&lt;/p&gt;
+
+&lt;p&gt;The problem was simple:  I have a class, with a bunch of properties, and those properties have values.  In order to put them into Redis, I need to know the property name and the value it contains.  I need to know, at runtime, that myObj.SomeProperty has a property called &amp;#8220;SomeProperty&amp;#8221; and the value of that property.  This is a problem shared with most serialization tools and ORM mappers:  how does a &amp;#8220;SomeProperty&amp;#8221; make it to a column in table in a database, or make it to a node in xml?&lt;/p&gt;
+
+&lt;p&gt;This problem can (and has been) solved in a variety of ways.  The most common was attributes to decorate classes and properties- which is how WCF constructs contracts or how some ORM toolkits work.  But that&amp;#8217;s extremely intrusive, in this pseudo example which combines WCF and DataAccess :&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;[Table(&#34;DtoTb&#34;)]
+[DataContract]
+public class Dto
+{
+     [PrimaryKey]
+     [DataMember]
+     public int Id { get; set; }
+
+     [ColumnName(&#34;Name&#34;)]
+     [DataMember]
+     public string Name { get; set; }
+}
+&lt;/pre&gt;
+
+&lt;p&gt;There&amp;#8217;s a weird combination of data storage and data definition which goes on in toolkits which use that approach.  It&amp;#8217;s not really a smooth way to operate- and the approach falls out when the model greatly diverages from the underlying table, or when a class has numerous other complex types.  Worse, when we want to also expose that class via WCF, we&amp;#8217;re essentially tacking on both data access description and web service schema description.  How many attributes can you tack on there? Validation attributes, too?&lt;/p&gt;
+
+&lt;p&gt;Another approach is to use code-generation.  This is essentially what Linq-to-Sql does; it provides the underlying property descriptions at design time, saving a lot of manual typing.  I&amp;#8217;m not a big fan of code generators; they have their place, but you lose a lot of control in defining explicit functionality.  You&amp;#8217;re boxed into what is generated and most customizations usually don&amp;#8217;t fit in well: when you stray outside of what the code generator provides (or even outside of what the core generation is focused on) you find yourself trying to shove a square peg in a round hole.&lt;/p&gt;
+
+&lt;p&gt;The best approach is to do what great tools like &lt;a href=&#34;https://github.com/atheken/NoRM&#34;&gt;Norm&lt;/a&gt;, &lt;a href=&#34;http://fluentnhibernate.org/&#34;&gt;Fluent NHibernate,&lt;/a&gt; &lt;a href=&#34;http://automapper.codeplex.com/&#34;&gt;AutoMapper&lt;/a&gt;, and .MVC&amp;#8217;s Html helpers do: they use &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb397687.aspx&#34;&gt;Expressions&lt;/a&gt;.  Most often the configuration is offloaded to separate classes which rely heavily on Expressions for property introspection.  This allows an end user to write code like:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;//For MVC:
+Html.TextBoxFor(m =&amp;gt; m.ProductName);
+//Or for Fluent NHibernate:
+Id(x =&amp;gt; x.ImageId);
+&lt;/pre&gt;
+
+&lt;p&gt;The TextBoxFor creates an input html element with a name=&amp;#8221;ProductName&amp;#8221; attribute; the Id() says NHIbernate should use a class&amp;#8217;s ImageId Property as the Id for the table.&lt;/p&gt;
+
+&lt;p&gt;Expressions where introduced in .NET 3.5, and have been heavily leveraged ever since to provide a level of meta-programming which previously didn&amp;#8217;t exist in the .NET world.   Expressions greatly differ from Reflection by the fact Expressions are code which has been parsed into a set of various descriptive classes, while Reflection is compiled code which has been deconstructed into a descriptive semantic. An Expression statement will not actually &amp;#8220;do&amp;#8221; anything.  It can, however, be compiled into a callable function- which is the core advantage over Reflection.  With Expressions, you can have both the description of code and the actual, runnable code together.  Most frameworks create a package or container around the two as a performance optimization- it prevents an application from having to compile the expression multiple times.  The performance is much greater than using reflection to dynamically invoke or inspect properties.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;How It Works&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Expressions and Lambdas go hand-in-hand, and can often be confused with one another. Let&amp;#8217;s take a look at the following code:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;Expression&amp;lt;Func&amp;lt;SomeDto, string&amp;gt;&amp;gt; expressionLambda = m =&amp;gt; m.SomeStringProp;
+Func&amp;lt;SomeDto, string&amp;gt;&amp;gt; funcLambda = m =&amp;gt; m.SomeStringProp;
+&lt;/pre&gt;
+
+&lt;p&gt;What&amp;#8217;s the difference between the two?  It&amp;#8217;s the same value, right?  Well, running that snippet in Visual Studio, and viewing the debugger properties, you&amp;#8217;ll find two different results for the m=&amp;gt;m.SomeStringProp statement. m=&amp;gt;m.SomeStringProp is the lambda: it&amp;#8217;s simply an alternative way of writing C# for various purposes. Usually, Lambdas are either Func or Action statements used as an alternative for delegate methods. The compiler will generate runnable IL code for the m =&amp;gt; m.SomeStringProp statement and create a callable method expecting an instance of SomeDto as the input. In the above example, you could get the value of a SomeStringProp using funcLambda like so:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c# escaped&#34;&gt;var dto = new SomeDto() { SomeStringProp = &#34;Hell Yeah!&#34; };
+funcLambda(dto); //Returns &#34;Hell Yeah!&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;This can provide a level of agnosticism by passing around logic as variables in a much easier way than vanilla delegates.&lt;/p&gt;
+
+&lt;p&gt;Expressions, on the other hand, don&amp;#8217;t compile into runnable IL code.  You can&amp;#8217;t write &lt;em&gt;funcExpression(dto)&lt;/em&gt; in the same was a normal lambda.  The compiler does something different: it actually parses the m=&amp;gt;m.SomeStringProp into various expression components which can be traversed, manipulated, rearranged and even compiled into a callable action, as if it were a Func all along. The]&lt;a href=&#34;http://msdn.microsoft.com/en-us/library/bb506649.aspx&#34;&gt;4&lt;/a&gt; has all of the available types a lambda expression can be broken down into.  Essentially, a hierarchal tree is generated, with each distinct component of the lambda expression being represented by one of the many Expression classes.  These &lt;span style=&#34;font-size: 13.2px;&#34;&gt;classes can be used to inspect various aspects of that part.  The above lambda is simply a &lt;a href=&#34;http://msdn.microsoft.com/en-us/library/system.linq.expressions.memberexpression.aspx&#34;&gt;MemberExpression&lt;/a&gt;, which is used for field and properties. Using MemberExpressions you can get the name of the Member, the Property Type, you can use the NodeType property- that&amp;#8217;s available with all Expression classes- to learn that it&amp;#8217;s a MemberAccess call.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&#34;font-size: 13.2px;&#34;&gt;Because Expressions can be compiled into runnable code, frameworks get the best of both worlds: metadata about the call, and the call itself.  This is the precisely how ASP.NET MVC Html Helpers are built: that TextBoxFor method takes in an expression which it uses to generate the Html output. The Html helpers in MVC inspect the input expression to figure out what the name of the property for the html name attribute value, and then it runs the compiled expression against the current ViewModel object to get the value for the value html attribute.  The expression metadata and compiled function is actual cached in various static classes for performance: you don&amp;#8217;t want to have to compile the expression every time you use it.  The performance is much better than using reflection alone.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Redaculous is using Expressions to avoid the magic string conundrum- by using expressions, Redaculous can parse a statement like &amp;#8220;m = m.Name&amp;#8221; and know it should put the value of a class&amp;#8217;s Name property in the store using a key involving the word &amp;#8220;Name&amp;#8221; in some way. You should explore the &lt;a href=&#34;http://aspnet.codeplex.com/wikipage?title=MVC&amp;amp;referringTitle=Home&#34;&gt;MVC Framework&amp;#8217;s source code&lt;/a&gt; to dig in to how they&amp;#8217;re using expressions for strongly typed helpers. Both Norm and Automapper have some pretty straightforward usage too. By inspecting how other tools use these features you can more easily integrate them into your own projects- and increase productivity by eliminating redundant code and code smells involving magic strings.&lt;/p&gt;
+
+&lt;p&gt;Other languages, like Ruby, have a similar level of functionality built in. This is inherit in all dynamic languages: functionality to not only provide an operation, but functionality to describe that operation as well.  I still get some hits on my &lt;a href=&#34;http://www.michaelhamrah.com/blog/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/&#34;&gt;ASP.NET MVC and Rails&lt;/a&gt; article, and I&amp;#8217;d say one of the biggest differences is how Rails, and Ruby in general, use dynamic language features like code metadata to drive functionality.  .NET has always had reflection, but expressions provide a much easier, and much more performant way of dealing with meta-programming.  &lt;span style=&#34;font-size: 13.2px;&#34;&gt;Expressions provide a core of the functionality in the Dynamic Language Runtime and have always been a strong part of Linq&amp;#8217;s roots.  DLR capabilities, using expressions, will continue to increase its surface area in the .NET world and should be a part of any developers toolkit.&lt;/span&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>QuickTip: Use CommonServiceLocator and MvcServiceLocator together in ASP.NET MVC 3 Pre-Release Projects</title>
+          <link>http://blog.michaelhamrah.com/2010/09/quicktip-use-commonservicelocator-and-mvcservicelocator-together-in-asp-net-mvc-3-projects/</link>
+          <pubDate>Thu, 23 Sep 2010 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2010/09/quicktip-use-commonservicelocator-and-mvcservicelocator-together-in-asp-net-mvc-3-projects/</guid>
+          <description>&lt;p&gt;&lt;strong&gt;UPDATE: This post is outdated since ASP.NET MVC Beta.  Use the DependencyResolver static class instead.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The integration of the CommonServiceLocator pattern within ASP.NET MVC is a positive step forward for the .MVC framework. Dependency management via ServiceLocation is a smart way to go, especially for large codebases with complex dependency needs. ServiceLocation keeps constructors clean, and prevents bloat in higher-level classes which don&amp;#8217;t need to know about lower-level dependencies.&lt;/p&gt;
+
+&lt;p&gt;However, the fact that .MVC now has its own ServiceLocation infrastructure, via the System.Web.Mvc.IServiceLocator interface, is a little troublesome for code which already uses the Microsoft CommonServiceLocator class found in the Unity Enterprise Application Block. But don&amp;#8217;t fret- luckily, the IServiceLocator interface is exactly the same in the System.Web.Mvc namespace and the Microsoft.Practices.ServiceLocation namespace. This means you can have one class implement both interface simultaneously, like so:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: csharp; title: ; notranslate&#34; title=&#34;&#34;&gt;public class  SomeServiceLocatorWrapper : System.Web.Mvc.IServiceLocator, Microsoft.Practices.ServiceLocation.IServiceLocator
+{
+ //Implicity Implementation of Methods
+}
+&lt;/pre&gt;
+
+&lt;p&gt;What&amp;#8217;s even easier is when there&amp;#8217;s already a wrapper class around the IServiceLocator for you, such as the one provided by Unity via the UnityServiceLocator class in Microsoft.Practices.Unity&amp;#8217;s namespace. The following code below provides all the functionality you need to use both ServiceLocators:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: csharp; title: ; notranslate&#34; title=&#34;&#34;&gt;public class UnityMvcServiceLocator : UnityServiceLocator, System.Web.Mvc.IServiceLocator
+{
+ public UnityMvcServiceLocator(IUnityContainer container)
+ : base(container)
+ {
+
+ }
+
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Once you have that class in place, then it&amp;#8217;s just a matter of hooking both up in your Global.asax file like so:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: csharp; title: ; notranslate&#34; title=&#34;&#34;&gt;//In Global.asax&#39;s Application_Start hook:
+var container = UnityContainerBuilder.CreateContainer();
+var locator = new UnityMvcServiceLocator(container);
+
+ServiceLocator.SetLocatorProvider(() =&amp;gt; locator);
+MvcServiceLocator.SetCurrent(locator);
+&lt;/pre&gt;
+
+&lt;p&gt;This allows you to access the same locator either via the MvcServiceLocator.Current instance or the ServiceLocator.Current instance.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Proposal: Let’s call ASP.NET MVC “.MVC”</title>
+          <link>http://blog.michaelhamrah.com/2010/02/proposal-lets-call-asp-net-mvc-mvc/</link>
+          <pubDate>Thu, 18 Feb 2010 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2010/02/proposal-lets-call-asp-net-mvc-mvc/</guid>
+          <description>&lt;p&gt;I hereby propose renaming ASP.NET MVC to just &amp;#8220;.MVC&amp;#8221;. It&amp;#8217;s just so much easier to type.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

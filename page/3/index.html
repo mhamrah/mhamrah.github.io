@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Adventures in HttpContext &middot; All the stuff after &#39;Hello, World&#39;
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item  active " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+
+
+
+<div class="posts">
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/03/running-an-akka-cluster-with-docker-containers/">Running an Akka Cluster with Docker Containers</a></h1>
+        <span class="post-date">Mar 23 2014</span>
+        
+
+<p><strong>Update! You can now use SBT-Docker with SBT-Native Packager for a better sbt/docker experience. <a href="http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/">Here&#8217;s the new approach</a> with an <a href="https://github.com/mhamrah/akka-docker-cluster-example">updated GitHub repo</a>.</strong></p>
+
+<p>We recently upgraded our vagrant environments to use <a href="http://docker.io">docker</a>. One of our projects relies on <a href="http://doc.akka.io/docs/akka/2.3.0/common/cluster.html">akka&#8217;s cluster functionality</a>. I wanted to easily run an akka cluster locally using docker as sbt can be somewhat tedious. <a href="https://github.com/mhamrah/akka-docker-cluster-example">The example project is on github</a> and the solution is described below.</p>
+
+<p>The solution relies on:</p>
+
+<ul>
+<li><a href="https://github.com/sbt/sbt-native-packager">Sbt Native Packager</a> to package dependencies and create a startup file.</li>
+<li><a href="https://github.com/typesafehub/config">Typesafe&#8217;s Config</a> library for configuring the app&#8217;s ip address and seed nodes. We setup cascading configurations that will look for docker link environment variables if present.</li>
+<li><a href="https://github.com/mhamrah/akka-docker-cluster-example/blob/master/bin/dockerize">A simple bash script</a> to package the app and build the docker container.</li>
+</ul>
+
+<p>I&#8217;m a big fan of <a href="http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/">Typesafe&#8217;s Config</a> library and the environment variable overrides come in handy for providing sensible defaults with optional overrides. It&#8217;s the preferred way we configure our applications in upper environments.</p>
+
+<p>The tricky part of running an akka cluster with docker is knowing the ip address each remote node needs to listen on. An akka cluster relies on each node listening on a specific port and hostname or ip. It also needs to know the port and hostname/ip of a seed node the cluster. As there&#8217;s no catch-all binding we need specific ip settings for our cluster.</p>
+
+<p>A simple bash script within the container will figure out the current IP for our cluster configuration and <a href="http://docs.docker.io/en/latest/use/working_with_links_names/">docker links</a> pass seed node information to newly launched nodes.</p>
+
+<h2 id="first-step-setup-application-configuration:bc2a8c6fccabe9b5fedfd70d57effb88">First Step: Setup Application Configuration</h2>
+
+<p>The configuration is the same as that of a normal cluster, but I&#8217;m using substitution to configure the ip address, port and seed nodes for the application. For simplicity I setup a <code>clustering</code> block with defaults for running normally and environment variable overrides:</p>
+
+<pre class="syntax json">clustering {
+ ip = "127.0.0.1"
+ ip = ${?CLUSTER_IP}
+ port = 1600
+ port = ${?CLUSTER_PORT}
+ seed-ip = "127.0.0.1"
+ seed-ip = ${?CLUSTER_IP}
+ seed-ip = ${?SEED_PORT_1600_TCP_ADDR}
+ seed-port = 1600
+ seed-port = ${?SEED_PORT_1600_TCP_PORT}
+ cluster.name = clustering-cluster
+}
+
+akka.remote {
+    log-remote-lifecycle-events = on
+    netty.tcp {
+      hostname = ${clustering.ip}
+      port = ${clustering.port}
+    }
+  }
+  cluster {
+    seed-nodes = [
+       "akka.tcp://"${clustering.cluster.name}"@"${clustering.seed-ip}":"${clustering.seed-port}
+    ]
+    auto-down-unreachable-after = 10s
+  }
+}
+</pre>
+
+<p>As an example the <code>clustering.seed-ip</code> setting will use <em>127.0.0.1</em> as the default. If it can find a <em>CLUSTER_IP</em> or a <em>SEED_PORT_1600_TCP_ADDR</em> override it will use that instead. You&#8217;ll notice the latter override is using docker&#8217;s environment variable pattern for linking: that&#8217;s how we set the cluster&#8217;s seed node when using docker. You don&#8217;t need the <em>CLUSTER_IP</em> in this example but that&#8217;s the environment variable we use in upper environments and I didn&#8217;t want to change our infrastructure to conform to docker&#8217;s pattern. The cascading settings are helpful if you&#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.</p>
+
+<p>With this override in place we can use substitution to set the seed nodes in the akka cluster configuration block. The expression <code>&quot;akka.tcp://&quot;${clustering.cluster.name}&quot;@&quot;${clustering.seed-ip}&quot;:&quot;${clustering.seed-port}</code> builds the proper akka URI so the current node can find the seed node in the cluster. Seed nodes avoid potential split-brain issues during network partitions. You&#8217;ll want to run more than one in production but for local testing one is fine. On a final note the cluster-name setting is arbitrary. Because the name of the actor system and the uri must match I prefer not to hard code values in multiple places.</p>
+
+<p>I put these settings in resources/reference.conf. We could have named this file application.conf, but I prefer bundling configurations as reference.conf and reserving application.conf for external configuration files. A setting in application.conf will override a corresponding reference.conf setting and you probably want to manage application.conf files outside of the project&#8217;s jar file.</p>
+
+<h2 id="second-sbt-native-packager:bc2a8c6fccabe9b5fedfd70d57effb88">Second: SBT Native Packager</h2>
+
+<p>We use the native packager plugin to build a runnable script for our applications. For docker we just need to run <code>universal:stage</code>, creating a folder with all dependencies in the <code>target/</code> folder of our project. We&#8217;ll move this into a staging directory for uploading to the docker container.</p>
+
+<h2 id="third-the-dockerfile-and-start-script:bc2a8c6fccabe9b5fedfd70d57effb88">Third: The Dockerfile and Start script</h2>
+
+<p>The dockerfile is pretty simple:</p>
+
+<pre class="syntax bash">FROM dockerfile/java
+
+MAINTAINER Michael Hamrah m@hamrah.com
+
+ADD tmp/ /opt/app/
+ADD start /opt/start
+RUN chmod +x /opt/start
+
+EXPOSE 1600
+
+ENTRYPOINT [ "/opt/start" ]
+</pre>
+
+<p>We start with Dockerfile&#8217;s java base image. We then upload our staging <code>tmp/</code> folder which has our application from sbt&#8217;s native packager output and a corresponding executable start script described below. I opted for <code>ENTRYPOINT</code> instead of <code>CMD</code> so the container is treated like an executable. This makes it easier to pass in command line arguments into the sbt native packager script in case you want to set java system properties or override configuration settings via command line arguments.</p>
+
+<p>The start script is how we tee up the container&#8217;s IP address for our cluster application:</p>
+
+<pre class="syntax bash">#!/bin/bash
+
+CLUSTER_IP=<code>/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'</code> /opt/app/bin/clustering $@
+</pre>
+
+<p>The script sets an inline environment variable by parsing <code>ifconfig</code> output to get the container&#8217;s ip. We then run the <em>clustering</em> start script produced from sbt native packager. The <code>$@</code> lets us pass along any command line settings set when launching the container into the sbt native packager script.</p>
+
+<h2 id="fourth-putting-it-together:bc2a8c6fccabe9b5fedfd70d57effb88">Fourth: Putting It Together</h2>
+
+<p>The last part is a simple bash script named <code>dockerize</code> to orchestrate each step. By running this script we run sbt native packager, move files to a staging directory, and build the container:</p>
+
+<pre class="syntax bash">#!/bin/bash
+
+echo "Build docker container"
+
+#run sbt native packager
+sbt universal:stage
+
+#cleanup stage directory
+rm -rf docker/tmp/
+
+#copy output into staging area
+cp -r target/universal/stage/ docker/tmp/
+
+#build the container, remove intermediate nodes
+docker build -rm -t clustering docker/
+
+#remove staged files
+rm -rf docker/tmp/
+</pre>
+
+<p>With this in place we simply run</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">bin/dockerize
+</pre>
+
+<p>to create our docker container named clustering.</p>
+
+<h2 id="running-the-application-within-docker:bc2a8c6fccabe9b5fedfd70d57effb88">Running the Application within Docker</h2>
+
+<p>With our clustering container built we fire up our first instance. This will be our seed node for other containers:</p>
+
+<pre class="syntax bash">$ docker run -i -t -name seed clustering
+2014-03-23 00:20:39,918 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:20:40,392 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:20:40,403 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:20:40,418 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:20:41,404 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+</pre>
+
+<p>Next we fire up a second node. Because of our reference.conf defaults all we need to do is link this container with the name <em>seed</em>. Docker will set the environment variables we are looking for in the bundled reference.conf:</p>
+
+<pre class="syntax bash">$ docker run -name c1 -link seed:seed -i -t clustering
+2014-03-23 00:22:49,332 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:22:49,788 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:22:49,797 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:22:50,238 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+2014-03-23 00:22:50,249 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:22:50,803 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.3:1600
+</pre>
+
+<p>You&#8217;ll see the current leader discovering new nodes and the appropriate broadcast messages sent out. We can even do this a third time and all nodes will react:</p>
+
+<pre class="syntax bash">$ docker run -name c2 -link seed:seed -i -t clustering
+2014-03-23 00:24:52,768 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:24:53,224 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:24:53,235 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:24:53,470 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+2014-03-23 00:24:53,472 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.3:1600
+2014-03-23 00:24:53,478 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:24:55,401 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.4:1600
+</pre>
+
+<p>Try killing a node and see what happens!</p>
+
+<h2 id="modifying-the-docker-start-script:bc2a8c6fccabe9b5fedfd70d57effb88">Modifying the Docker Start Script</h2>
+
+<p>There&#8217;s another reason for the docker start script: it opens the door for different seed discovery options. Container linking works well if everything is running on the same host but not when running on multiple hosts. Also setting multiple seed nodes via docker links will get tedious via environment variables; it&#8217;s doable but we&#8217;re getting into coding-cruft territory. It would be better to discover seed nodes and set that configuration via command line parameters when launching the app.</p>
+
+<p>The start script gives us control over how we discover information. We could use <a href="https://github.com/coreos/etcd">etcd</a>, <a href="http://www.serfdom.io/">serf</a> or even zookeeper to manage how seed nodes are set and discovered, passing this to our application via environment variables or additional command line parameters. Seed nodes can easily be set via system properties set via the command line:</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">-Dakka.cluster.seed-nodes.0=akka.tcp://ClusterSystem@host1:2552
+-Dakka.cluster.seed-nodes.1=akka.tcp://ClusterSystem@host2:2552
+</pre>
+
+<p>The start script can probably be configured via sbt native packager but I haven&#8217;t looked into that option. Regardless this approach is (relatively) straight forward to run akka clusters with docker. The <a href="https://github.com/mhamrah/akka-docker-cluster-example">full project is on github</a>. If there&#8217;s a better approach I&#8217;d love to know!</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/03/testing-akkas-fsm-using-setstate-for-unit-testing/">Testing Akka’s FSM: Using setState for unit testing</a></h1>
+        <span class="post-date">Mar 21 2014</span>
+        <p>I wrote <a href="http://blog.michaelhamrah.com/2014/01/programming-akkas-finite-state-machines-in-scala/">about Akka&#8217;s Finite State Machine</a> as a way to model a process. One thing I didn&#8217;t discuss was testing an FSM. Akka has <a href="http://doc.akka.io/docs/akka/snapshot/scala/testing.html">great testing support</a> and FSM&#8217;s can easily be tested using the <a href="http://doc.akka.io/api/akka/snapshot/index.html#akka.testkit.TestFSMRef"><code>TestFSMRef</code></a> class.</p>
+
+<p>An FSM is defined by its states and the data stored between those states. For each state in the machine you can match on both an incoming message and current state data. Our previous example modeled a process to check data integrity across two systems. We&#8217;ll continue that example by adding tests to ensure the FSM is working correctly. <a href="http://blog.michaelhamrah.com/2013/02/embracing-test-driven-development-for-speed/">These should have been before we developed the FSM</a> but late tests are (arguably) better than no tests.</p>
+
+<p>It&#8217;s important to test combinations of messages against various states and data. You don&#8217;t want to be in a position to run through a state machine to the state you want for every test. Luckily, there&#8217;s a handy <code>setState</code> method to explicitly set the current state and data of the FSM. This lets you &#8220;fast forward&#8221; the FSM to the exact state you want to test against.</p>
+
+<p>Let&#8217;s say we want to test a <code>DataRetrieved</code> message in the <code>PendingComparison</code> state. We also want to test this message against various <code>Data</code> combinations. We can set this state explicitly:</p>
+
+<pre class="syntax scala">"The ComparisonEngine" - {
+  "in the PendingComparison state" - {
+    "when a DataRetrieved message arrives from the old system" - {
+      "stays in PendingComparison with updated data when no other data is present" in {
+        val fsm = TestFSMRef(new ComparisonEngine())
+        
+        //set our initial state with setState
+        fsm.setState(PendingComparison, ComparisonStatus("someid", None, None))
+
+        fsm ! DataRetrieved("oldSystem", "oldData")
+
+        fsm.stateName should be (PendingComparison)
+        fsm.stateData should be (ComparisonStatus("someid", Some("oldData"), None))
+      }
+    }
+  }
+}
+</pre>
+
+<p>It may be tempting to send more messages to continue verifying the FSM is working correctly. This will yield a large, unwieldy and brittle test. It will make refactoring difficult and make it harder to understand what <em>should</em> be happening.</p>
+
+<p>Instead, to further test the FSM, be explicit about the current state and what should happen next. Add a test for it:</p>
+
+<pre class="syntax scala">"when a DataRetrieved message arrives from the old system" - {
+  "moves to AllRetrieved when data from the new system is already present" in {
+    val fsm = TestFSMRef(new ComparisonEngine())
+        
+    //set our initial state with setState
+    fsm.setState(PendingComparison, ComparisonStatus("someid", None, Some("newData")))
+
+    fsm ! DataRetrieved("oldSystem", "oldData")
+    fsm.stateName should be (AllRetrieved)
+    fsm.stateData should be (ComparisonStatus("someid", Some("oldData"), Some("newData")))
+  }
+}
+</pre>
+
+<p>By mixing in ImplicitSender or using TestProbes we can also verify messages the FSM should be sending in response to incoming messages.</p>
+
+<p>Testing is an essential part of developing applications. Unit tests should be explicit and granular. For higher level orchestration integration tests, taking a black-box approach, provide ways to oversee entire processes. Don&#8217;t let your code become too unwieldy to manage: use the tools at your disposal and good coding practices to stay lean. Akka&#8217;s FSM provides ways of programming transitional behavior over time and Akka&#8217;s FSM Testkit support provides a way of ensuring that code works over time.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/">Using Typesafe’s Config for Scala (and Java) for Application Configuration</a></h1>
+        <span class="post-date">Feb 23 2014</span>
+        
+
+<p>I recently leveraged <a href="https://github.com/typesafehub/config">Typesafe&#8217;s Config</a> library to refactor configuration settings for a project. I was very pleased with the API and functionality of the library.</p>
+
+<p>The documentation is pretty solid so there&#8217;s no need to go over basics. One feature I like is the clear hierarchy when specifying configuration values. I find it helpful to put as much as possible in a reference.conf file in the /resources directory for an application or library. These can get overridden in a variety of ways, primarily by adding an application.conf file to the bundled output&#8217;s classpath. The <a href="https://github.com/sbt/sbt-native-packager">sbt native packager</a>, helpful for deploying applications, makes it easy to attach a configuration file to an output. This is helpful if you have settings which you normally wouldn&#8217;t want to use during development, say using remote actors with akka. I find placing a reasonable set of defaults in a reference.conf file allows you to easily transport a configuration around while still overriding it as necessary. Otherwise you can get into copy and paste hell by duplicating configurations across multiple files for multiple environments.</p>
+
+<h2 id="alternative-overrides:25b0f7af66c88453ba07c790c20bec8d">Alternative Overrides</h2>
+
+<p>There are two other interesting ways you can override configuration settings: using environment variables or java system properties. The environment variable approach comes in very handy when pushing to cloud environments where you don&#8217;t know what a configuration is beforehand. Using the ${?VALUE} pattern a property will only be set if a value exists. This allows you to provide an option for overriding a value without actually having to specify one.</p>
+
+<p>Here&#8217;s an example in a conf file using substitution leveraging this technique:</p>
+
+<pre><code>http {
+ port = 8080
+ port = ${?HTTP_PORT}
+}
+</code></pre>
+
+<p>We&#8217;re setting a default port of 8080. If the configuration can find a valid substitute it will replace the port value with the substitute; otherwise, it will keep it at 8080. The configuration library will look up its hierarchy for an HTTP_PORT value, checking other configuration files, Java system properties, and finally environment variables. Environment variables aren&#8217;t perfect, but they&#8217;re easy to set and leveraged in a lot of places. If you leave out the ? and just have ${HTTP_PORT} then the application will throw an exception if it can&#8217;t find a value. But by using the ? you can override as many times as you want. This can be helpful when running apps on Heroku where environment variables are set for third party services.</p>
+
+<h3 id="using-java-system-properties:25b0f7af66c88453ba07c790c20bec8d">Using Java System Properties</h3>
+
+<p>Java system properties provide another option for setting config values. The shell script created by sbt-native-packager supports java system properties, so you can also set the http port via the command line using the -D flag:</p>
+
+<pre><code>bin/bash_script_from_native_packager -Dhttp.port=8081
+</code></pre>
+
+<p>This can be helpful if you want to run an akka based application with a different log level to see what&#8217;s going on in production:</p>
+
+<pre><code>bin/some_akka_app_script -Dakka.loglevel=debug
+</code></pre>
+
+<p>Unfortunately sbt run doesn&#8217;t support java system properties so you can&#8217;t tweak settings with the command line when running sbt. The <a href="https://github.com/spray/sbt-revolver">sbt-revolver</a> plugin, which allows you to run your app in a forked JVM, does allow you to pass java arguments using the command line. Once you&#8217;re set up with this plugin you can change settings by adding your Java overrides after <code>---</code>:</p>
+
+<pre><code>re-start --- -Dhttp.port=8081
+</code></pre>
+
+<h3 id="with-c3p0:25b0f7af66c88453ba07c790c20bec8d">With c3p0</h3>
+
+<p>I was really excited to see that the <a href="http://www.mchange.com/projects/c3p0/#c3p0_conf">c3p0 connection pool library also supports Typesafe Config</a>. So you can avoid those annoying xml-based files and merge your c3p0 settings directly with your regular configuration files. I&#8217;ve migrated an application to a <a href="docker.io">docker</a> based development environment and used this c3p0 feature with <a href="http://docs.docker.io/en/latest/use/working_with_links_names/">docker links</a> to set mysql settings:</p>
+
+<pre><code>app {
+ db {
+  host = localhost
+  host = ${?DB_PORT_3306_TCP_ADDR}
+  port = &quot;3306&quot;
+  port = ${?DB_PORT_3306_TCP_PORT}
+ }
+}
+
+c3p0 {
+ named-configs {
+  myapp {
+      jdbcUrl = &quot;jdbc:mysql://&quot;${app.db.host}&quot;:&quot;${app.db.port}&quot;/MyDatabase&quot;
+  }
+ }
+}
+</code></pre>
+
+<p>When I link a mysql container to my app container with <code>--link mysql:db</code> Docker will inject the DB_PORT_3306_TCP_* environment variables which are pulled by the above settings.</p>
+
+<h3 id="accessing-values-from-code:25b0f7af66c88453ba07c790c20bec8d">Accessing Values From Code</h3>
+
+<p>One other practice I like is having a single &#8220;Config&#8221; class for an application. It can be very tempting to load a configuration node from anywhere in your app but that can get messy fast. Instead, create a config class and access everything you need through that:</p>
+
+<pre><code>object MyAppConfig {
+  private val config =  ConfigFactory.load()
+
+  private lazy val root = config.getConfig(&quot;my_app&quot;)
+
+  object HttpConfig {
+    private val httpConfig = config.getConfig(&quot;http&quot;)
+
+    lazy val interface = httpConfig.getString(&quot;interface&quot;)
+    lazy val port = httpConfig.getInt(&quot;port&quot;)
+  }
+}
+</code></pre>
+
+<p>Type safety, Single Responsibility, and no strings all over the place.</p>
+
+<h3 id="conclusion:25b0f7af66c88453ba07c790c20bec8d">Conclusion</h3>
+
+<p>When dealing with configuration think about what environments you have and what the actual differences are between those environments. Usually this is a small set of differing values for only a few properties. Make it easy to change just those settings without changing&#8211;or duplicating&#8211;anything else. This could done via environment variables, command line flags, even loading configuration files from a url. Definitely avoid copying the same value across multiple configurations: just distill that value down to a lower setting in a hierarchy. By minimizing configuration files you&#8217;ll be making your life a lot easier.</p>
+
+<p>If you&#8217;re developing an app for distribution, or writing a library, providing a well-documented configuration file (<a href="https://github.com/spray/spray/blob/master/spray-can/src/main/resources/reference.conf">spray&#8217;s spray-can reference.conf is an excellent example</a>) you can allow users to override defaults easily in a manner that is suitable for them and their runtimes.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/02/using-akkas-clusterclient/">Using Akka’s ClusterClient</a></h1>
+        <span class="post-date">Feb 5 2014</span>
+        <p>I&#8217;ve been spending some time implementing a feature which leverages Akka&#8217;s <a href="http://doc.akka.io/docs/akka/2.2.3/contrib/cluster-client.html">ClusterClient</a> (<a href="http://doc.akka.io/api/akka/2.2.3/index.html#akka.contrib.pattern.ClusterClient">api docs</a>). A ClusterClient can be useful if:</p>
+
+<ul>
+<li>You are running a service which needs to talk to another service in a cluster, but you don&#8217;t that service to be in the cluster (cluster roles are another option for interconnecting services where separate hosts are necessary but I&#8217;m not sold on them just yet).</li>
+<li>You don&#8217;t want the overhead of running an http client/server interaction model between these services, but you&#8217;d like similar semantics. Spray is a great akka framework for api services but you may not want to write a Spray API or use an http client library.</li>
+<li>You want to use the same transparency of local-to-remote actors but don&#8217;t want to deal with remote actorref configurations to specific hosts.</li>
+</ul>
+
+<p>The documentation was a little thin on some specifics so getting started wasn&#8217;t as smooth sailing as I&#8217;d like. Here are some gotchas:</p>
+
+<ul>
+<li>You only need <code>akka.extensions = [&quot;akka.contrib.pattern.ClusterReceptionistExtension&quot;]</code> on the Host (Server) Cluster. (If your client isn&#8217;t a cluster, you&#8217;ll get a runtime exception).</li>
+<li>&#8220;Receptionist&#8221; is the default name for the Host Cluster actor managing ClusterClient connections. Your ClusterClient connects first to the receptionist (via the set of initial contacts) then can start sending messages to actors in the Host Cluster. The name is configurable.</li>
+<li>The client actor system using the ClusterClient needs to have a Netty port open. You must use either actor.cluster.ClusterActorRefProvider or actor.remote.RemoteActorRefProvider. Otherwise the Host Cluster and ClusterClient can&#8217;t establish proper communication. You can use the ClusterActorRefProvider on the client even you&#8217;re not running a cluster.</li>
+<li>As a ClusterClient you wrap messages with a ClusterClient.send (or sendAll) message first. (I was sending vanilla messages and they weren&#8217;t going through, but this is in the docs).</li>
+</ul>
+
+<p>ClusterClients are worth checking out if you want to create physically separate yet interconnected systems but don&#8217;t want to go through the whole load-balancer or http-layer setup. Just another tool in the Akka toolbelt!</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/01/first-class-function-example-in-scala-and-go/">First Class Function Example in Scala and Go</a></h1>
+        <span class="post-date">Jan 20 2014</span>
+        <p>Go and Scala both make functions first-class citizens of their language. I recently had to recurse a directory tree in Go and came across the <a href="http://golang.org/pkg/path/filepath/#Walk">Walk</a> function which exemplifies first-class functions. The Walk function talks a path to start a directory traversal and calls a function WalkFunc for everything it finds in the sub-tree:</p>
+
+<pre class="syntax go">func Walk(root string, walkFn WalkFunc) error </pre>
+
+<p>If you&#8217;re coming from the <a href="http://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html">Kingdom of Nouns</a> you may assume WalkFunc is a class or interface with a method for Walk to call. But that cruft is gone; WalkFunc is just a regular function with a defined signature given its own type, WalkFunc:</p>
+
+<pre class="syntax go">type WalkFunc func(path string, info os.FileInfo, err error) error
+</pre>
+
+<p>Why is this interesting? I wasn&#8217;t surprised Go would have a built-in method for crawling a directory tree. It&#8217;s a pretty common scenario, and I&#8217;ve written similar code many times before. What&#8217;s uncommon about directory crawling is what you want to do with those files: open them up, move them around, inspect them. Separating the common from the uncommon is where first-class functions come into play. How much code have you had to write to just write the code you want?</p>
+
+<p>Scala hides the OOP-ness of its underlying runtime by compile-time tricks, putting a first-class function like:</p>
+
+<pre class="syntax go">val walkFunc = (file: java.io.File) => { /* do something with the file */ }
+</pre>
+
+<p>into a class of <a href="http://www.scala-lang.org/api/current/index.html#scala.Function1">Function1</a>. C# does something similar with its various <a href="http://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx">function classes</a> and delegate constructs. Go makes the interesting design decision of forcing function declarations outside of structs, putting an emphasis on stand-alone functions and struct extensibility. There are no classes in Go to encapsulate functions.</p>
+
+<p>We can write a walk method for our walkFunc in Scala by creating a method which takes a function as a parameter (methods and functions have nuanced differences in Scala, but don&#8217;t worry about it):</p>
+
+<pre class="syntax scala">object FileUtil {
+  def walk(file: File, depth: Int, walkFunc: (File, Int) => Unit): Unit = {
+    walkFunc(file, depth)
+    Option(file.listFiles).map(_.map(walk(_, depth + 1, walkFunc)))
+  }
+}
+</pre>
+
+<p>In our Scala walk function we added a depth parameter which tracks how deep you are in the stack. We&#8217;re also wrapping the listFiles method in an Option to avoid a possible null pointer exception.</p>
+
+<p>We can tweak our walkFunc and use our Scala walk function:</p>
+
+<pre class="syntax scala">import FileUtil._
+val walkFunc = (path: File, depth: Int) => { println(s"$depth, ${path}") }
+walk(new File("/path/to/dir"), 0, walkFunc)
+</pre>
+
+<p>Because typing (File, Int) =&gt; Unit is somewhat obscure, type aliases come in handy. We can refactor this with a type alias:</p>
+
+<pre class="syntax scala">type WalkFunc = (File, Int) => Unit
+</pre>
+
+<p>And update our walk method accordingly:</p>
+
+<pre class="syntax scala">def walk(file: File, depth: Int, walkFunc: WalkFunc): Unit = { ... }
+</pre>
+
+<p>First class functions are powerful constructs making code flexible and succinct. If all you need is to call a function than pass that function as a parameter to your method. Just as classes have the <a href="http://en.wikipedia.org/wiki/Single_responsibility_principle">single responsibility principle</a> functions can have them too; avoid doing too much at once like file crawling and file processing. Instead pass a file processor call to your file crawling function.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2014/01/programming-akkas-finite-state-machines-in-scala/">Programming Akka’s Finite State Machines in Scala</a></h1>
+        <span class="post-date">Jan 16 2014</span>
+        <p>Over the past few months my team has been building a new suite of services using Scala and Akka. An interesting aspect of Akka</p>
+
+<p>we leverage is its <a href="http://doc.akka.io/docs/akka/2.2.3/scala/fsm.html">Finite State Machine</a> support. Finite State Machines</p>
+
+<p>are a staple of computer programming although not often used in practice. A conceptual process can usually be represented with a finite state machine: there are a defined number of states with explicit transitions between states. If we have a vocabulary</p>
+
+<p>around these states and transitions we can program the state machine.</p>
+
+<p>A traditional implementation of an FSM is to check and maintain state explicitly via if/else conditions, use the state design pattern, or implement some other construct. Using Akka&#8217;s FSM support, which explicitly defines states and offers transition hooks, allows us to easily implement our conceptual model of a process. FSM is built on top of Akka&#8217;s actor model giving excellent concurrency controls so we can run many of these state machines simultaneously. You can implement your own FSM with Akka&#8217;s normal actor behavior with the <em>become</em> method to change the partial function handling messages. However FSM offers some nice hooks plus data management in addition to just changing behavior.</p>
+
+<p>As an example we will use Akka&#8217;s FSM support to check data in two systems. Our initial process is fairly simplistic but provides a good overview of leveraging Finite State Machines. Say we are rolling out a new system and we want to ensure data flows to both the old and new system. We need a process which waits a certain</p>
+
+<p>amount of time for data to appear in both places. If data is found in both systems we will check the data for consistency,</p>
+
+<p>if data is never found after a threshold we will alert data is out of sync.</p>
+
+<p>Based on our description we have four states. We define our states using a sealed trait:</p>
+
+<pre class="syntax scala">sealed trait ComparisonStates
+case object AwaitingComparison extends ComparisonStates
+case object PendingComparison extends ComparisonStates
+case object AllRetrieved extends ComparisonStates
+case object DataUnavailable extends ComparisonStates
+</pre>
+
+<p>Next we define the data we manage between state transitions. We need to manage an identifier with data from</p>
+
+<p>the old and new system. Again we use a sealed trait:</p>
+
+<pre class="syntax scala">sealed trait Data
+case object Uninitialized extends Data
+case class ComparisonStatus(id: String, oldSystem: Option[SomeData] = None, newSystem: Option[SomeData] = None) extends Data
+</pre>
+
+<p>A state machine is just a normal actor with the FSM trait mixed in. We declare our</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">ComparisonEngine</pre>
+
+<p>actor with FSM support,</p>
+
+<p>specifying our applicable state and data types:</p>
+
+<pre class="syntax scala">class ComparisonEngine extends Actor with FSM[ComparisonStates, Data] {
+}
+</pre>
+
+<p>Instead of handling messages directly in a receive method FSM support creates an additional layer of messaging handling.</p>
+
+<p>When using FSM you match on both message and current state. Our FSM only handles two messages: <em>Compare(id: Int)</em> and</p>
+
+<p><em>DataRetrieved(system: String, someData: SomeData)</em>. You can construct your data types and messages any way</p>
+
+<p>you please. I like to keep states abstract as we can generalize on message handling. This</p>
+
+<p>prevents us from dealing with too many states and state transitions.</p>
+
+<p>Let&#8217;s start implementing the body of our <em>ComparisonEngine</em>. We will start with our initial state:</p>
+
+<pre class="syntax scala">startWith(AwaitingComparison, Uninitialized)
+
+when(AwaitingComparison) {
+  case Event(Compare(id), Uninitialized) =>
+    goto(PendingComparison) using ComparisonStatus(id)
+}
+</pre>
+
+<p>We simply declare our initial state is AwaitingComparison, and the only message we are willing to process is a Compare.</p>
+
+<p>When we receive this message we go to a new state&#8211;PendingComparison&#8211;and set some data. Notice how we aren&#8217;t actually doing anything else?</p>
+
+<p>A great aspect of FSM is the ability to listen on state transitions. This allows us to separate state transition logic from state transition</p>
+
+<p>actions. When we transition from an initial state to a PendingComparison state we want to ask our two systems for data. We simply match</p>
+
+<p>on state transitions and add our applicable logic:</p>
+
+<pre class="syntax scala">onTransition {
+    case AwaitingComparison -> PendingComparison =>
+      nextStateData match {
+        case ComparisonStatus(id, old, new) => {
+          oldSystemChecker ! VerifyData(id)
+          newSystemChecker ! VerifyData(id)
+        }
+      }
+    }
+</pre>
+
+<p><em>oldSystemChecker</em> and <em>newSystemChecker</em> are actors responsible for verifying data in their respective systems. These can be passed in to the FSM as constructor arguments, or you can have the FSM create the actors and supervise their lifecycle.</p>
+
+<p>These two actors will send a DataRetrieved message back to our FSM when data is present. Because we are now in the <em>PendingComparison</em></p>
+
+<p>state we specify our new state transition actions against a set of possible scenarios:</p>
+
+<pre class="syntax scala">when(PendingComparison, stateTimeout = 15 minutes) {
+  case Event(DataRetrieved("old", old), ComparisonStatus(id, _, None)) => {
+    stay using ComparisonStatus(id, Some(old), None)
+  }
+  case Event(DataRetrieved("new", new), ComparisonStatus(id, None, _)) => {
+    stay using ComparisonStatus(id, None, Some(new))
+  }
+  case Event(StateTimeout, c: ComparisonStatus) => {
+    goto(IdUnavailable) using c
+  }
+  case Event(DataRetrieved(system, data), cs @ ComparisonStatus(_, _, _)) => {
+    system match {
+      case "old" => goto(AllRetrieved) using cs.copy(old = Some(data))
+      case "new" => goto(AllRetrieved) using cs.copy(new = Some(data))
+    }
+  }
+}
+</pre>
+
+<p>Our snippet says we will wait 15 minutes for our systemChecker actors to return with data, otherwise, we&#8217;ll timeout and go to the unavailable state. Either the old</p>
+
+<p>system or new system will return first, in which case, one set of data in our ComparisonStatus will be None. So we stay in the PendingComparison state until</p>
+
+<p>the other system returns. If our previous pattern matches do not match, we know the current message we are processing is the final message. Notice how we don&#8217;t care how these actors are getting their data. That&#8217;s the responsibility of the child actors.</p>
+
+<p>Once we have all our data,</p>
+
+<p>so we go to the AllRetrieved state with the data from the final message.</p>
+
+<p>There are a couple of ways we could have defined our states. We could have a state for the oldSystem returned or newSystem returned. I find it easier to</p>
+
+<p>create a generic <em>PendingComparison</em> state to keep our pattern matching for pending comparisons consolidated in a single partial function.</p>
+
+<p>Our final states are pretty simple: we just stop our state machine!</p>
+
+<pre class="syntax scala">when(IdUnavailable) {
+  case Event(_, _) => {
+    stop
+  }
+}
+when(AllRetrieved) {
+  case Event(_, _) => {
+    stop
+  }
+}
+</pre>
+
+<p>Our last step is to add some more onTransition checks to handle our final states:</p>
+
+<pre class="syntax scala">case PendingComparison -> AllRetrieved =>
+    nextStateData match {
+      case ComparisonStatus(id, old, new) => {
+        //Verification logic
+     }
+   }
+ case _ -> IdUnavailable =>
+   nextStateData match {
+     case ComparisonStatus(id, old, new) => {
+      //Handle timeout
+      }
+   }
+</pre>
+
+<p>We don&#8217;t care how we got to the <em>AllRetrieved</em> state; we just know we are there and we have the data we need. We can offload our verification logic</p>
+
+<p>to another actor or inline it within our FSM as necessary.</p>
+
+<p>Implementing processing workflows can be tricky involving a lot of boilerplate code. Conditions must be checked, timeouts handled, error handling implemented.</p>
+
+<p>The Akka FSM approach provides a foundation for implementing workflow based processes on top of Akka&#8217;s great supervision support. We create a ComparisonEngine</p>
+
+<p>for every piece of data we need to check. If an engine dies we can supervise and restart. My favorite feature is the separation of what causes a state transition</p>
+
+<p>with what happens during a state transition. Combined with isolated behavior amongst actors this creates a cleaner, isolated and composable application to manage.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2013/10/overview-on-web-performance-and-scalability/">Overview on Web Performance and Scalability</a></h1>
+        <span class="post-date">Oct 12 2013</span>
+        <p>I recently gave a talk to some junior developers on performance and scalability. The talk is relatively high-level, providing an overview of non-programming topics which are important for performance and scalability. The <a href="http://michaelhamrah.com/perf/#/">original deck is here</a> and on <a href="https://speakerdeck.com/mhamrah/things-to-know-about-web-performance">speaker deck</a>.</p>
+
+<p>A few months ago I also <a href="http://michaelhamrah.com/spdy/">gave a talk on spdy</a> which is also on <a href="https://speakerdeck.com/mhamrah/intro-to-spdy">speaker deck</a>.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2013/06/scala-web-apis-up-and-running-with-spray-and-akka/">Spray API Development: Getting Started with a Spray Web Service Using JSON</a></h1>
+        <span class="post-date">Jun 22 2013</span>
+        
+
+<p><a href="spray.io">Spray</a> is a great library for building http api&#8217;s with Scala. Just like <a href="playframework.com">Play!</a> it&#8217;s built with <a href="akka.io">Akka</a> and provides numerous low and high level tools for http servers and clients. It puts Akka and Scala&#8217;s asynchronous programming model first for high performance, composable application development.</p>
+
+<p>I wanted to highlight the <a href="http://spray.io/documentation/1.1-M8/spray-routing/">spray-routing</a> library which provides a nice DSL for defining web services. The routing library can be used with the standalone <a href="http://spray.io/documentation/1.1-M8/spray-can/#spray-can">spray-can</a> http server or in any servlet container.</p>
+
+<p>We&#8217;ll highlight a simple entity endpoint, unmarshalling Json data into an object and deferring actual process to another Akka actor. To get started with your own spray-routing project, I created a <a href="https://github.com/n8han/giter8">giter8</a> template to bootstrap your app:</p>
+
+<p><code>$g8 mhamrah/sbt -b spray</code></p>
+
+<p><a href="http://spray.io/documentation/">The documentation</a> is quite good and <a href="https://github.com/spray/spray">the source code is worth browsing</a>. For a richer routing example check out <a href="https://github.com/spray/spray/tree/release/1.1/examples/spray-routing/on-spray-can">Spray&#8217;s own routing project</a> which shows off http-streaming and a few other goodies.</p>
+
+<h2 id="creating-a-server:e4c25fe8ca10d79600b3f827b4d5c8dd">Creating a Server</h2>
+
+<p>We are going to create three main structures: An actor which contains our Http Service, a trait which contains our route definition, and a Worker actor that will do the work of the request.</p>
+
+<p>The service actor is launched in your application&#8217;s main method. Here we are using Scala&#8217;s App class to launch our server feeding in values from <a href="https://github.com/typesafehub/config">typesafe config</a>:</p>
+
+<pre><code>#!scala
+val service= system.actorOf(Props[SpraySampleActor], &quot;spray-sample-service&quot;)
+IO(Http) ! Http.Bind(service, system.settings.config.getString(&quot;app.interface&quot;), system.settings.config.getInt(&quot;app.port&quot;))
+
+println(&quot;Hit any key to exit.&quot;)
+val result = readLine()
+system.shutdown()
+</code></pre>
+
+<p>Because Spray is based on Akka, we are just creating a standard actor system and passing our service to <a href="http://doc.akka.io/docs/akka/snapshot/scala/io.html">Akka&#8217;s new IO library</a>. This is the high performance foundation for our service built on the spray-can server.</p>
+
+<h2 id="the-service-actor:e4c25fe8ca10d79600b3f827b4d5c8dd">The Service Actor</h2>
+
+<p>Our service actor is pretty lightweight, as the functionality is deferred to our route definition in the HttpService trait. We only need to set the actorRefFactory and call runRoutes from our trait. You could simply set routes directly in this class, but the separation has its benefits, primarily for testing.</p>
+
+<pre><code>#!scala
+class SpraySampleActor extends Actor with SpraySampleService with SprayActorLogging {
+  def actorRefFactory = context
+  def receive = runRoute(spraysampleRoute)
+}
+</code></pre>
+
+<h2 id="the-service-trait-8211-spray-8217-s-routing-dsl:e4c25fe8ca10d79600b3f827b4d5c8dd">The Service Trait &#8211; Spray&#8217;s Routing DSL</h2>
+
+<p><a href="http://spray.io/documentation/1.1-M8/spray-routing/key-concepts/routes/">Spray&#8217;s Routing DSL</a> is where Spray really shines. It is similar to Sinatra inspired web frameworks like Scalatra, but relies on composable function elements so requests pass through a series of actions similar to <a href="http://unfiltered.databinder.net/">Unfiltered</a>. The result is an easy to read syntax for routing and the Dont-Repeat-Yourself of composable functions.</p>
+
+<p>To start things off, we&#8217;ll create a simple get/post operation at the /entity path:</p>
+
+<pre><code>#!scala
+trait SpraySampleService extends HttpService {
+  val spraysampleRoute = {
+    path(&quot;entity&quot;) {
+      get { 
+        complete(&quot;list&quot;)
+      } ~
+      post {
+        complete(&quot;create&quot;)
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>The path, get and complete operations are <a href="http://spray.io/documentation/1.1-M8/spray-routing/key-concepts/directives/#directives">Directives</a>, the building blocks of Spray routing. Directives take the current http request and process a particular action against it. The above snippet doesn&#8217;t much except filter the request on the current path and the http action. The path directive also lets you pull out path elements:</p>
+
+<pre><code>#!scala
+path (&quot;entity&quot; / Segment) { id =&gt;
+    get {
+      complete(s&quot;detail ${id}&quot;)
+    } ~
+    post {
+      complete(s&quot;update ${id}&quot;)
+    }
+  }
+</code></pre>
+
+<p>There are a number ways to pull out elements from a path. Spray&#8217;s unit tests are the best way to explore the possibilities.</p>
+
+<p>You can use curl to test the service so far:</p>
+
+<pre><code>#!bash
+curl -v http://localhost:8080/entity
+curl -v http://localhost:8080/entity/1234
+</code></pre>
+
+<h2 id="unmarshalling:e4c25fe8ca10d79600b3f827b4d5c8dd">Unmarshalling</h2>
+
+<p>One of the nice things about Spray&#8217;s DSL is how function composition allows you to build up request handling. In this snippet we use json4s support to unmarshall the http request into a JObject:</p>
+
+<pre><code>#!scala
+/* We need an implicit formatter to be mixed in to our trait */
+object Json4sProtocol extends Json4sSupport {
+  implicit def json4sFormats: Formats = DefaultFormats
+}
+
+trait SpraySampleService extends HttpService {
+  import Json4sProtocol._
+
+  val spraysampleRoute = {
+    path(&quot;entity&quot;) {
+      /* ... */
+      post {
+        entity(as[JObject]) { someObject =&gt;
+          doCreate(someObject)
+        }
+      } 
+     /* ... */
+  }
+}
+</code></pre>
+
+<p>We use the Entity to directive to unmarshall the request, which finds the implicit json4s serializer we specified earlier. SomeObject is set to the JObject produced, which is passed to our yet-to-be-built doCreate method. If Spray can&#8217;t unmarshall the entity an error is returned to the client.</p>
+
+<p>Here&#8217;s a curl command that sets the http method to POST and applies the appropriate header and json body:</p>
+
+<pre><code>#!bash
+curl -v -X POST http://localhost:8080/entity -H &quot;Content-Type: application/json&quot; -d &quot;{ \&quot;property\&quot; : \&quot;value\&quot; }&quot;
+</code></pre>
+
+<h2 id="leveraging-akka-and-futures:e4c25fe8ca10d79600b3f827b4d5c8dd">Leveraging Akka and Futures</h2>
+
+<p>We want to keep our route structure clean, so we defer actual work to another Akka worker. Because Spray is built with Akka this is pretty seamless. We need to create our ActorRef to send a message. We&#8217;ll also implement our doCreate function called within the earlier POST /entity directive:</p>
+
+<pre><code>#!scala
+//Our worker Actor handles the work of the request.
+val worker = actorRefFactory.actorOf(Props[WorkerActor], &quot;worker&quot;)
+
+def doCreate[T](json: JObject) = {
+  //all logic must be in the complete directive
+  //otherwise it will be run only once on launch
+  complete {
+    //We use the Ask pattern to return
+    //a future from our worker Actor,
+    //which then gets passed to the complete
+    //directive to finish the request.
+    (worker ? Create(json))
+                .mapTo[Ok]
+                .map(result =&gt; s&quot;I got a response: ${result}&quot;)
+                .recover { case _ =&gt; &quot;error&quot; }
+  }
+}
+</code></pre>
+
+<p>There&#8217;s a couple of things going on here. Our worker class is looking for a Create message, which we send to the actor with the ask (?) pattern. The ask pattern lets us know the task completed so we call then tell the client. When we get the Ok message we simply return the result; in the case of an error we return a short message. The response future returned is passed to Spray&#8217;s complete directive, which will then complete the request to the client. There&#8217;s no blocking occurring in this snippet: we are just wiring up futures and functions.</p>
+
+<p>Our worker doesn&#8217;t do much but out the message contents and return a random number:</p>
+
+<pre><code>#!scala
+class WorkerActor extends Actor with ActorLogging {
+import WorkerActor._
+
+def receive = {
+  case Create(json) =&gt; {
+    log.info(s&quot;Create ${json}&quot;)
+    sender ! Ok(util.Random.nextInt(10000))
+    }
+  }
+}
+</code></pre>
+
+<p>You can view how the entire request is handled <a href="https://github.com/mhamrah/spray-sample/blob/master/src/main/scala/Boot.scala">by viewing the source file</a>.</p>
+
+<h2 id="wrapping-up:e4c25fe8ca10d79600b3f827b4d5c8dd">Wrapping Up</h2>
+
+<p>Reading the documentation and exploring the unit tests are the best way to understand the power of Spray&#8217;s routing DSL. The performance of the standalone <a href="http://spray.io/documentation/1.1-M8/spray-can/">spray-can</a> service is outstanding, and the Akka platform adds resiliency through its lifecycle management tools. Akka&#8217;s remoting feature allows systems to build out their app tiers. A project I&#8217;m working on is using Spray and Akka to publish messages to a pub/sub system for downstream request handling. It&#8217;s an excellent platform for high performance API development. <a href="https://github.com/mhamrah/spray-sample">Full spray-sample is on GitHub</a>.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2013/05/updating-flickr-photos-with-gpx-data-using-scala-getting-started/">Updating Flickr Photos with Gpx Data using Scala: Getting Started</a></h1>
+        <span class="post-date">May 5 2013</span>
+        
+
+<p>If you read this blog you know I&#8217;ve just returned from six months of travels around Asia, documented on our tumblr, <a href="http://thegreatbigadventure.tumblr.com">The Great Big Adventure</a> with photos on <a href="http://flickr.com/hamrah">Flickr</a>. Even though my camera doesn&#8217;t have a GPS, I realized toward the second half of the trip I could mark GPS waypoints and write a program to link that data later. I decided to write this little app in Scala, a language I&#8217;ve been learning since my return. The app is still a work in progress, but instead of one long post I&#8217;ll spread it out as I go along.</p>
+
+<h2 id="the-workflow:57d2935fd637ebe85b97477296b70272">The Workflow</h2>
+
+<p>When I took a photo I usually marked the location with a waypoint in my GPS. I accumulated a set of around 1000 of these points spread out over three gpx (xml) files. My plan is to:</p>
+
+<ol>
+<li>Read in the three gpx files and combine them into a distinct list.</li>
+<li>For each day I have at least one gpx point, get all of my flickr images for that data.</li>
+<li>For each image, find the waypoint timestamp with the least difference in time.</li>
+<li>Update that image with the waypoint data on Flickr.</li>
+</ol>
+
+<h2 id="getting-started:57d2935fd637ebe85b97477296b70272">Getting Started</h2>
+
+<p>If you&#8217;re going to be doing anything with Scala, learning <a href="http://scala-sbt.org">sbt</a> is essential. Luckily, it&#8217;s pretty straightforward, but the documentation across the internet is somewhat inconsistent. As of this writing, <a href="http://twitter.github.io/scala_school/sbt.html">Twitter&#8217;s Scala School SBT Documentation</a>, which I used as a reference to get started, incorrectly states that SBT creates a template for you. It no longer does, with the preferred approach to use <a href="https://github.com/n8han/giter8">giter8</a>, an excellent templating tool. I created <a href="https://github.com/mhamrah/sbt.g8">my own simplified version</a> which is based off of the excellently documented <a href="https://github.com/ymasory/sbt.g8">template by Yuvi Masory</a>. Some of the versions in build.sbt are a outdated, but it&#8217;s worthwhile reading through the code to get a feel for the Scala and SBT ecosystem. The g8 project also contains a good working example of custom sbt commands (like g8-test). One gotcha with SBT: if you change your build.sbt file, you must call <em>reload</em> in the sbt console. Otherwise, your new dependencies will not be picked up. For rubyists this is similar to running <em>bundle update</em> after changing your gemfile.</p>
+
+<h2 id="testing:57d2935fd637ebe85b97477296b70272">Testing</h2>
+
+<p>I&#8217;m a big fan of TDD, and strive for a test-first approach. It&#8217;s easy to get a feel for the small stuff in the scala repl, but orchestration is what programming is all about, and TDD allows you to design and throughly test functionality in a repeatable way. The two main libraries are <a href="https://code.google.com/p/specs/">specs</a> (actually, it&#8217;s now <a href="http://etorreborre.github.io/specs2/">specs2</a>) and <a href="http://www.scalatest.org/">ScalaTest</a>. I originally went with specs2. It was fine, but I wasn&#8217;t too impressed with the output and not thrilled with the matchers. I believe these are all customizable, but to get a better feel for the ecosystem I switched to ScalaTest. I like ScalaTest&#8217;s default output better and the flexible composition of testing styles (I&#8217;m using FreeSpec) and matchers (ShouldMatchers) provide a great platform for testing. Luckily, both specs2 and scalatest integrate with SBT which provides continuous testing and growl support, so you don&#8217;t need to fully commit to either one too early.</p>
+
+    </div>
+  
+    <div class="post">
+        <h1 class="post-title"><a href="http://blog.michaelhamrah.com/2013/04/six-months-of-computer-science-without-computers/">Six Months of Computer Science Without Computers</a></h1>
+        <span class="post-date">Apr 22 2013</span>
+        
+
+<p>A few weeks ago I returned from <a href="http://thegreatbigadventure.tumblr.com">a six month trip around Asia</a>. I didn&#8217;t have a computer while abroad, but I was able to catch up on several tech books I never had time for previously. Reading about programming without actually programming was an interesting and rewarding circumstance. It provided a unique mental model: it was no longer about &#8220;how you do this&#8221; but about &#8220;why would you do this&#8221;. Accomplishment of a task via implementation was not an end goal. The end goal was simply absorbing information; once read, it didn&#8217;t need to be applied. It only needed to be reasoned about and hypothetically applied under a specific situation (which I usually did on a trek or on a beach). Before I would have been eager to try it out, hacking away, but without a computer, I couldn&#8217;t. It was liberating. Given a problem, and a set of constraints, what&#8217;s the ideal solution? I realize this is somewhat of an ivory-tower mentality, however, I also realized some of the best software has emerged from an idealism to solve problems in an opinionated way. Sometimes we are too consumed by the here-and-now we fail to step back for the bigger picture. Conversely, we hold onto our ideals and fail to adapt to changing circumstances.</p>
+
+<p>My favorite aspect of learning technology while traveling abroad did not come from any book or video. A large part of computer science is about optimizing systems under the pressure of constraints. Efficient algorithms, clean code, improving performance. The world is full of sub-optimal processes. Burmese hotels, the Lao transportation system, and Nepalese immigration to name a few. On a larger scale sun-optimal problems are created by geographic, socio-economic, or political constraints. People try the best they can to improve their way of life, and unfortunately, the processes are often &#8220;implemented&#8221; with a &#8220;naïve&#8221; solution. Some are also inspiring. It was powerful to see these systems up close, with cultural and historical factors so foreign. One thing is certain: when you optimize for efficiency, everyone wins.</p>
+
+<p>Below are a selection of books and resources I found particularly interesting. I encourage you to check them out, hopefully away from a computer in a foreign land:</p>
+
+<p><a href="http://programmer.97things.oreilly.com/wiki/index.php/97_Things_Every_Programmer_Should_Know">97 Things Every Programmer Should Know</a> : A great selection of tidbits from a variety of sources. Nothing new for the experienced programmer, but reading through the sections is a great refresher to keep core principles fresh. Worthwhile to randomly select a chapter now and again for those &#8220;oh yeah&#8221; moments.</p>
+
+<p><a href="http://shop.oreilly.com/product/9780596510046.do">Beautiful Code</a> by Andy Oram and Greg Wilson: My favorite book. Not so much about code, but the insight about solving problems makes it a great read. I appreciate the intelligent thought process which went into some of the chapters. Python&#8217;s hashtable implementation and debugging prioritization in the Linux kernel are two highlights.</p>
+
+<p><a href="http://shop.oreilly.com/product/0636920022626.do">Exploring Everyday Things with R and Ruby</a> by Sau Sheong Chang: This is a short book with great content. You only need an elementary knowledge of programming and mathematics to appreciate the concepts. It&#8217;s also a great way to get a taste of R. The book covers a variety of topics from statistics, machine learning, and simulations. My favorite aspect is how to use modeling to verify a hypothesis or create a simulation. The chapters involving emergent behavior are particularly interesting.</p>
+
+<p><a href="http://shop.oreilly.com/product/0636920018483.do">Machine Learning for Hackers</a> by Drew Conway and John Myles White: I&#8217;ve been interested in machine learning for a while, and I was very happy with this read. Far more technical and mathematical than <em>Exploring Everyday Things</em>, this book digs into supervised and unsupervised learning and several aspects of statistics. If you&#8217;re interested in data science and are comfortable with programming, this book is for you.</p>
+
+<p><a href="http://www.manning.com/raychaudhuri/">Scala in Action</a> by Nilanjan Raychaudhuri: Scala and Go have been on my radar for a while as new languages to learn. It&#8217;s funny to learn a new programming language without being able to test-drive it, but I appreciated the separation. My career has largely been focused on OOP: leveraging design patterns, class composition, SOLID principles, enterprise architecture. After reading this book I realize I was missing out on great functional programming paradigms I was only unconsciously using. Languages like Clojure and Haskell are gaining steam for a radically different approach to OOP, and Scala provides a nice balance between the two. It&#8217;s also wonderfully expressive: traits, the type system, and for-comprehension are beautiful building blocks to managing complex behavior. Since returning I&#8217;ve been doing Scala full-time and couldn&#8217;t be happier. It&#8217;s everything you need with a statically typed language with everything you want from a dynamic one (well, there&#8217;s still no method-missing, at least not yet). I looked at a few Scala books and this is easily on the top of the list. Nilanjan does an excellent job balancing language fundamentals with applied patterns.</p>
+
+<p><a href="http://shop.oreilly.com/product/0636920014348.do">HBase: The Definitive Guide</a> by Lars George: I&#8217;ve been deeply interested in distributed databases and performance for some time. I purchased this book a few years ago when first exploring NoSQL databases. Since then, Cassandra has eclipsed the distributed hashtable family of databases (Riak, Hbase, Voldemort) but I found this book a great read. No matter what implementation you go with, this book will help you think in a column-orientated way, offering great tidbits into architectural tradeoffs which went into HBase&#8217;s design. At the very least, this book will give you a solid foundation to compare against other BigTable/Dynamo clones.</p>
+
+<p><a href="http://www.aosabook.org/en/index.html">The Architecture of Open Source Applications</a>: I was excited when I stumbled upon this website. It offers a plethora of information from elite contributors. The applied-practices and deep architectural insight are valuable lessons to learn from. <a href="http://www.aosabook.org/en/nginx.html">Andrew Alexeev on Nginx</a>, <a href="http://www.aosabook.org/en/distsys.html">Kate Matsudaira on Scalable Web Architecture</a> and <a href="http://www.aosabook.org/en/zeromq.html">Martin Sústrik on ZeroMQ</a> are highlights.</p>
+
+<h2 id="itunes-u:c1a63adcb7740f27e4178f1e17a10120">iTunes U</h2>
+
+<p>I was also able to check out some courses on iTunes U while traveling. <a href="http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-172-performance-engineering-of-software-systems-fall-2010/index.htm">The MIT OCW Performance Engineering of Software Systems</a> was my favorite. Prof. Saman Amarasinghe and Prof. Charles Leiserson were both entertaining lecturers, and the course provided great insight into memory management, parallel programming, hardware architecture, and bit hacking. I also watched several lectures on algorithms giving me a new found appreciation for Big-O notation (I wish I remembered more while on the job interview circuit). I&#8217;ve been gradually neglecting the importance of algorithmic design since graduating ten years ago, but found revisiting sorting algorithms, dynamic programming, and graph algorithms refreshing. Focusing on how well code runs is as important as how well it&#8217;s written. Like most things, there&#8217;s a naïve brute-force solution and an elegant, efficient other solution. You may not know what the other solution is, but knowing there&#8217;s one lurking behind the curtain will make you a better engineer.</p>
+
+<p>So, if you can (and you definitely can!) take a break, grab a book, read it distraction free, gaze out in space and think. You&#8217;ll like what you&#8217;ll find!</p>
+
+    </div>
+  
+</div>
+
+<div class="pagination">
+  
+  <a class="pagination-item older" href="http://blog.michaelhamrah.com/page/4/">Older</a>
+  
+
+  
+  <a class="pagination-item newer" href="http://blog.michaelhamrah.com/page/2/">Newer</a>
+  
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

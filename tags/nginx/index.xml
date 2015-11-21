@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/nginx/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2013-03-17 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Scalability comparison of WordPress with NGINX/PHP-FCM and Apache on an ec2-micro instance.</title>
+          <link>http://blog.michaelhamrah.com/2013/03/scalability-comparison-of-wordpress-with-nginxphp-fcm-and-apache-on-an-ec2-micro-instance/</link>
+          <pubDate>Sun, 17 Mar 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/03/scalability-comparison-of-wordpress-with-nginxphp-fcm-and-apache-on-an-ec2-micro-instance/</guid>
+          <description>&lt;p&gt;For the past few years this blog ran apache + mod_php on an ec2-micro instance. It was time for a change; I&amp;#8217;ve enjoyed using nginx in other projects and thought I could get more out of my micro server. I went with a php-fpm/nginx combo and am very surprised with the results. The performance charts are below; for php the response times varied little under minimal load, but nginx handled heavy load far better than apache. Overall throughput with nginx was phenomenal from this tiny server. The result for static content was even more impressive: apache effectively died after ~2000 concurrent connections and 35k total pages killing the server; nginx handled the load to 10,000 very well and delivered 160k successful responses.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s the &lt;a href=&#34;http://loader.io&#34;&gt;loader.io&lt;/a&gt; results from static content from &lt;a href=&#34;http://www.michaelhamrah.com&#34;&gt;http://www.michaelhamrah.com&lt;/a&gt;, comparing apache with nginx. I suggest clicking through and exploring the charts:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/f1c357b13b1f554eef534b79866eb5ce&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Apache only handled 33.5k successful responses up to about 1,300 concurrent connections, and died pretty quickly. Nginx did far better:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/9430bdfcab50f31dc66f3ea3014beb84&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;160k successful response with a 22% error rate and avg. response time of 142ms. Not too shabby. The apache run effectively killed the server and required a full reboot as ssh was unresponsive. Nginx barely hiccuped.&lt;/p&gt;
+
+&lt;p&gt;The results of my wordpress/php performance is also interesting. I only did 1000 concurrent users hitting blog.michaelhamrah.com. Here&amp;#8217;s the apache result:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/210867953c97cdd2dd4308dce17bcae3&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There was a 21% error rate with 13.7k request served and a 237ms average response time (I believe the lower average is due to errors). Overall not too bad for an ec2-micro instance, but the error rate was quite high and nginx again did far better:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/631e11ff9206c6c7a3820c891380c9a3&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A total of 19k successes with a 0% error rate. The average response time was a little higher than apache, but nginx did serve far more responses. I also get a kick out of the response time line between the two charts. Apache is fairly choppy as it scales up, while nginx increases smoothly and evens out when the concurrent connections plateaus. That&amp;#8217;s what scalability should look like!&lt;/p&gt;
+
+&lt;p&gt;There are plenty of guides online showing how to get set up with nginx/php-fpm. &lt;a href=&#34;http://codex.wordpress.org/Nginx&#34;&gt;The Nginx guide on WordPress Codex&lt;/a&gt; is the most thorough, but there&amp;#8217;s a &lt;a href=&#34;http://todsul.com/install-configure-php-fpm&#34;&gt;straightforward nginx/php guide on Tod Sul&lt;/a&gt;. I also relied on an &lt;a href=&#34;http://dak1n1.com/blog/12-nginx-performance-tuning&#34;&gt;nginx tuning guide from Dakini&lt;/a&gt; and &lt;a href=&#34;http://calendar.perfplanet.com/2012/using-nginx-php-fpmapc-and-varnish-to-make-wordpress-websites-fly/&#34;&gt;this nginx/wordpress tuning guide from perfplanet&lt;/a&gt;. They both have excellent information. I also think you should check out the &lt;a href=&#34;https://github.com/h5bp/server-configs/blob/master/nginx/nginx.conf&#34;&gt;html5 boilerplate nginx conf files&lt;/a&gt; which have great bits of information.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;re setting this up yourself, start simple and work your way up. The guides above have varying degrees of information and various configuration options which may conflict with each other. Here&amp;#8217;s some tips:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Decide if you&amp;#8217;re going with a socket or tcp/ip connection between nginx + php-fcm. A socket connection is slightly faster and local to the system, but a tcp/ip is (marginally) easier to set up and good if you are spanning multiple nodes (you could create a php app farm to compliment an nginx front-facing web farm).&lt;/p&gt;
+
+&lt;p&gt;I chose to go with the socket approach between nginx/php-fpm. It was relatively painless, but I did hit a snag passing nginx requests to php. I kept getting a &amp;#8220;no input file specified&amp;#8221; error. It turns out it was a simple permissions issue: the default php-fpm user was different the nginx user the webserver runs under. Which leads me to:&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Plan your users. Security issues are annoying, so make sure file and app permissions are all in sync.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Check your settings! Read through default configuration options so you know what&amp;#8217;s going on. For instance you may end up running more worker processes in your nginx instance than available cpu&amp;#8217;s killing performance. Well documented configuration files are essential to tuning.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Plan for access and error logging. If things go wrong during the setup, you&amp;#8217;ll want to know what&amp;#8217;s going on and if your server is getting requests. You can turn access logs of later.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Get your app running, test, and tune. If you do too many configuration settings at once you&amp;#8217;ll most likely hit a snag. I only did a moderate amount of tuning; nginx configuration files vary considerably, so again it&amp;#8217;s a good idea to read through the options and make your own call. Ditto for php-fcm.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I am really happy with the idea of running php as a separate process. Running php as a daemon has many benefits: you have a dedicate process you can monitor and recycle for php without effecting your web server. Pooling apps allows you to tune them individually. You&amp;#8217;re also not tying yourself to a particular web server; php-fpm can run fine with apache. In TCP mode you can even offload your web server to separate node. At the very least, you can distinguish php usage against web server usage.&lt;/p&gt;
+
+&lt;p&gt;So my only question is why would anyone still use apache?&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

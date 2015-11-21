@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/akka-http/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2015-01-18 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Adding Http Server-Side Events to Akka-Streams</title>
+          <link>http://blog.michaelhamrah.com/2015/01/adding-http-server-side-events-to-akka-streams/</link>
+          <pubDate>Sun, 18 Jan 2015 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2015/01/adding-http-server-side-events-to-akka-streams/</guid>
+          <description>
+
+&lt;p&gt;In my last blog post we pushed messages from RabbitMq to the console using Akka-Streams. We used the &lt;a href=&#34;https://github.com/ScalaConsultants/reactive-rabbit&#34;&gt;reactive-rabbit&lt;/a&gt; library to create an Akka-Streams &lt;code&gt;Source&lt;/code&gt; for our &lt;em&gt;streams-playground&lt;/em&gt; queue and mapped the stream to a &lt;code&gt;println&lt;/code&gt; statement before dropping it into an empty &lt;code&gt;Sink&lt;/code&gt;. All Akka-Streams need both a &lt;code&gt;Source&lt;/code&gt; and &lt;code&gt;Sink&lt;/code&gt; to be runnable; we created a complete stream blueprint to be run later.&lt;/p&gt;
+
+&lt;p&gt;Printing to the console is somewhat boring, so let&amp;#8217;s take it up a notch. The excellent &lt;a href=&#34;spray.io&#34;&gt;Spray Web Service&lt;/a&gt; library is being merged into Akka as &lt;a href=&#34;http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/scala/http/index.html&#34;&gt;Akka-Http&lt;/a&gt;. It&amp;#8217;s essentially Spray built with Akka-Streams in mind. The routing dsl, immutable request/response model, and high-performance http server are all there; think of it as Spray vNext. Check out Mathias Doenitz&amp;#8217;s &lt;a href=&#34;http://spray.io/scaladays2014/#/&#34;&gt;excellent slide deck on kaka-http from Scala days&lt;/a&gt; to learn more on this evolution of Spray; it also highlights the back-pressure functionality Akka-Streams will give you for Http.&lt;/p&gt;
+
+&lt;p&gt;Everyone&amp;#8217;s familiar with the Request/Response model of Http, but to show the power of Akka-Streams we&amp;#8217;ll add Heiko Seeberger&amp;#8217;s &lt;a href=&#34;https://github.com/hseeberger/akka-sse&#34;&gt;Akka-SSE&lt;/a&gt; library which brings Server-Side Events to Akka-Http. &lt;a href=&#34;http://www.html5rocks.com/en/tutorials/eventsource/basics/&#34;&gt;Server-Side Events&lt;/a&gt; are a more efficient form of long-polling that&amp;#8217;s a lighter protocol to the bi-directional WebSocket API. It allows the client to easily register a handler which the server can then push events to. Akka-SSE adds an SSE-enabled completion marshaller to Akka-Http so your response can be SSE-aware. Instead of printing messages to the console, we&amp;#8217;ll push those messages to the browser with SSE. This shows one of my favorite features of stream-based programming: we simply connect the specific pipes to create more complex flows, without worrying about the how; the framework handles that for us.&lt;/p&gt;
+
+&lt;h2 id=&#34;changing-the-original-example:a9237168f3920272915cff712cbdae5e&#34;&gt;Changing the Original Example&lt;/h2&gt;
+
+&lt;p&gt;If you&amp;#8217;re interested in the code, simply &lt;a href=&#34;https://github.com/mhamrah/streams-playground&#34;&gt;clone the original repo&lt;/a&gt; with &lt;code&gt;git clone https://github.com/mhamrah/streams-playground.git&lt;/code&gt; and then &lt;code&gt;git checkout adding-sse&lt;/code&gt; to get to this step in the repo.&lt;/p&gt;
+
+&lt;p&gt;To modify the original example we&amp;#8217;re going to remove the &lt;code&gt;println&lt;/code&gt; and &lt;code&gt;Sink&lt;/code&gt; calls from &lt;code&gt;RabbitMqConsumer&lt;/code&gt; so we can plug in our enhanced &lt;code&gt;Source&lt;/code&gt; to the Akka-Http sink.&lt;/p&gt;
+
+&lt;pre class=&#34;scala&#34;&gt;def consume() = {
+    Source(connection.consume(&#34;streams-playground&#34;))
+      .map(_.message.body.utf8String)
+  }
+&lt;/pre&gt;
+
+&lt;p&gt;This is now a partial flow: we build up the original RabbitMq &lt;code&gt;Source&lt;/code&gt; with our map function to get the message body. Now the &amp;#8220;other end&amp;#8221; of the stream needs to be connected, which we defer until later. This is the essence of stream composition. There are multiple ways we can cut this up: our &lt;code&gt;map&lt;/code&gt; call could be the only thing in this function, with our &lt;code&gt;RabbitMq&lt;/code&gt; source defined elsewhere.&lt;/p&gt;
+
+&lt;h2 id=&#34;adding-akka-http:a9237168f3920272915cff712cbdae5e&#34;&gt;Adding Akka-Http&lt;/h2&gt;
+
+&lt;p&gt;If you&amp;#8217;re familiar with Spray, Akka-Http won&amp;#8217;t look that much different. We want to create an &lt;code&gt;Actor&lt;/code&gt; for our http service. There are just a few different traits we extend our original Actor from, and a different way plug our routing functions into the Akka-Streams pipeline.&lt;/p&gt;
+
+&lt;pre class=&#34;scala&#34;&gt;class HttpService
+  extends Actor
+  with Directives
+  with ImplicitFlowMaterializer
+  with SseMarshalling {
+  // implementation
+  // ...
+}
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Directives&lt;/code&gt; gives us the routing dsl, similar to &lt;a href=&#34;http://spray.io/documentation/1.2.2/spray-routing/&#34;&gt;spray-routing&lt;/a&gt; (the functions are pretty much the same). Because Akka-Http uses Akka-Streams, we need an implicit &lt;code&gt;FlowMaterializer&lt;/code&gt; in scope to run the stream. &lt;code&gt;ImplicitFlowMaterializer&lt;/code&gt; provides a default. Finally, the &lt;code&gt;SseMarshalling&lt;/code&gt; trait from Heiko Seeberger&amp;#8217;s library provides the SSE functionality we want for our app. &lt;em&gt;If you&amp;#8217;re interested in a robust Akka-Streams sample, Heiko&amp;#8217;s &lt;a href=&#34;https://github.com/hseeberger/reactive-flows&#34;&gt;Reactive-Flows&lt;/a&gt; is worth checking out.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;##Binding to Http&lt;/p&gt;
+
+&lt;p&gt;Within our actor body we&amp;#8217;ll create our http stream by binding a routing function to an http port. This is a little different than Spray; there&amp;#8217;s just some syntactical sugar so we can plug our routing function directly into the http pipeline:&lt;/p&gt;
+
+&lt;pre class=&#34;scala&#34;&gt;//need an ExecutionContext for Futures
+    import context.dispatcher
+
+    //There&#39;s no receive needed, this is implicit
+    //by our routing dsl.
+    override def receive: Receive = Actor.emptyBehavior
+
+    //We bind to an interface and create a 
+    //Flow with our routing function
+    Http()(context.system)
+      .bind(Config.interface, Config.port)
+      .startHandlingWith(route)
+
+    //Simple composition of basic routes
+    private def route: Route = sse ~ assets
+
+    //Defined later
+    private def see: Route = ???
+    private def assets: Route = ???
+&lt;/pre&gt;
+
+&lt;p&gt;If we weren&amp;#8217;t using the Routing DSL we&amp;#8217;d need to explicitly handling HttpRequest messages in our receive partial function. But the &lt;code&gt;startHandlingWith&lt;/code&gt; call will do this for us; like spray-routing it takes in a routing function, and will call the appropriate route handler. New http requests will be pumped into the route handler and completed with the completion function at the end of the route.&lt;/p&gt;
+
+&lt;p&gt;##Adding SSE&lt;/p&gt;
+
+&lt;p&gt;The last piece of the puzzle is adding a specific route for SSE. We need two pieces for SSE support: first, an implicit function which converts the type produced from our &lt;code&gt;Source&lt;/code&gt; to an &lt;code&gt;Sse.Message&lt;/code&gt;; in this case, we need to go from a &lt;code&gt;String&lt;/code&gt; to an &lt;code&gt;Sse.Message&lt;/code&gt;. Secondly we need a route where a client can subscribe to the stream of server-side events.&lt;/p&gt;
+
+&lt;pre class=&#34;scala&#34;&gt;//Convert a String (our RabbitMq output) to an SSE Message
+ implicit def stringToSseMessage(event: String): Sse.Message = {
+      Sse.Message(event, Some(&#34;published&#34;))
+    }
+
+ //add a route for our sse endpoint.
+ private def sse: Route = {
+      path(&#34;messages&#34;) {
+        get {
+          complete {
+            RabbitMqConsumer.consume
+          }
+        }
+      }
+    }
+&lt;/pre&gt;
+
+&lt;p&gt;In order for SSE to work in the browser we need to produce a stream of SSE messages with a specific content-type: &lt;code&gt;Content-Type: text/event-stream&lt;/code&gt;. That&amp;#8217;s what Akka-SSE provides: the SSE Message case classes and serialization to &lt;code&gt;text/event-stream&lt;/code&gt;. Our implicit function &lt;code&gt;stringToSseMessage&lt;/code&gt; allows the Scala types to align so the &amp;#8220;stream pipes&amp;#8221; can be attached together. In our case, we produce a stream of &lt;code&gt;String&lt;/code&gt;s, our RabbitMq message body. We need to produce a stream of &lt;code&gt;SSE.Messages&lt;/code&gt; so we add a simple conversion function. When a new client connects, they&amp;#8217;ll attach themselves to the consuming RabbitMq &lt;code&gt;Source&lt;/code&gt;. Akka-Http lets you natively complete a route with a &lt;code&gt;Flow&lt;/code&gt;; Akka-Sse simply completes that &lt;code&gt;Flow&lt;/code&gt; with the proper Http response for SSE.&lt;/p&gt;
+
+&lt;h2 id=&#34;trying-it-out:a9237168f3920272915cff712cbdae5e&#34;&gt;Trying It Out&lt;/h2&gt;
+
+&lt;p&gt;Fire up SBT and run &lt;code&gt;~reStart&lt;/code&gt;, ensuring you have RabbitMq running and set up a queue named &lt;code&gt;streams-playground&lt;/code&gt; (&lt;a href=&#34;https://github.com/mhamrah/streams-playground/blob/master/README.md&#34;&gt;see the README&lt;/a&gt;). In your console, try a simple &lt;code&gt;curl&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;pre class=&#34;bash&#34;&gt;$ curl http://localhost:8080/messages
+&lt;/pre&gt;
+
+&lt;p&gt;The curl command won&amp;#8217;t return. Start sending messages via the RabbitMq Admin console and you&amp;#8217;ll see the SSE output in action:&lt;/p&gt;
+
+&lt;pre class=&#34;bash&#34;&gt;$ curl localhost:8080/messages
+event:published
+data:woot!
+
+event:published
+data:another message!
+&lt;/pre&gt;
+
+&lt;p&gt;Close the curl command, and fire up your browser at &lt;code&gt;http://localhost:8080&lt;/code&gt; you&amp;#8217;ll see a simple web page (served from the &lt;code&gt;assets&lt;/code&gt; route). Continue sending messages via RabbitMq, and those messages will be added to the dom. Most modern browsers natively support SSE with the &lt;code&gt;EventSource&lt;/code&gt; object. The following gist creates an event listener on the &lt;code&gt;&#39;published&#39;&lt;/code&gt; event, which is produced from our &lt;code&gt;implicit string =&amp;gt; sse&lt;/code&gt; function above:&lt;/p&gt;
+
+&lt;p&gt;There&amp;#8217;s also handlers for opening the initial sse connection and any errors produced. You could also add more events; our simple conversion only goes from a &lt;code&gt;String&lt;/code&gt; to one specific SSE of type &lt;code&gt;published&lt;/code&gt;. You could map a set of case classes&amp;#8211;preferably an algebraic data type&amp;#8211;to a set of events for the client. Most modern browsers support &lt;code&gt;EventStream&lt;/code&gt;; there&amp;#8217;s no need a for an additional framework or library. The gist above includes a test I copied from the &lt;a href=&#34;http://www.html5rocks.com/en/tutorials/eventsource/basics/&#34;&gt;html5 rocks page on SSE&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-naive-implementation:a9237168f3920272915cff712cbdae5e&#34;&gt;A Naive Implementation&lt;/h2&gt;
+
+&lt;p&gt;If you open up multiple browsers to localhost, or &lt;code&gt;curl http://localhost:8080/messages&lt;/code&gt; a few times, you&amp;#8217;ll notice that a published message only goes to one client. This is because our initial RabbitMq &lt;code&gt;Source&lt;/code&gt; only consumes one message from a queue, and passes that down the stream pipeline. That single message will only go to one of the connected clients; there&amp;#8217;s no fanout or broadcasting. You can do that with either RabbitMq or Akka-Streams, try experimenting for yourself!&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

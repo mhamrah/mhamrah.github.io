@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/jquery/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2010-02-05 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Using Flickr and jQuery to learn JSONP</title>
+          <link>http://blog.michaelhamrah.com/2010/02/using-flickr-and-jquery-to-learn-jsonp/</link>
+          <pubDate>Fri, 05 Feb 2010 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2010/02/using-flickr-and-jquery-to-learn-jsonp/</guid>
+          <description>&lt;p&gt;I was playing around with the Flickr API recently and got a little stuck: when using jQuery to call the &lt;a href=&#34;http://www.flickr.com/services/feeds/&#34;&gt;Flickr public feed&lt;/a&gt; using jQuery&amp;#8217;s $.getJSON method, I wasn&amp;#8217;t getting any results.  I thought maybe I was parsing the response incorrectly, but when I went to check out the data coming back in firebug, nothing was there.  I couldn&amp;#8217;t believe it- the response headers were present, but the body was blank.  Calling the public feed url from the browser worked fine.  What&amp;#8217;s more interesting was everything worked in IE.  So I did some experimenting and learned the issue: I wasn&amp;#8217;t correctly using the endpoint to work with &lt;a href=&#34;http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/&#34;&gt;JSONP&lt;/a&gt;, which is required when using jQuery with Flickr.  Then I thought I better learn more about JSONP.&lt;/p&gt;
+
+&lt;p&gt;There are &lt;a href=&#34;http://www.insideria.com/2009/03/what-in-the-heck-is-jsonp-and.html&#34;&gt;plenty of good articles&lt;/a&gt; about &lt;a href=&#34;http://en.wikipedia.org/wiki/JSON#JSONP&#34;&gt;JSONP&lt;/a&gt; on the net.  Essentially, JSONP allows you to specify custom callbacks when making remote ajax calls.  Firefox seems to be more strict when dealing with jsonp, which is why I didn&amp;#8217;t get a response body.  What did the trick was adding the&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;jsoncallback=?&lt;/pre&gt;
+
+&lt;p&gt;query string parameter to the end of my Flickr url.  This allows the jQuery framework to route to the default success function you pass to .getJSON(), like so:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$.getJSON(
+            &#39;http://api.flickr.com/services/feeds/photos_public.gne?format=json&amp;jsoncallback=?&#39;,
+               function(data) {
+                   $.each(data.items, function(i, item) {
+                       $(&#34;img&#34;).attr(&#34;src&#34;, item.media.m).appendTo(&#34;#images&#34;);
+                   });
+               });
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.michaelhamrah.com/blog/wp-content/FlickrJsonp.html&#34;&gt;Here&amp;#8217;s an example of this call&lt;/a&gt;.   So what happens if we replace the ? with something else? Well, passing a simple text string will be treated like a normal function call.  Take a look at the example below:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;function GetItemsUsingExternalCallback() {
+            $.ajax({ url: &#39;http://api.flickr.com/services/feeds/photos_public.gne?format=json&amp;jsoncallback=myCallbackFunction&#39;,
+                dataType: &#39;jsonp&#39;
+            });
+        }
+  function myCallbackFunction(data) {
+  //dostuff
+  }
+&lt;/pre&gt;
+
+&lt;p&gt;jQuery will try and call &amp;#8220;myCallbackFunction&amp;#8221; as a normal function call instead of routing to the standard success function that&amp;#8217;s part of the getJSON call.  &lt;a href=&#34;http://www.michaelhamrah.com/blog/wp-content/FlickrJsonp.html&#34;&gt;The example page also includes this approach.&lt;/a&gt; There&amp;#8217;s only a slight difference between the two approaches, but it&amp;#8217;s cool that jQuery can call a function outside of the normal success callback.  Of course, if you needed to reuse a common callback across multiple ajax calls, you&amp;#8217;d probably want to call that function directly from the success method, rather than inlining the function in the .ajax call.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Organizing Javascript for Event Pooling with jQuery</title>
+          <link>http://blog.michaelhamrah.com/2009/12/organizing-javascript-for-event-pooling-with-jquery/</link>
+          <pubDate>Mon, 21 Dec 2009 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2009/12/organizing-javascript-for-event-pooling-with-jquery/</guid>
+          <description>
+
+&lt;p&gt;It turns out my most popular article of the past year was &lt;a href=&#34;http://www.michaelhamrah.com/blog/index.php/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/&#34;&gt;Event Pooling with jQuery&amp;#8217;s Bind and Trigger&lt;/a&gt;.&amp;nbsp; I wanted to write a follow up article taking this approach one step further by discussing how to logically organize the relationship between binders and triggers on a javascript heavy UI.&amp;nbsp; It&amp;#8217;s important to properly design the code structure of your javascript to create a flexible and maintainable system.&amp;nbsp; This is essential for any software application. &amp;nbsp;For javascript development, you don&amp;#8217;t want to end up with odd dependencies hindering changes or randomly bubbled events causing bugs.&lt;/p&gt;
+
+&lt;h3 id=&#34;event-pooling-a-quick-review:b1aa778a626daa40c556fbd74954875f&#34;&gt;Event Pooling: A Quick Review&lt;/h3&gt;
+
+&lt;p&gt;What is event pooling and why is it important?&amp;nbsp; Quite simply it&amp;#8217;s a way to manage dependencies.&amp;nbsp; You create a loosely coupled system between the thing which triggers an action to happen and the thing which responds to the action, called the binder.&amp;nbsp; jQuery has some cool bind and trigger functionality which allows you to create custom events for event pooling- and you can use this to easily wire up multiple functions to write complex javascript with ease.&amp;nbsp; I encourage you to check out the original how-to article &lt;a href=&#34;../index.php/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/&#34;&gt;Event Pooling with jQuery&amp;#8217;s Bind and Trigger&lt;/a&gt; to learn more. &amp;nbsp;It&amp;#8217;s a very powerful technique.&lt;/p&gt;
+
+&lt;p&gt;Now, as we all know, with great power comes great responsibility.&amp;nbsp; If you structure the relationship between binders and triggers incorrectly you&amp;#8217;ll end up with a mess on your hands, a spider web of logic which is almost impossible to unwind.&amp;nbsp; Here are some tips to better structure your binders and triggers for a logical and maintainable application&lt;/p&gt;
+
+&lt;h3 id=&#34;presenting-the-problem:b1aa778a626daa40c556fbd74954875f&#34;&gt;Presenting the Problem&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2009/12/Stupid-Form1.png&#34;&gt;&lt;img class=&#34;alignleft size-medium wp-image-292&#34; title=&#34;Stupid Form&#34; src=&#34;http://i1.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2009/12/Stupid-Form1-300x179.png?resize=300%2C179&#34; alt=&#34;Stupid Form&#34; data-recalc-dims=&#34;1&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s take a look at an example app. &amp;nbsp;Here&amp;#8217;s a simple form where a user can draft a report, save it for later, or send it immediately. There are three options to enter data in the name/email/department field.&amp;nbsp; The user can enter it manually, choose from the autosuggest area at left, or simply select one of the favorite links.&amp;nbsp; The autosuggest/favorite link would pre-populate the textboxes used in the form. &amp;nbsp;If all the data is there, the send button is enabled. &amp;nbsp;If not, it&amp;#8217;s disabled.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s discuss how we&amp;#8217;d deal with enabling and disabling the send button. &amp;nbsp;There are many ways to approach this. &amp;nbsp;A traditional way is to wire up some standard event to our textboxes:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: jscript; title: ; notranslate&#34; title=&#34;&#34;&gt;$(&#39;#name&#39;).keyup(function(){
+    //Logic (hopefully structured in a reusable way across all controls).
+});
+//Do this for all other input controls.
+&lt;/pre&gt;
+
+&lt;p&gt;This solution is perfectly valid and works, but it has some shortcomings. &amp;nbsp;First, you need to wire up all three controls and route them to the same function. &amp;nbsp;Next, even though the keyup will handle user input, the textboxes could change in other ways- either from the favorite link or the auto suggest box. &amp;nbsp;We&amp;#8217;ll need to call our validation function in numerous places. &amp;nbsp;There may also be other logic we want to incorporate within the text change event unrelated to enabling of the send button- email validation, for instance, which is only applicable to the email textbox, or a certain length requirement on the name textbox. &amp;nbsp;What happens if there&amp;#8217;s a new requirement where the subject/body must be filled to enable the send button? Where does all this functionality fall into our larger requirements?&lt;/p&gt;
+
+&lt;p&gt;You can imagine the complexity of writing the javascript required for this UI. &amp;nbsp;We need a slew of functions to deal with validation logic: Both for enabling the send button and other input controls. &amp;nbsp;We need to wire up all our onkeyup and on click events across the auto suggest field, textboxes, and favorite links. &amp;nbsp;Function calls are everywhere. &amp;nbsp;It will take all your code complete skills to manage those dependencies and keep this code lean.&lt;/p&gt;
+
+&lt;p&gt;This is where event pooling comes into play: instead of direct dependencies between these controls and logic, you bubble events to a middle man and allow interested parties to respond accordingly. &amp;nbsp;Instead of all the controls telling the send button to enable/disable itself, the send button &amp;#8220;listens&amp;#8221; for changes it cares about- when the value of the textbox changes- and responds accordingly. &amp;nbsp;The responsibility is reversed- the function which needs to be called can choose when it&amp;#8217;s called, rather than waiting for something to call it.&lt;/p&gt;
+
+&lt;h3 id=&#34;dependencies-between-binders-and-triggers:b1aa778a626daa40c556fbd74954875f&#34;&gt;Dependencies Between Binders and Triggers&lt;/h3&gt;
+
+&lt;p&gt;With event pooling there are two things you need to be conscience of:&amp;nbsp; the events themselves and the data passed between the binder and trigger.&amp;nbsp; These items form the two dependencies between binders and triggers.&amp;nbsp; The event serves as a link between the binder and trigger and the data is the information which is passed between the two.&amp;nbsp; It&amp;#8217;s essential to properly structure your events and choose the right data transfer option to avoid pitfalls over the life of the application.&amp;nbsp; We&amp;#8217;ll deal with each aspect individually. &amp;nbsp;This post will be about the structure of events, and I&amp;#8217;ll write various ways to pass data between parties in another post.&lt;/p&gt;
+
+&lt;h3 id=&#34;structuring-custom-events:b1aa778a626daa40c556fbd74954875f&#34;&gt;Structuring Custom Events&lt;/h3&gt;
+
+&lt;p&gt;&lt;span style=&#34;font-weight: normal;&#34;&gt;Most people are familiar with the standard javascript events: click, blur, enter, exit, etc.&amp;nbsp; These are what you usually wire up to functions when you want to do something.&amp;nbsp; However, they only go so far- you need custom events when you have a lot of stuff happening. &amp;nbsp;Why use them?&amp;nbsp; Quite simply, it&amp;#8217;s more logical for your application control flow. &amp;nbsp;For our send button functionality, we want our validation function to act when something happens. &amp;nbsp;This &amp;#8220;something&amp;#8221; will be a custom event we create. &amp;nbsp;We have two options for naming our event: we can name the event after what is intended, like &amp;#8220;ENABLE_DISABLE_SEND_BUTTON&amp;#8221;, or name the event after what has happened, like &amp;#8220;NAME_CHANGED&amp;#8221; or &amp;#8220;FAVORITE_LINK_SELECTED&amp;#8221;. &amp;nbsp;The former option requires multiple events to be fired when something happens. &amp;nbsp;The autosuggest box, for instance, would require the ENABLE_DISABLE_SEND_BUTTON trigger, a SELECTED_CONTACT event for setting the textboxes, and whatever else happens after a contact is selected. &amp;nbsp;The latter option requires just one trigger to be fired, but the binder must subscribe to multiple events. &amp;nbsp;The choice can also be presented like this: do we want each element to fire a trigger for each action which should occur, or have a function to listen for multiple triggered events?&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span style=&#34;font-weight: normal;&#34;&gt;&lt;a href=&#34;http://i0.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2009/12/Event_Pooling-2-e1261347350823.png&#34;&gt;&lt;img class=&#34;aligncenter size-full wp-image-300&#34; title=&#34;Event_Pooling-2&#34; src=&#34;http://i0.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2009/12/Event_Pooling-2-e1261347350823.png?resize=600%2C317&#34; alt=&#34;&#34; data-recalc-dims=&#34;1&#34; /&gt;&lt;/a&gt;&lt;br /&gt; &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Naming events may seem like an arbitrary and thoughtless act, but it&amp;#8217;s essential to have a naming strategy with event pooling. &amp;nbsp;Just like wiring up functions directly can be unwieldy, so can a slew of events wired up every which way.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;For event pooling, it&amp;#8217;s more important to name events after what has happened, rather than what is intended.&lt;/strong&gt; So the correct approach is to go with things like &amp;#8220;NAME_CHANGED&amp;#8221;, &amp;#8220;CONTACT_SELECTED&amp;#8221;, or &amp;#8220;EMAIL_CHANGED&amp;#8221;. &amp;nbsp;The rationale has to do with dependencies themselves: &amp;nbsp;we don&amp;#8217;t want functions called from random parts of the system via specific events: &amp;nbsp;this is no better than calling functions directly from disparate parts of the system. &amp;nbsp;And with specific action related events like &amp;#8220;ENABLE_SEND&amp;#8221; you just know someone is going to take a shortcut and wire some random binder to a totally unrelated trigger, because that trigger is fired from the control they want to monitor. &amp;nbsp;Binders- and the functions they are wired to- should proactively &amp;#8220;listen&amp;#8221; for things which it&amp;#8217;s interested in. &amp;nbsp;This allows you to easily know why a function is being called. &amp;nbsp;If you need to change why or how something is handled, you go to the recipient, not the caller. &amp;nbsp;The caller, after all, could be anything, and more importantly the caller could be triggering multiple things.&lt;/p&gt;
+
+&lt;pre class=&#34;brush: jscript; title: ; notranslate&#34; title=&#34;&#34;&gt;//Funnel all possibilities to single custom trigger
+$(&#39;#name&#39;).bind(&#39;keyup enter&#39;, function() {
+ $(document).trigger(&#39;NAME_CHANGED&#39;);
+});
+
+//Funnel all possibilites to single custom trigger
+$(&#39;#email&#39;).bind(&#39;keyup enter&#39;, function() {
+$(document).trigger(&#39;EMAIL_CHANGED&#39;);
+});
+
+//I know why this is being called because I&#39;ve subscribed
+//to the events I&#39;m interested in.
+$(document).bind(&#39;NAME_CHANGED EMAIL_CHANGED&#39;, function()
+{
+ //Handle validation, etc.
+});
+&lt;/pre&gt;
+
+&lt;p&gt;The cool thing about this approach is there may be something else which will cause an email or name changed event to happen: specifically, when someone has selected a contact from the autosuggest list or a favorite link is selected. &amp;nbsp;You can fire the name_changed event from multiple places and not worry about wiring up any new triggers. &amp;nbsp;The code would look something like this:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: jscript; title: ; notranslate&#34; title=&#34;&#34;&gt;//Fired from elsewhere
+$(document).bind(&#39;FAVORITE_LINK_SELECTED&#39;, function()
+{
+  //Handle selection
+  //Set Name, Email, etc.
+  //Fire event:
+  $(document).trigger(&#39;EMAIL_CHANGED&#39;);
+  $(document).trigger(&#39;NAME_CHANGED&#39;);
+});
+&lt;/pre&gt;
+
+&lt;p&gt;How nice: &amp;nbsp;another part of the system changes the name indirectly, and we don&amp;#8217;t have to worry about hooking anything up because the binder is already subscribed to the NAME_CHANGED event.&lt;/p&gt;
+
+&lt;p&gt;Note the name doesn&amp;#8217;t necessarily correspond to a specific element: It&amp;#8217;s not a textbox_name_changed event, nor are any specific html id&amp;#8217;s involved except for wiring up a trigger from a standard keyup event. &amp;nbsp;This is an important difference: we could rename the id&amp;#8217;s, or switch to some other input control, and not have to rewire everything. &amp;nbsp;We don&amp;#8217;t care about the textbox nor that the textbox&amp;#8217;s value has changed. &amp;nbsp;We care that the textbox respresents the name entered or the email address- and we want to know when the name or email has changed. &amp;nbsp;The favorite link clicked is a good example of this nuanced difference. &amp;nbsp;Take a look at the following html:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: xml; title: ; notranslate&#34; title=&#34;&#34;&gt;&amp;lt;a href=&#39;#&#39; id=&#39;fav1&#39; class=&#39;favorite&#39;&amp;gt;My Favorite 1&amp;lt;/a&amp;gt;
+&amp;lt;a href=&#39;#&#39; id=&#39;fav2&#39; class=&#39;favorite&#39;&amp;gt;My Favorite 2&amp;lt;/a&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Imagine we&amp;#8217;ve wired the click event to fire a FAVORITE_LINK_SELECTED trigger. &amp;nbsp;With this trigger, we don&amp;#8217;t care that the link with id fav1 or fav2 has been clicked, nor the a.favorite selector has been clicked. &amp;nbsp;We don&amp;#8217;t care about ids or css classes. &amp;nbsp;We care a FAVORITE_LINK_SELECTED event has happened because that&amp;#8217;s what the id fav1 and favorite class represents- the favorite link- and we want to know when that has been selected. &amp;nbsp;We can rename the id, change the class, or even change the entire element. &amp;nbsp;As long as FAVORITE_LINK_SELECTED is fired we&amp;#8217;re good to go. &amp;nbsp;Our custom FAVORITE_LINK_SELECTED trigger is the abstraction which creates the loosely coupled system.&lt;/p&gt;
+
+&lt;h3 id=&#34;conclusion:b1aa778a626daa40c556fbd74954875f&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;One thing I haven&amp;#8217;t discuss is how data is passed from trigger to binder. &amp;nbsp;It&amp;#8217;s the other important dependency between triggers and binders which we&amp;#8217;ll discuss in another post. &amp;nbsp;The important thing to take away is why you&amp;#8217;d want to use custom named events to create a loosely coupled system. &amp;nbsp;For very straightforward pages it&amp;#8217;s probably not worth the overhead- the abstraction isn&amp;#8217;t required. &amp;nbsp;However, in a complex form where there are lots of validation dependencies, or many routes to the same function, or when multiple events can trigger an update- you want to use event pooling. &amp;nbsp;More importantly, you want to think about your strategy when it comes to naming events, because it&amp;#8217;s the description linking the caller and method together. &amp;nbsp;You do not want to code yourself into a corner!&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>All those jQuery fans: new event delegation</title>
+          <link>http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/</link>
+          <pubDate>Wed, 14 Jan 2009 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/</guid>
+          <description>&lt;p&gt;jQuery 1.3 now has a &amp;#8216;live&amp;#8217; function which acts similar to liveQuery. It lets you wire up events automatically for newly injected DOM elements. Not bad!&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Saving dynamically added list items using jQuery and ASP.NET MVC</title>
+          <link>http://blog.michaelhamrah.com/2008/12/saving-dynamically-added-list-items-using-jquery-and-aspnet-mvc/</link>
+          <pubDate>Mon, 15 Dec 2008 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2008/12/saving-dynamically-added-list-items-using-jquery-and-aspnet-mvc/</guid>
+          <description>&lt;p&gt;There are going to be times when you want to allow a user to enter multiple copies of a single form on a web page.  This frequently happens when adding items to a list- like products in a shopping cart or tasks in a task list.  You want the user to add as many &amp;#8220;items&amp;#8221; as they want to the list, then save the entire list at once.&lt;/p&gt;
+
+&lt;p&gt;Dynamically adding elements to a page is easy with jQuery, but parsing out list items on the server can be difficult- especially when you don&amp;#8217;t know how many items are on the page!   Things get even trickier when the number of input controls for each item increases- you have to keep all these input controls in sync so each item gets saved correctly.  Luckily, ASP.NET MVC has &lt;a href=&#34;http://haacked.com/archive/2008/10/23/model-binding-to-a-list.aspx&#34; target=&#34;_blank&#34;&gt;a built in feature to pull out a list of complex types posted to a page&lt;/a&gt; and automatically put them in a model.  We&amp;#8217;re going to combine this feature with jQuery to dynamically add form elements on a page which end up in a list of complex types that can be accessed in a controller action.&lt;/p&gt;
+
+&lt;p&gt;In our example,  a user will be creating a shopping list and will  have the ability to add items to the shopping list dynamically.  When the user hits &amp;#8220;Save&amp;#8221; the entire list with all items will be posted to the server and serialized into a ShoppingList model.&lt;/p&gt;
+
+&lt;p&gt;We&amp;#8217;re going to use:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax html&#34;&gt;&lt;ul&gt;
+  &lt;li&gt;
+    jQuery to dynamically drive the client side and dynamically add list items
+  &lt;/li&gt;
+    
+  
+  &lt;li&gt;
+    ASP.NET MVC as our web infrastructure
+  &lt;/li&gt;
+    
+  
+  &lt;li&gt;
+    The DefaultModelBinder to build a list of complex types which can be passed to an action method.
+  &lt;/li&gt;
+  
+&lt;/ul&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Our model is simple- we have a ShoppingList with properties of Name and ShoppingItems:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c#&#34;&gt;public class ShoppingList
+{
+public string ListName { get; set; }
+public IList&amp;lt;ShoppingItem&gt; Items { get; set; }
+}
+
+public class ShoppingItem
+{
+public string Name { get; set; }
+public int Quantity { get; set; }
+}
+
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Posting Multiple Items At Once&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The key to this feature is posting multiple related elements which end up in a list.  In order for the DefaultModelBinder to build a list, we have to post elements in a certain way.  Essentially, each set of related input elements are grouped together using a uniquer key.  The key can be any string- it doesn&amp;#8217;t have to be an integer index.&lt;/p&gt;
+
+&lt;p&gt;Keys are specified with a hidden input element.  In our sample, we want our list to end up in the myList.Items property.  So for every object in the Items list, we need a hidden input field with a name of &amp;#8220;myList.Items.Index&amp;#8221;.  The key we specify for the element will be the key we use in the name attribute the input element.  If our key is &amp;#8220;foo&amp;#8221;, and our property is &amp;#8220;Quantity&amp;#8221;, we&amp;#8217;ll have:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax html&#34;&gt;&lt;input type=&#34;hidden&#34; name=&#34;myList.Items.Index&#34; value=&#34;foo&#34; /&gt;
+
+&lt;input type=&#34;hidden&#34; name=&#34;myList.Items[foo].Quantity&#34; value=&#34;5&#34; /&gt;
+
+[/pre]
+
+Even though we couldn&#39;t do that in c#, we can do it in our markup.  Think of keys for a hashtable- the key can be anything you want.  The hashtable is a list of the complex type your building, so typing hashtable[&#34;myKey&#39;] returns the complex type, and you have access to all properties of that type.
+
+I&#39;ve created a unit test which shows off this magic for multiple items:
+
+
+
+&lt;pre class=&#34;syntax c#&#34;&gt;
+
+shoppingController.Request.Form.Add(&#34;myList.ListName&#34;, &#34;My Shopping List&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items.Index&#34;, &#34;1&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items[1].Name&#34;, &#34;Chocolate&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items[1].Quantity&#34;, &#34;5&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items.Index&#34;, &#34;Alpha&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items[Alpha].Name&#34;, &#34;Graham Crackers&#34;);
+shoppingController.Request.Form.Add(&#34;myList.Items[Alpha].Quantity&#34;, &#34;10&#34;);
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+  Notice how we&#39;re passing multiple &#34;myList.Items.Index&#34; values.  Don&#39;t worry- they won&#39;t overwrite eachother.  Servers turn multiple name values into a comma delimited list (you&#39;ll end up with: &#34;1,Alpha&#34; has your values for &#34;myList.Items.Index&#34;.  All the DefaultModelBinder is doing is parsing the list of  keys for whatever array you want, then matching those values to the form package. My naming convention of myList.Items is simply allowing the myList parameter in the controller action to be populated correctly by the DefaultModelBinder.
+&lt;/p&gt;
+
+&lt;p&gt;
+  To reiterate, the indexer I use for each array object is simply grouping related html elements together- Graham Crackers has a quantity of 10 because I&#39;m using the same indexer for each name: Items[Alpha].Name and Items[Alpha].Quantity, just like a hashtable.
+&lt;/p&gt;
+
+&lt;p&gt;
+  The rest of the unit test shows how the DefaultModelBinder will build the ShoppingList Item&#39;s property using these form values:
+&lt;/p&gt;
+
+&lt;pre class=&#34;syntax c#&#34;&gt;
+
+var defaultBinding = ModelBinders.GetBinder(typeof(ShoppingList));
+var bindingContext = new ModelBindingContext(shoppingController.ControllerContext,
+shoppingController.ValueProvider,
+typeof(ShoppingList),
+&#34;myList&#34;, null, shoppingController.ModelState, null);
+var binderResult = defaultBinding.BindModel(bindingContext);
+
+Assert.IsNotNull(binderResult);
+Assert.IsNotNull(binderResult.Value);
+Assert.IsInstanceOfType(binderResult.Value, typeof(ShoppingList));
+
+var myList = binderResult.Value as ShoppingList;
+
+Assert.IsTrue(myList.ListName == &#34;My Shopping List&#34;);
+Assert.IsTrue(myList.Items.Count &gt; 0);
+Assert.IsTrue(myList.Items[0].Name == &#34;Chocolate&#34;);
+Assert.IsTrue(myList.Items[0].Quantity == 5);
+
+Assert.IsTrue(myList.Items[1].Name == &#34;Graham Crackers&#34;);
+Assert.IsTrue(myList.Items[1].Quantity == 10);
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;The View&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  I want a button to &#34;add another item&#34; to the shopping list.  If the user clicks this button, two new textboxes should appear: one for name, and another for quantity.  These need to have the same indexer.  When the page first loads, there should already be an item to enter.
+&lt;/p&gt;
+
+&lt;p&gt;
+  I have a couple of choices to build this logic.  I could specify one set of input elements in the view, and use jQuery to add individual elements to the DOM when the user hits the button.  I don&#39;t like this idea because it means I have two places to build the list items: one in the view, the other in jQuery.  When you build the same code in multiple places, you&#39;re going to get discrepancies, which lead to bugs-  I guarantee it. I could use jQuery to add the default form when the page loads, but I don&#39;t like this- html is easy and simply, it allows me to see what I&#39;m doing.  It&#39;s much easier to write html than write javascript to build html.
+&lt;/p&gt;
+
+&lt;p&gt;
+  Instead, I&#39;m going for a partial view approach using actions.  By putting the injected section of markup into its own UserControl with a controller action I can embed the markup in the parent view and use ajax to get the rendered html snippet to the client via a url.  I can also choose how to generate the indexer in the action method&#39;s body: I&#39;m going to use Guids.  With Guids, I won&#39;t have to track any other indexers- I&#39;m guaranteed a unique value I can use for all the related elements in the partial view.  Here&#39;s the markup:
+&lt;/p&gt;
+
+&lt;p&gt;
+  The parent view, which the user sees on load:
+&lt;/p&gt;
+
+&lt;pre class=&#34;syntax html&#34;&gt;
+
+
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+  The partial view for each item:
+&lt;/p&gt;
+
+&lt;pre class=&#34;syntax html&#34;&gt;
+
+
+
+&lt;div class=&#34;itemContent&#34;&gt;
+  &amp;lt;input type=&#34;hidden&#34; name=&#34;&amp;lt;%= ViewData[&#34;Prefix&#34;] + &#34;.Index&#34; %&gt;&#34; value=&#34;&amp;lt;%=ViewData[&#34;GUID&#34;] %&gt;&#34; /&gt;
+  &lt;label&gt;Item: &lt;/label&gt;&amp;lt;input type=&#34;text&#34; name=&#34;&amp;lt;%= ViewData[&#34;Prefix&#34;]  + &#34;[&#34; + ViewData[&#34;GUID&#34;] + &#34;].Name&#34; %&gt;&#34; /&gt;
+  &lt;br /&gt;
+  &lt;label&gt;Quantity: &lt;/label&gt;&amp;lt;input type=&#34;text&#34; name=&#34;&amp;lt;%= ViewData[&#34;Prefix&#34;] + &#34;[&#34; + ViewData[&#34;GUID&#34;] + &#34;].Quantity&#34; %&gt;&#34; /&gt;
+  &lt;br /&gt;
+  
+&lt;/div&gt;
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+  I chose to make the &#34;prefix&#34; I need a variable so I can potentially use this same view in other forms if needed.  I may want to put this form somewhere else, where the server argument isn&#39;t myList, but something else- I could forgo a parameter of ShoppingList and want to post a list of ShoppingItems.  This is useful when adding some sort of &#34;update&#34; feature in another section of page- say, when I already have a ShoppingList and I&#39;m updating with a new list of items.
+&lt;/p&gt;
+
+&lt;p&gt;
+  On the client side I simply wire up my button to request the html snippet from the server and inject that snippet with jQuery:
+&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;
+
+$(document).ready(function() {
+$(&#34;#btnAddAnother&#34;).click(function() {
+$.ajax(
+{
+type: &#34;GET&#34;,
+url: &#34;/Shopping/ShoppingItemFormContent/myList.Items&#34;,
+success: function(result) {
+var toInject = $(result);
+$(&#34;#itemContainer&#34;).append(toInject);
+}
+});
+
+})
+
+});
+
+&lt;/pre&gt;
+
+&lt;p&gt;
+  There&#39;s something I don&#39;t like about this: I need to call the server every time I need a view.  This isn&#39;t that snappy, and could create a lot of chatter with the server.  There&#39;s a way around this for brevity I&#39;m only going to explain: render the indexer as a specific value which can be parsed out and replaced with something else later.  My original goal is only wanting one place to specify markup: I do not want to have to duplicate code across a project.  But that shouldn&#39;t mean I need to call the server every time I need an html snippet.  I could make the snippet regular html which can be cached, then use a string or regular expression replace function to replace the hard coded indexer with something unique.
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;a href=&#34;http://michaelhamrah.com/blog/wp-content/uploads/postingalist.zip&#34;&gt;You can download the sample project here.&lt;/a&gt;&lt;br /&gt;
+  &lt;a href=&#34;http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fsaving-dynamically-added-list-items-using-jquery-and-aspnet-mvc%2f&#34;&gt;&lt;img src=&#34;http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fsaving-dynamically-added-list-items-using-jquery-and-aspnet-mvc%2f&amp;#038;bgcolor=0000CC&#34; border=&#34;0&#34; alt=&#34;kick it on DotNetKicks.com&#34; /&gt;&lt;/a&gt;
+&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Event Pooling with jQuery Using Bind and Trigger: Managing Complex Javascript</title>
+          <link>http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/</link>
+          <pubDate>Fri, 05 Dec 2008 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/</guid>
+          <description>&lt;p&gt;&lt;strong&gt;Managing Complexity in the UI&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;As everyone knows, the more dependencies you have in a system, the harder maintaining that system is.  Javascript is no exception- and orchestrating actions across complex user interfaces can be a nightmare if not done properly.&lt;/p&gt;
+
+&lt;p&gt;Luckily, there&amp;#8217;s a great pattern for orchestrating complex interaction in a disconnected way. No, it&amp;#8217;s not the Observer pattern.  It&amp;#8217;s a take on the Observer pattern called Event Pooling which is a piece of cake with jQuery&amp;#8217;s &lt;a href=&#34;http://docs.jquery.com/Events/bind&#34; title=&#34;jQuery Bind&#34;&gt;bind&lt;/a&gt; and &lt;a href=&#34;http://docs.jquery.com/Events/trigger&#34; title=&#34;jQuery Trigger&#34;&gt;trigger&lt;/a&gt; functions.  &lt;a title=&#34;jQuery bind and trigger example&#34; href=&#34;http://www.michaelhamrah.com/blog/wp-content/uploads/jqueryEventPool/index.html&#34; target=&#34;_blank&#34;&gt;For the get to the code folks, here&amp;#8217;s an example of using jQuery&amp;#8217;s bind and trigger for event pooling&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Problems with the Observer Pattern&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The observer pattern is great for some things, but it still requires a dependency between the observer and the subject.  The publish/subscribe scenario creates a direct relationship between two objects- and makes orchestrating a lot of events difficult when you have to manage so many direct references.&lt;figure id=&#34;attachment_56&#34; style=&#34;width: 300px;&#34; class=&#34;wp-caption aligncenter&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/observer.png&#34;&gt;&lt;img class=&#34;size-medium wp-image-56&#34; title=&#34;observer pattern&#34; src=&#34;http://i0.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/observer-300x91.png?resize=300%2C91&#34; alt=&#34;observer pattern&#34; data-recalc-dims=&#34;1&#34; /&gt;&lt;/a&gt;&lt;figcaption class=&#34;wp-caption-text&#34;&gt;observer pattern&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Event Pooling&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Event pooling is simply a variation on the Observer pattern, where a &amp;#8220;middle man&amp;#8221; is used to orchestrate the publish/subscribe system.  First, an observer will register with the event pool by saying &amp;#8220;I need to call this function when this event is fired&amp;#8221;.  Next, the subject will tell the event pool &amp;#8220;I&amp;#8217;m firing this event&amp;#8221;.  Finally, the event pool will call the function the observer registered on behalf of the subject.  The observer and subject only need to know about the event pool, not each other.&lt;figure id=&#34;attachment_57&#34; style=&#34;width: 300px;&#34; class=&#34;wp-caption aligncenter&#34;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/event-pool.png&#34;&gt;&lt;img class=&#34;size-medium wp-image-57&#34; title=&#34;event-pool&#34; src=&#34;http://i2.wp.com/www.michaelhamrah.com/blog/wp-content/uploads/2008/12/event-pool-300x147.png?resize=300%2C147&#34; alt=&#34;Event Pool&#34; data-recalc-dims=&#34;1&#34; /&gt;&lt;/a&gt;&lt;figcaption class=&#34;wp-caption-text&#34;&gt;Event Pool&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
+
+&lt;p&gt;This provides some cool functionality- especially because if you need to reference the subject (called the publisher), you can get a direct reference via the event pool.  This is similar to the object sender parameter in .NET&amp;#8217;s event system.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Show me Code!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We are going to do two things: First, update a span tag to show an address when a user enters a name, city, or state.  Second, show some complex behavior by daisy changing events and binding a single function to multiple triggers. &lt;a title=&#34;jQuery bind and trigger example&#34; href=&#34;http://www.michaelhamrah.com/blog/wp-content/uploads/jqueryEventPool/index.html&#34; target=&#34;_blank&#34;&gt;Check out the example.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We have an UpdateOutput() function that updates the span:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;function UpdateOutput() {
+    var name = $(&#39;#txtName&#39;).val();
+    var address = $(&#39;#txtAddress&#39;).val();
+    var city = $(&#39;#txtCity&#39;).val();
+
+    $(&#39;#output&#39;).html(name + &#39; &#39; + address + &#39; &#39; + city);
+}
+&lt;/pre&gt;
+
+&lt;p&gt;This is wired up via the bind function:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$(document).bind(&#39;NAME_CHANGE ADDRESS_CHANGE CITY_CHANGE&#39;, function() {
+    UpdateOutput();
+});
+&lt;/pre&gt;
+
+&lt;p&gt;Notice how we&amp;#8217;re wiring up multiple event names with a single function which calls UpdateOutput.  This allows us to encapsulate common functionality in a single function which could be called from various sources.&lt;/p&gt;
+
+&lt;p&gt;We&amp;#8217;re also binding and firing to $(document).  Document provides a global bucket all functionality has access to- a static class that can be referenced from anywhere, making pooling easy.&lt;/p&gt;
+
+&lt;p&gt;We can also wire up another function with the NAME_CHANGE event without effecting any other logic:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$(document).bind(&#39;NAME_CHANGE&#39;, function(e) {
+    UpdateName();
+    UpdateOtherText(e);
+});
+&lt;/pre&gt;
+
+&lt;p&gt;Here, NAME_CHANGE will also trigger UpdateName and UpdateOther.&lt;/p&gt;
+
+&lt;p&gt;Firing an event is done with the trigger function:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$(&#39;#txtAddress&#39;).keyup(function() {
+    $(document).trigger(&#39;ADDRESS_CHANGE&#39;);
+});
+$(&#39;#txtCity&#39;).keyup(function() {
+    $(document).trigger(&#39;CITY_CHANGE&#39;);
+});
+&lt;/pre&gt;
+
+&lt;p&gt;It can also be called directly from html:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax html escaped&#34;&gt;Name: &amp;lt;input type=&#34;text&#34; id=&#34;txtName&#34; onkeyup=&#34;javascript:$(document).trigger(&#39;NAME_CHANGE&#39;);&#34; /&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Advanced Functionality&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;There are two more things you can do with bind and trigger: Inspect who fired the trigger (this can be important if you&amp;#8217;re wiring up a single function from multiple subjects) and pass data to the event.&lt;/p&gt;
+
+&lt;p&gt;In our next example, our function definition takes in two parameters: e, which is the event&amp;#8217;s sender, and data, a generic data bucket:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$(document).bind(&#39;FIRST_UPDATED&#39;, function(e, data) {
+    UpdateOtherText(e, data);
+});
+&lt;/pre&gt;
+
+&lt;p&gt;The first parameter will always be the event&amp;#8217;s sender.  You can wire up as many other parameters as you want.  You pass data as a comma delimited list between brackets [parm1,parm2] when calling trigger:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;$(document).trigger(&#39;FIRST_UPDATED&#39;, [data]);
+&lt;/pre&gt;
+
+&lt;p&gt;and from html:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js escaped&#34;&gt;&amp;lt;input type=&#34;text&#34; id=&#34;txtData&#34; onkeyup=&#34;javascript:$(document).trigger(&#39;DATA_CHANGED&#39;, [$(this).val()]);&#34; /&amp;gt;
+&lt;/pre&gt;
+
+&lt;p&gt;The sender object has a couple of properties, but the most important is &amp;#8216;type&amp;#8217;, which let&amp;#8217;s you know what triggered the event:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax js&#34;&gt;function UpdateOtherText(e, text) {
+var text;
+if (e.type == &#39;FIRST_UPDATED&#39;)
+ text = &#39;from first: &#39; + text;
+else
+ text = e.type;
+$(&#39;#eventFired&#39;).html(text);
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Check out my follow up article &lt;a href=&#34;http://www.michaelhamrah.com/blog/index.php/2009/12/organizing-javascript-for-event-pooling-with-jquery/&#34;&gt;Organizing Events for Event Pooling.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[]&lt;a href=&#34;http://www.michaelhamrah.com/blog/index.php/2009/12/organizing-javascript-for-event-pooling-with-jquery/&#34;&gt;5&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fevent-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript%2f&#34;&gt;&lt;img src=&#34;http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2008%2f12%2fevent-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript%2f&amp;bgcolor=0000FF&#34; border=&#34;0&#34; alt=&#34;kick it on DotNetKicks.com&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/openid/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2011-03-21 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Updated MVC3 Html5 Boilerplate Template: Now with Twitter and Facebook</title>
+          <link>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</link>
+          <pubDate>Mon, 21 Mar 2011 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</guid>
+          <description>&lt;p&gt;I pushed a major update to the MVC3/Html5 Boilerplate Template found on the &lt;a href=&#34;https://github.com/mhamrah/Html5OpenIdTemplate&#34;&gt;github&lt;/a&gt; page. The new update includes the latest boilerplate code and uses the DotnetOpenAuth CTP for logging in via Twitter and Facebook. Thanks to &lt;a href=&#34;http://www.twitter.com/jacob4u2&#34;&gt;@jacob4u2&lt;/a&gt; for making some necessary web.config changes (he has an alternate template on his &lt;a href=&#34;https://bitbucket.org/jacob4u2/mothereffin-html5-site&#34;&gt;bitbucket&lt;/a&gt; site you should also check out.&lt;/p&gt;
+
+&lt;p&gt;Your best option is to &lt;code class=&#34;syntax bash&#34;&gt;git clone git@github.com:mhamrah/Html5OpenIdTemplate.git&lt;/code&gt; the template with your own app. That way you&amp;#8217;ll get the latest nu-get packages with the bundle. You can also use the template, but you&amp;#8217;ll need to manually pull &lt;a href=&#34;http://sourceforge.net/projects/dnoa/files/CTP/OAuth2/&#34;&gt;the latest CTP for DotNetOpenAuth&lt;/a&gt; to get the latest dlls.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Authlogic and OpenID on Rails</title>
+          <link>http://blog.michaelhamrah.com/2009/05/authlogic-and-openid-on-rails/</link>
+          <pubDate>Mon, 11 May 2009 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2009/05/authlogic-and-openid-on-rails/</guid>
+          <description>&lt;p&gt;So, I&amp;#8217;m working on a Rails App and I want to use OpenID (and only OpenID) for authentication.  I was going to use Restful_Authentication with the open_id_authentication extension, but then I saw Ryan Bates&amp;#8217; &lt;a href=&#34;http://www.railscasts.com&#34;&gt;Railscast&lt;/a&gt; on &lt;a href=&#34;http://github.com/binarylogic/authlogic/tree/master&#34;&gt;AuthLogic&lt;/a&gt;.  Authlogic has an &lt;a href=&#34;http://github.com/binarylogic/authlogic_openid/tree/master&#34;&gt;OpenID extention&lt;/a&gt; which looked perfect for my needs, and Authlogic seemed like a great gem for authentication.  My goal was simple: I wanted to support, and only support, authentication via OpenID.  None of this username/password/salt stuff.&lt;/p&gt;
+
+&lt;p&gt;Now, I should warn you: I HAVE NO IDEA WHAT I AM DOING.  I&amp;#8217;m just getting started with Rails so I hit a few bumps getting this working.  I learned a lot along the way, so here&amp;#8217;s a quick rundown of my adventure with Authlogic and OpenID on Rails.&lt;/p&gt;
+
+&lt;p&gt;First, getting started with sample code is always a good idea.  Authlogic has an &lt;a href=&#34;http://github.com/binarylogic/authlogic_example/tree/master&#34;&gt;example app&lt;/a&gt; on github where you can check out how to use the gem.  After pulling down the code, I was surprised I couldn&amp;#8217;t find anything relating to OpenID.  It turns out, the master repository doesn&amp;#8217;t have the OpenID example.  But there&amp;#8217;s a branch of the master example that does have the OpenID functionality.  Here&amp;#8217;s how to get it:&lt;/p&gt;
+
+&lt;p&gt;First, clone the Authlogic example like so:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;git clone git://github.com/binarylogic/authlogic_example.git&lt;/pre&gt;
+
+&lt;p&gt;Then, cd into the new Authlogic directory and get the OpenID fork like so:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;git checkout --track -b authlogic_with_openid origin/with-openid&lt;/pre&gt;
+
+&lt;p&gt;Then, you can explore away.  My approach was simple: using the OpenID example as a guide, I&amp;#8217;d start a new app and add OpenID support from Authlogic.&lt;/p&gt;
+
+&lt;p&gt;First, I need the required gems.  Authlogic and authlogic-oid are obvious, but I also need ruby-openid.  Authlogic-oid is built on the rails plugin open_id_authentication, which in turn is built on ruby-openid.&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;sudo gem install ruby-openid
+sudo gem install authlogic
+sudo gem install authlogic-oid
+&lt;/pre&gt;
+
+&lt;p&gt;You can also set these in your environment.rb file, like so:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: ruby; title: ; notranslate&#34; title=&#34;&#34;&gt;config.gem &#34;authlogic&#34;
+config.gem &#34;authlogic-oid&#34;, :lib =&amp;gt; &#34;authlogic_openid&#34;
+config.gem &#34;ruby-openid&#34;, :lib =&amp;gt; &#34;openid&#34;
+&lt;/pre&gt;
+
+&lt;p&gt;Note: I got thwarted when I tried running the app using the config.gem approach.  I kept getting an &amp;#8220;Uninitialized constant Authlogic&amp;#8221; in User_sessions.rb when I ran the app.  It sucked!  It took me a while to figure this out, but it was a horrible beginner mistake.  I was doing rake gems:install instead of sudo rake gems:install.  So when I ran my app, the proper gems weren&amp;#8217;t in the right place.  Ouch!&lt;/p&gt;
+
+&lt;p&gt;Next, it&amp;#8217;s time to install the open_id_authentication plugin which is required by Authlogic-oid.  It&amp;#8217;s not available as a gem.&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;script/plugin install git://github.com/rails/open_id_authentication.git&lt;/pre&gt;
+
+&lt;p&gt;The next step is to create the necessary migration scripts for the open_id_authentication plugin.&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;rake open_id_authentication:db:create&lt;/pre&gt;
+
+&lt;p&gt;Another beginner mistake: I got a failure when I tried doing open_id_authentication:db:create before I installed the Authlogic gem.  Something about &amp;#8220;acts_as_authenticated&amp;#8221; wasn&amp;#8217;t there.  So the order of installation is important!&lt;/p&gt;
+
+&lt;p&gt;Next, use the authlogic command to create the user_session model.  I&amp;#8217;m prettying much following instructions from the Authlogic github pages at this point:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;script/generate session user_session
+script/generate model user
+&lt;/pre&gt;
+
+&lt;p&gt;Another beginner mistake: if you&amp;#8217;re making changes to your migration files without creating a new migration, make sure your schema is correct. I don&amp;#8217;t know the best way to do this except by using rake db:drop, rake db:create, and rake db:migrate.  This was due to an error I was seeing in my view: &amp;#8220;undefined method :openid_identifier&amp;#8221;.  I had a text_field in my form for the openid field, and I had the openid_identifier field in my model.  The problem? It wasn&amp;#8217;t in the database schema so Rails couldn&amp;#8217;t do its thing to make it a property of the user model and render the textfield correctly.&lt;/p&gt;
+
+&lt;p&gt;From there, the views and controllers are pretty much the same as the example.  My user model is also pretty slim:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: ruby; title: ; notranslate&#34; title=&#34;&#34;&gt;class CreateUsers &amp;lt; ActiveRecord::Migration
+def self.up
+create_table :users do |t|
+t.string :email, :null=&amp;gt;false
+t.string :persistence_token, :null=&amp;gt; false
+t.string :openid_identifier, :null=&amp;gt; false
+t.datetime :last_request_at
+t.timestamps
+end
+add_index :users, :openid_identifier
+add_index :users, :persistence_token
+end
+def self.down
+drop_table :users
+end
+end
+&lt;/pre&gt;
+
+&lt;p&gt;Now, when I put everything together to run the app, I got some weird failures.  When trying to login using my OpenID, I got a nasty error:&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;undefined local variable or method &#39;crypted_password_field&#39;&lt;/pre&gt;
+
+&lt;p&gt;Not having a crypted&lt;em&gt;pasword field made sense seeing how I wasn&amp;#8217;t supporting login or password fields. But I wasn&amp;#8217;t expecting _not&lt;/em&gt; having it to be an issue.  In fact, from the docs the only required field on the user model is :persistance_token. So what&amp;#8217;s going on?&lt;/p&gt;
+
+&lt;p&gt;Well, it turns out the Authlogic OpenID extension is designed to work with a login/password by default.  I had to dig through the stack trace and source code, but was able to figure out what&amp;#8217;s going on.  There&amp;#8217;s a method called &lt;span class=&#34;name&#34;&gt;attributes_to_save which is responsible for persisting form fields across the OpenID process.  By default, &lt;/span&gt;&lt;span class=&#34;name&#34;&gt;attributes_to_save includes password related information.  It treats the crypted password and password salt fields a little differently, which causes a problem when you don&amp;#8217;t have a :crypted_password attribute on your model.  The solution is simple: just override the method with one which doesn&amp;#8217;t include the password fields.  The user model will look like this:&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;span class=&#34;name&#34;&gt;&lt;/p&gt;
+
+&lt;pre class=&#34;brush: ruby; title: ; notranslate&#34; title=&#34;&#34;&gt;
+class User &amp;lt; ActiveRecord::Base
+acts_as_authentic do |c|
+def attributes_to_save # :doc:
+attrs_to_save = attributes.clone.delete_if do |k, v|
+[ :persistence_token, :perishable_token, :single_access_token, :login_count,
+:failed_login_count, :last_request_at, :current_login_at, :last_login_at, :current_login_ip, :last_login_ip, :created_at,
+:updated_at, :lock_version].include?(k.to_sym)
+end
+end
+end
+end
+&lt;/pre&gt;
+
+&lt;p&gt;
+  &lt;/span&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  The second mistake was because I got ahead of myself.  In the example app there&amp;#8217;s code in the application.html.erb file rendering a login/register link or user info based on the current_user method in the application controller.  I was getting an error:
+&lt;/p&gt;
+
+&lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;unknown method &#39;logged_out?&#39;&lt;/pre&gt;
+
+&lt;p&gt;
+  &lt;span class=&#34;n&#34;&gt;which was occurring deep in the Authlogic codebase.  The problem was I didn&amp;#8217;t go a good job copying everything I needed from the example files!  The authlogic example project used the&lt;/span&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;span class=&#34;n&#34;&gt;logout_on_timeout true&lt;/p&gt; 
+  
+
+&lt;p&gt;&lt;p&gt;
+    &lt;/span&gt;
+  &lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;p&gt;
+    &lt;span class=&#34;n&#34;&gt;filter on the UserSession method.  After digging through the documentation, this callback relies on the &lt;/span&gt;
+  &lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;p&gt;
+    &lt;span class=&#34;n&#34;&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;pre class=&amp;quot;brush: ruby; title: ; notranslate&amp;quot; title=&amp;quot;&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;t.datetime :last_request_at
+&lt;/pre&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;p&amp;gt;
+  &amp;lt;/span&amp;gt;
+&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;
+  &amp;lt;span class=&amp;quot;n&amp;quot;&amp;gt;field on the user model, which I didn&amp;amp;#8217;t have at the time.  And not having this field was throwing everything off.  (The best part was the documentation clearly states you need that attribute on the model for the callback to work correctly.&amp;lt;br /&amp;gt; &amp;lt;/span&amp;gt;
+&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;
+  &amp;lt;span class=&amp;quot;n&amp;quot;&amp;gt;Lesson learned: always know what you&amp;amp;#8217;re doing. (Also: don&amp;amp;#8217;t be afraid of source code).&amp;lt;br /&amp;gt; &amp;lt;/span&amp;gt;
+&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;
+  The whole process has really made me appreciate Authlogic.  It&amp;amp;#8217;s very extensible and extremely easy to customize.  If you know what you&amp;amp;#8217;re doing it&amp;amp;#8217;s pretty slick- the best way to figure it out is by reading the documentation and playing around with some code.
+&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;
+  Good luck!
+&amp;lt;/p&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

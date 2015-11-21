@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/dotnetopenauth/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2011-03-21 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Updated MVC3 Html5 Boilerplate Template: Now with Twitter and Facebook</title>
+          <link>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</link>
+          <pubDate>Mon, 21 Mar 2011 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2011/03/updated-mvc3-html5-boilerplate-template-now-with-twitter-and-facebook/</guid>
+          <description>&lt;p&gt;I pushed a major update to the MVC3/Html5 Boilerplate Template found on the &lt;a href=&#34;https://github.com/mhamrah/Html5OpenIdTemplate&#34;&gt;github&lt;/a&gt; page. The new update includes the latest boilerplate code and uses the DotnetOpenAuth CTP for logging in via Twitter and Facebook. Thanks to &lt;a href=&#34;http://www.twitter.com/jacob4u2&#34;&gt;@jacob4u2&lt;/a&gt; for making some necessary web.config changes (he has an alternate template on his &lt;a href=&#34;https://bitbucket.org/jacob4u2/mothereffin-html5-site&#34;&gt;bitbucket&lt;/a&gt; site you should also check out.&lt;/p&gt;
+
+&lt;p&gt;Your best option is to &lt;code class=&#34;syntax bash&#34;&gt;git clone git@github.com:mhamrah/Html5OpenIdTemplate.git&lt;/code&gt; the template with your own app. That way you&amp;#8217;ll get the latest nu-get packages with the bundle. You can also use the template, but you&amp;#8217;ll need to manually pull &lt;a href=&#34;http://sourceforge.net/projects/dnoa/files/CTP/OAuth2/&#34;&gt;the latest CTP for DotNetOpenAuth&lt;/a&gt; to get the latest dlls.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

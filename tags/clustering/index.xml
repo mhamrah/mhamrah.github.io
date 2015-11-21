@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/clustering/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2014-11-29 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Running Consul on CoreOS</title>
+          <link>http://blog.michaelhamrah.com/2014/11/running-consul-on-coreos/</link>
+          <pubDate>Sat, 29 Nov 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/11/running-consul-on-coreos/</guid>
+          <description>&lt;p&gt;I&amp;#8217;m a big fan of &lt;a href=&#34;consul.io&#34;&gt;Consul&lt;/a&gt;, Hashicorp&amp;#8217;s service discovery tool. I&amp;#8217;ve also become a fan of CoreOS, the cluster framework for running docker containers. Even though CoreOS comes with etcd for service discovery I find the feature set of Consul more compelling. And as a programmer I know I can have my cake and eat it too.&lt;/p&gt;
+
+&lt;p&gt;My first take was to modify my &lt;a href=&#34;github.com/mhamrah/ansible-consul&#34;&gt;ansible-consul&lt;/a&gt; fork to run consul natively on CoreOS. Although this could work I find it defeats CoreOS&amp;#8217;s container-first approach with &lt;a href=&#34;https://github.com/coreos/fleet&#34;&gt;fleet&lt;/a&gt;. Jeff Lindsay created &lt;a href=&#34;https://github.com/progrium/docker-consul&#34;&gt;a consul docker container&lt;/a&gt; which does the job well. I created two fleet service files: one for launching the consul container and another for service discovery. At first the service discovery aspect seemed weird; I tried to pass ip addresses via the &amp;#8211;join parameter or use &lt;code&gt;ExecStartPost&lt;/code&gt; for running the join command. However I took a cue from the CoreOS cluster setup: sometimes you need a third party to get stuff done. In this case we the built in etcd server to manage the join ip address to kickstart the consul cluster.&lt;/p&gt;
+
+&lt;p&gt;The second fleet service file acts as a sidekick:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;For every running consul service there&amp;#8217;s a sidekick process&lt;/li&gt;
+&lt;li&gt;The sidekick process writes the current IP to a key only if that key doesn&amp;#8217;t exist&lt;/li&gt;
+&lt;li&gt;The sidekick process uses the value of that key to join the cluster with &lt;code&gt;docker exec&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The sidekick process removes the key if the consul service dies.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The two service files are below, but you should tweak for your needs.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;You only need a 3 or 5 node server cluster. If your CoreOS deployment is large, use some form of restriction for the server nodes. You can do the same for the client nodes.&lt;/li&gt;
+&lt;li&gt;The discovery script could be optimized. It will try and join whatever ip address is listed in the key. This avoids a few split brain scenarios, but needs to be tested.&lt;/li&gt;
+&lt;li&gt;If you want DNS to work properly you need to set some Docker daemon options. Read the docker-consul README.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Clustering Akka Applications with Docker — Version 3</title>
+          <link>http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/</link>
+          <pubDate>Thu, 27 Nov 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/11/clustering-akka-applications-with-docker-version-3/</guid>
+          <description>&lt;p&gt;The SBT Native Packager plugin now offers first-class Docker support for building Scala based applications. My last post involved combining SBT Native Packager, SBT Docker, and a custom start script to launch our application. We can simplify the process in two ways:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Although the SBT Docker plugin allows for better customization of Dockerfiles it&amp;#8217;s unnecessary for our use case. SBT Native Packager is enough.&lt;/li&gt;
+&lt;li&gt;A separate start script was required for IP address inspection so TCP traffic can be routed to the actor system. I recently contributed an update for &lt;a href=&#34;https://github.com/sbt/sbt-native-packager/pull/411&#34;&gt;better ENTRYPOINT support within SBT Native Packager&lt;/a&gt; which gives us options for launching our app in a container.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;With this PR we can now add our IP address inspection snippet to our build removing the need for extraneous files. We could have added this snippet to &lt;code&gt;bashScriptExtraDefines&lt;/code&gt; but that is a global change, requiring &lt;code&gt;/sbin/ifconfig eth0&lt;/code&gt; to be available wherever the application is run. This is definitely infrastructure bleed-out and must be avoided.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/mhamrah/akka-docker-cluster-example&#34;&gt;The new code, on GitHub,&lt;/a&gt; uses a shell with ENTRYPOINT exec mode to set our environment variable before launching the application:&lt;/p&gt;
+
+&lt;pre class=&#34;code scala&#34;&gt;dockerExposedPorts in Docker := Seq(1600)
+
+dockerEntrypoint in Docker := Seq(&#34;sh&#34;, &#34;-c&#34;, &#34;CLUSTER_IP=`/sbin/ifconfig eth0 | grep &#39;inet addr:&#39; | cut -d: -f2 | awk &#39;{ print $1 }&#39;` bin/clustering $*&#34;)
+&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;$*&lt;/code&gt; allows for command-line parameters to be honored when launching the container. Because the app leverages the Typesafe Config library we can also set via Java system properties:&lt;/p&gt;
+
+&lt;pre class=&#34;code bash&#34;&gt;docker run --rm -i -t --name seed mhamrah/clustering:0.3 -Dclustering.cluster.name=example-cluster
+&lt;/pre&gt;
+
+&lt;p&gt;Launching the cluster is exactly as before:&lt;/p&gt;
+
+&lt;pre class=&#34;code bash&#34;&gt;docker run --rm -d --name seed mhamrah/clustering:0.3
+docker run --rm -d --name member1 --link seed:seed mhamrah/clustering:0.3
+&lt;/pre&gt;
+
+&lt;p&gt;For complex scripts it may be too messy to overload the ENTRYPOINT sequence. For those cases simply bake your own docker container as a base and use the ENTRYPOINT approach to call out to your script. SBT Native Packager will still upload all your dependencies and its bash script to &lt;code&gt;/opt/docker/bin/&amp;lt;your app&amp;gt;&lt;/code&gt;. The Docker &lt;code&gt;WORKDIR&lt;/code&gt; is set to &lt;code&gt;/opt/docker&lt;/code&gt; so you can drop the &lt;code&gt;/opt/docker&lt;/code&gt; as above.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

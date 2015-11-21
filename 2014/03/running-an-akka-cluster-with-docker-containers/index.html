@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Running an Akka Cluster with Docker Containers &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Running an Akka Cluster with Docker Containers</h1>
+  <span class="post-date">Mar 23 2014</span>
+  
+
+<p><strong>Update! You can now use SBT-Docker with SBT-Native Packager for a better sbt/docker experience. <a href="http://blog.michaelhamrah.com/2014/06/akka-clustering-with-sbt-docker-and-sbt-native-packager/">Here&#8217;s the new approach</a> with an <a href="https://github.com/mhamrah/akka-docker-cluster-example">updated GitHub repo</a>.</strong></p>
+
+<p>We recently upgraded our vagrant environments to use <a href="http://docker.io">docker</a>. One of our projects relies on <a href="http://doc.akka.io/docs/akka/2.3.0/common/cluster.html">akka&#8217;s cluster functionality</a>. I wanted to easily run an akka cluster locally using docker as sbt can be somewhat tedious. <a href="https://github.com/mhamrah/akka-docker-cluster-example">The example project is on github</a> and the solution is described below.</p>
+
+<p>The solution relies on:</p>
+
+<ul>
+<li><a href="https://github.com/sbt/sbt-native-packager">Sbt Native Packager</a> to package dependencies and create a startup file.</li>
+<li><a href="https://github.com/typesafehub/config">Typesafe&#8217;s Config</a> library for configuring the app&#8217;s ip address and seed nodes. We setup cascading configurations that will look for docker link environment variables if present.</li>
+<li><a href="https://github.com/mhamrah/akka-docker-cluster-example/blob/master/bin/dockerize">A simple bash script</a> to package the app and build the docker container.</li>
+</ul>
+
+<p>I&#8217;m a big fan of <a href="http://blog.michaelhamrah.com/2014/02/leveraging-typesafes-config-library-across-environments/">Typesafe&#8217;s Config</a> library and the environment variable overrides come in handy for providing sensible defaults with optional overrides. It&#8217;s the preferred way we configure our applications in upper environments.</p>
+
+<p>The tricky part of running an akka cluster with docker is knowing the ip address each remote node needs to listen on. An akka cluster relies on each node listening on a specific port and hostname or ip. It also needs to know the port and hostname/ip of a seed node the cluster. As there&#8217;s no catch-all binding we need specific ip settings for our cluster.</p>
+
+<p>A simple bash script within the container will figure out the current IP for our cluster configuration and <a href="http://docs.docker.io/en/latest/use/working_with_links_names/">docker links</a> pass seed node information to newly launched nodes.</p>
+
+<h2 id="first-step-setup-application-configuration:bc2a8c6fccabe9b5fedfd70d57effb88">First Step: Setup Application Configuration</h2>
+
+<p>The configuration is the same as that of a normal cluster, but I&#8217;m using substitution to configure the ip address, port and seed nodes for the application. For simplicity I setup a <code>clustering</code> block with defaults for running normally and environment variable overrides:</p>
+
+<pre class="syntax json">clustering {
+ ip = "127.0.0.1"
+ ip = ${?CLUSTER_IP}
+ port = 1600
+ port = ${?CLUSTER_PORT}
+ seed-ip = "127.0.0.1"
+ seed-ip = ${?CLUSTER_IP}
+ seed-ip = ${?SEED_PORT_1600_TCP_ADDR}
+ seed-port = 1600
+ seed-port = ${?SEED_PORT_1600_TCP_PORT}
+ cluster.name = clustering-cluster
+}
+
+akka.remote {
+    log-remote-lifecycle-events = on
+    netty.tcp {
+      hostname = ${clustering.ip}
+      port = ${clustering.port}
+    }
+  }
+  cluster {
+    seed-nodes = [
+       "akka.tcp://"${clustering.cluster.name}"@"${clustering.seed-ip}":"${clustering.seed-port}
+    ]
+    auto-down-unreachable-after = 10s
+  }
+}
+</pre>
+
+<p>As an example the <code>clustering.seed-ip</code> setting will use <em>127.0.0.1</em> as the default. If it can find a <em>CLUSTER_IP</em> or a <em>SEED_PORT_1600_TCP_ADDR</em> override it will use that instead. You&#8217;ll notice the latter override is using docker&#8217;s environment variable pattern for linking: that&#8217;s how we set the cluster&#8217;s seed node when using docker. You don&#8217;t need the <em>CLUSTER_IP</em> in this example but that&#8217;s the environment variable we use in upper environments and I didn&#8217;t want to change our infrastructure to conform to docker&#8217;s pattern. The cascading settings are helpful if you&#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.</p>
+
+<p>With this override in place we can use substitution to set the seed nodes in the akka cluster configuration block. The expression <code>&quot;akka.tcp://&quot;${clustering.cluster.name}&quot;@&quot;${clustering.seed-ip}&quot;:&quot;${clustering.seed-port}</code> builds the proper akka URI so the current node can find the seed node in the cluster. Seed nodes avoid potential split-brain issues during network partitions. You&#8217;ll want to run more than one in production but for local testing one is fine. On a final note the cluster-name setting is arbitrary. Because the name of the actor system and the uri must match I prefer not to hard code values in multiple places.</p>
+
+<p>I put these settings in resources/reference.conf. We could have named this file application.conf, but I prefer bundling configurations as reference.conf and reserving application.conf for external configuration files. A setting in application.conf will override a corresponding reference.conf setting and you probably want to manage application.conf files outside of the project&#8217;s jar file.</p>
+
+<h2 id="second-sbt-native-packager:bc2a8c6fccabe9b5fedfd70d57effb88">Second: SBT Native Packager</h2>
+
+<p>We use the native packager plugin to build a runnable script for our applications. For docker we just need to run <code>universal:stage</code>, creating a folder with all dependencies in the <code>target/</code> folder of our project. We&#8217;ll move this into a staging directory for uploading to the docker container.</p>
+
+<h2 id="third-the-dockerfile-and-start-script:bc2a8c6fccabe9b5fedfd70d57effb88">Third: The Dockerfile and Start script</h2>
+
+<p>The dockerfile is pretty simple:</p>
+
+<pre class="syntax bash">FROM dockerfile/java
+
+MAINTAINER Michael Hamrah m@hamrah.com
+
+ADD tmp/ /opt/app/
+ADD start /opt/start
+RUN chmod +x /opt/start
+
+EXPOSE 1600
+
+ENTRYPOINT [ "/opt/start" ]
+</pre>
+
+<p>We start with Dockerfile&#8217;s java base image. We then upload our staging <code>tmp/</code> folder which has our application from sbt&#8217;s native packager output and a corresponding executable start script described below. I opted for <code>ENTRYPOINT</code> instead of <code>CMD</code> so the container is treated like an executable. This makes it easier to pass in command line arguments into the sbt native packager script in case you want to set java system properties or override configuration settings via command line arguments.</p>
+
+<p>The start script is how we tee up the container&#8217;s IP address for our cluster application:</p>
+
+<pre class="syntax bash">#!/bin/bash
+
+CLUSTER_IP=<code>/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'</code> /opt/app/bin/clustering $@
+</pre>
+
+<p>The script sets an inline environment variable by parsing <code>ifconfig</code> output to get the container&#8217;s ip. We then run the <em>clustering</em> start script produced from sbt native packager. The <code>$@</code> lets us pass along any command line settings set when launching the container into the sbt native packager script.</p>
+
+<h2 id="fourth-putting-it-together:bc2a8c6fccabe9b5fedfd70d57effb88">Fourth: Putting It Together</h2>
+
+<p>The last part is a simple bash script named <code>dockerize</code> to orchestrate each step. By running this script we run sbt native packager, move files to a staging directory, and build the container:</p>
+
+<pre class="syntax bash">#!/bin/bash
+
+echo "Build docker container"
+
+#run sbt native packager
+sbt universal:stage
+
+#cleanup stage directory
+rm -rf docker/tmp/
+
+#copy output into staging area
+cp -r target/universal/stage/ docker/tmp/
+
+#build the container, remove intermediate nodes
+docker build -rm -t clustering docker/
+
+#remove staged files
+rm -rf docker/tmp/
+</pre>
+
+<p>With this in place we simply run</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">bin/dockerize
+</pre>
+
+<p>to create our docker container named clustering.</p>
+
+<h2 id="running-the-application-within-docker:bc2a8c6fccabe9b5fedfd70d57effb88">Running the Application within Docker</h2>
+
+<p>With our clustering container built we fire up our first instance. This will be our seed node for other containers:</p>
+
+<pre class="syntax bash">$ docker run -i -t -name seed clustering
+2014-03-23 00:20:39,918 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:20:40,392 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:20:40,403 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:20:40,418 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:20:41,404 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+</pre>
+
+<p>Next we fire up a second node. Because of our reference.conf defaults all we need to do is link this container with the name <em>seed</em>. Docker will set the environment variables we are looking for in the bundled reference.conf:</p>
+
+<pre class="syntax bash">$ docker run -name c1 -link seed:seed -i -t clustering
+2014-03-23 00:22:49,332 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:22:49,788 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:22:49,797 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:22:50,238 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+2014-03-23 00:22:50,249 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:22:50,803 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.3:1600
+</pre>
+
+<p>You&#8217;ll see the current leader discovering new nodes and the appropriate broadcast messages sent out. We can even do this a third time and all nodes will react:</p>
+
+<pre class="syntax bash">$ docker run -name c2 -link seed:seed -i -t clustering
+2014-03-23 00:24:52,768 INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+2014-03-23 00:24:53,224 DEBUG com.mlh.clustering.ClusterListener - starting up cluster listener...
+2014-03-23 00:24:53,235 DEBUG com.mlh.clustering.ClusterListener - Current members:
+2014-03-23 00:24:53,470 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.2:1600
+2014-03-23 00:24:53,472 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.3:1600
+2014-03-23 00:24:53,478 INFO  com.mlh.clustering.ClusterListener - Leader changed: Some(akka.tcp://clustering-cluster@172.17.0.2:1600)
+2014-03-23 00:24:55,401 DEBUG com.mlh.clustering.ClusterListener - Member is Up: akka.tcp://clustering-cluster@172.17.0.4:1600
+</pre>
+
+<p>Try killing a node and see what happens!</p>
+
+<h2 id="modifying-the-docker-start-script:bc2a8c6fccabe9b5fedfd70d57effb88">Modifying the Docker Start Script</h2>
+
+<p>There&#8217;s another reason for the docker start script: it opens the door for different seed discovery options. Container linking works well if everything is running on the same host but not when running on multiple hosts. Also setting multiple seed nodes via docker links will get tedious via environment variables; it&#8217;s doable but we&#8217;re getting into coding-cruft territory. It would be better to discover seed nodes and set that configuration via command line parameters when launching the app.</p>
+
+<p>The start script gives us control over how we discover information. We could use <a href="https://github.com/coreos/etcd">etcd</a>, <a href="http://www.serfdom.io/">serf</a> or even zookeeper to manage how seed nodes are set and discovered, passing this to our application via environment variables or additional command line parameters. Seed nodes can easily be set via system properties set via the command line:</p>
+
+<pre class="brush: plain; title: ; notranslate" title="">-Dakka.cluster.seed-nodes.0=akka.tcp://ClusterSystem@host1:2552
+-Dakka.cluster.seed-nodes.1=akka.tcp://ClusterSystem@host2:2552
+</pre>
+
+<p>The start script can probably be configured via sbt native packager but I haven&#8217;t looked into that option. Regardless this approach is (relatively) straight forward to run akka clusters with docker. The <a href="https://github.com/mhamrah/akka-docker-cluster-example">full project is on github</a>. If there&#8217;s a better approach I&#8217;d love to know!</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

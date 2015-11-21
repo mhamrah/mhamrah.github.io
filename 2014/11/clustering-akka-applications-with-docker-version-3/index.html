@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Clustering Akka Applications with Docker — Version 3 &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">Clustering Akka Applications with Docker — Version 3</h1>
+  <span class="post-date">Nov 27 2014</span>
+  <p>The SBT Native Packager plugin now offers first-class Docker support for building Scala based applications. My last post involved combining SBT Native Packager, SBT Docker, and a custom start script to launch our application. We can simplify the process in two ways:</p>
+
+<ol>
+<li>Although the SBT Docker plugin allows for better customization of Dockerfiles it&#8217;s unnecessary for our use case. SBT Native Packager is enough.</li>
+<li>A separate start script was required for IP address inspection so TCP traffic can be routed to the actor system. I recently contributed an update for <a href="https://github.com/sbt/sbt-native-packager/pull/411">better ENTRYPOINT support within SBT Native Packager</a> which gives us options for launching our app in a container.</li>
+</ol>
+
+<p>With this PR we can now add our IP address inspection snippet to our build removing the need for extraneous files. We could have added this snippet to <code>bashScriptExtraDefines</code> but that is a global change, requiring <code>/sbin/ifconfig eth0</code> to be available wherever the application is run. This is definitely infrastructure bleed-out and must be avoided.</p>
+
+<p><a href="https://github.com/mhamrah/akka-docker-cluster-example">The new code, on GitHub,</a> uses a shell with ENTRYPOINT exec mode to set our environment variable before launching the application:</p>
+
+<pre class="code scala">dockerExposedPorts in Docker := Seq(1600)
+
+dockerEntrypoint in Docker := Seq("sh", "-c", "CLUSTER_IP=`/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1 }'` bin/clustering $*")
+</pre>
+
+<p>The <code>$*</code> allows for command-line parameters to be honored when launching the container. Because the app leverages the Typesafe Config library we can also set via Java system properties:</p>
+
+<pre class="code bash">docker run --rm -i -t --name seed mhamrah/clustering:0.3 -Dclustering.cluster.name=example-cluster
+</pre>
+
+<p>Launching the cluster is exactly as before:</p>
+
+<pre class="code bash">docker run --rm -d --name seed mhamrah/clustering:0.3
+docker run --rm -d --name member1 --link seed:seed mhamrah/clustering:0.3
+</pre>
+
+<p>For complex scripts it may be too messy to overload the ENTRYPOINT sequence. For those cases simply bake your own docker container as a base and use the ENTRYPOINT approach to call out to your script. SBT Native Packager will still upload all your dependencies and its bash script to <code>/opt/docker/bin/&lt;your app&gt;</code>. The Docker <code>WORKDIR</code> is set to <code>/opt/docker</code> so you can drop the <code>/opt/docker</code> as above.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+

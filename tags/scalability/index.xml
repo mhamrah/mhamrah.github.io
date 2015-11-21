@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> </title>
+    <link>http://blog.michaelhamrah.com/tags/scalability/</link>
+    <language>en-us</language>
+    <author>Michael Hamrah</author>
+    <rights>(C) 2015</rights>
+    <updated>2013-10-12 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Overview on Web Performance and Scalability</title>
+          <link>http://blog.michaelhamrah.com/2013/10/overview-on-web-performance-and-scalability/</link>
+          <pubDate>Sat, 12 Oct 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/10/overview-on-web-performance-and-scalability/</guid>
+          <description>&lt;p&gt;I recently gave a talk to some junior developers on performance and scalability. The talk is relatively high-level, providing an overview of non-programming topics which are important for performance and scalability. The &lt;a href=&#34;http://michaelhamrah.com/perf/#/&#34;&gt;original deck is here&lt;/a&gt; and on &lt;a href=&#34;https://speakerdeck.com/mhamrah/things-to-know-about-web-performance&#34;&gt;speaker deck&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;A few months ago I also &lt;a href=&#34;http://michaelhamrah.com/spdy/&#34;&gt;gave a talk on spdy&lt;/a&gt; which is also on &lt;a href=&#34;https://speakerdeck.com/mhamrah/intro-to-spdy&#34;&gt;speaker deck&lt;/a&gt;.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Scalability comparison of WordPress with NGINX/PHP-FCM and Apache on an ec2-micro instance.</title>
+          <link>http://blog.michaelhamrah.com/2013/03/scalability-comparison-of-wordpress-with-nginxphp-fcm-and-apache-on-an-ec2-micro-instance/</link>
+          <pubDate>Sun, 17 Mar 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/03/scalability-comparison-of-wordpress-with-nginxphp-fcm-and-apache-on-an-ec2-micro-instance/</guid>
+          <description>&lt;p&gt;For the past few years this blog ran apache + mod_php on an ec2-micro instance. It was time for a change; I&amp;#8217;ve enjoyed using nginx in other projects and thought I could get more out of my micro server. I went with a php-fpm/nginx combo and am very surprised with the results. The performance charts are below; for php the response times varied little under minimal load, but nginx handled heavy load far better than apache. Overall throughput with nginx was phenomenal from this tiny server. The result for static content was even more impressive: apache effectively died after ~2000 concurrent connections and 35k total pages killing the server; nginx handled the load to 10,000 very well and delivered 160k successful responses.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s the &lt;a href=&#34;http://loader.io&#34;&gt;loader.io&lt;/a&gt; results from static content from &lt;a href=&#34;http://www.michaelhamrah.com&#34;&gt;http://www.michaelhamrah.com&lt;/a&gt;, comparing apache with nginx. I suggest clicking through and exploring the charts:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/f1c357b13b1f554eef534b79866eb5ce&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Apache only handled 33.5k successful responses up to about 1,300 concurrent connections, and died pretty quickly. Nginx did far better:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/9430bdfcab50f31dc66f3ea3014beb84&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;160k successful response with a 22% error rate and avg. response time of 142ms. Not too shabby. The apache run effectively killed the server and required a full reboot as ssh was unresponsive. Nginx barely hiccuped.&lt;/p&gt;
+
+&lt;p&gt;The results of my wordpress/php performance is also interesting. I only did 1000 concurrent users hitting blog.michaelhamrah.com. Here&amp;#8217;s the apache result:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/210867953c97cdd2dd4308dce17bcae3&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There was a 21% error rate with 13.7k request served and a 237ms average response time (I believe the lower average is due to errors). Overall not too bad for an ec2-micro instance, but the error rate was quite high and nginx again did far better:&lt;/p&gt;
+
+&lt;div style=&#34;width: 600px;&#34;&gt;
+  &lt;/p&gt; 
+  
+  &lt;div style=&#34;width: 100%; text-align: right;&#34;&gt;
+    &lt;a href=&#34;http://loader.io/results/631e11ff9206c6c7a3820c891380c9a3&#34; target=&#34;_blank&#34;  style=&#34;padding: 0 10px 10px 0; font-family: Arial, &#39;Helvetica Neue&#39;, Helvetica, sans-serif; font-size: 14px;&#34;&gt;View on loader.io&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;A total of 19k successes with a 0% error rate. The average response time was a little higher than apache, but nginx did serve far more responses. I also get a kick out of the response time line between the two charts. Apache is fairly choppy as it scales up, while nginx increases smoothly and evens out when the concurrent connections plateaus. That&amp;#8217;s what scalability should look like!&lt;/p&gt;
+
+&lt;p&gt;There are plenty of guides online showing how to get set up with nginx/php-fpm. &lt;a href=&#34;http://codex.wordpress.org/Nginx&#34;&gt;The Nginx guide on WordPress Codex&lt;/a&gt; is the most thorough, but there&amp;#8217;s a &lt;a href=&#34;http://todsul.com/install-configure-php-fpm&#34;&gt;straightforward nginx/php guide on Tod Sul&lt;/a&gt;. I also relied on an &lt;a href=&#34;http://dak1n1.com/blog/12-nginx-performance-tuning&#34;&gt;nginx tuning guide from Dakini&lt;/a&gt; and &lt;a href=&#34;http://calendar.perfplanet.com/2012/using-nginx-php-fpmapc-and-varnish-to-make-wordpress-websites-fly/&#34;&gt;this nginx/wordpress tuning guide from perfplanet&lt;/a&gt;. They both have excellent information. I also think you should check out the &lt;a href=&#34;https://github.com/h5bp/server-configs/blob/master/nginx/nginx.conf&#34;&gt;html5 boilerplate nginx conf files&lt;/a&gt; which have great bits of information.&lt;/p&gt;
+
+&lt;p&gt;If you&amp;#8217;re setting this up yourself, start simple and work your way up. The guides above have varying degrees of information and various configuration options which may conflict with each other. Here&amp;#8217;s some tips:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Decide if you&amp;#8217;re going with a socket or tcp/ip connection between nginx + php-fcm. A socket connection is slightly faster and local to the system, but a tcp/ip is (marginally) easier to set up and good if you are spanning multiple nodes (you could create a php app farm to compliment an nginx front-facing web farm).&lt;/p&gt;
+
+&lt;p&gt;I chose to go with the socket approach between nginx/php-fpm. It was relatively painless, but I did hit a snag passing nginx requests to php. I kept getting a &amp;#8220;no input file specified&amp;#8221; error. It turns out it was a simple permissions issue: the default php-fpm user was different the nginx user the webserver runs under. Which leads me to:&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Plan your users. Security issues are annoying, so make sure file and app permissions are all in sync.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Check your settings! Read through default configuration options so you know what&amp;#8217;s going on. For instance you may end up running more worker processes in your nginx instance than available cpu&amp;#8217;s killing performance. Well documented configuration files are essential to tuning.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Plan for access and error logging. If things go wrong during the setup, you&amp;#8217;ll want to know what&amp;#8217;s going on and if your server is getting requests. You can turn access logs of later.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Get your app running, test, and tune. If you do too many configuration settings at once you&amp;#8217;ll most likely hit a snag. I only did a moderate amount of tuning; nginx configuration files vary considerably, so again it&amp;#8217;s a good idea to read through the options and make your own call. Ditto for php-fcm.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I am really happy with the idea of running php as a separate process. Running php as a daemon has many benefits: you have a dedicate process you can monitor and recycle for php without effecting your web server. Pooling apps allows you to tune them individually. You&amp;#8217;re also not tying yourself to a particular web server; php-fpm can run fine with apache. In TCP mode you can even offload your web server to separate node. At the very least, you can distinguish php usage against web server usage.&lt;/p&gt;
+
+&lt;p&gt;So my only question is why would anyone still use apache?&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>How to Handle a Super Bowl Size Spike in Web Traffic</title>
+          <link>http://blog.michaelhamrah.com/2013/02/how-to-handle-a-super-bowl-size-spike-in-web-traffic/</link>
+          <pubDate>Wed, 06 Feb 2013 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2013/02/how-to-handle-a-super-bowl-size-spike-in-web-traffic/</guid>
+          <description>
+
+&lt;p&gt;I was shocked to learn the number of &lt;a href=&#34;http://www.yottaa.com/blog/bid/265815/Coke-SodaStream-the-13-Websites-That-Crashed-During-Super-Bowl-2013&#34;&gt;sites which failed to handle the spike in web traffic during the Super Bowl&lt;/a&gt;. Most of these sites served static content and should have scaled easily with the use of CDNs. Scaling sites, even dynamic ones, are achievable with well known tools and techniques.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-problem-is-simple:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;The Problem is Simple&lt;/h2&gt;
+
+&lt;p&gt;At a basic level accessing a web page is when one computer, the client, connects to a server and downloads some content. A problem occurs when the number of people requesting content exceeds the ability to deliver content. It&amp;#8217;s just like a restaurant. When there are too many customers people must wait to be served. Staff becomes stressed and strained. Computers are the same. Excessive load causes things to break down.&lt;/p&gt;
+
+&lt;h2 id=&#34;optimization-comes-in-three-forms:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Optimization Comes in Three Forms&lt;/h2&gt;
+
+&lt;p&gt;To handle more requests there are three things you can do: produce (render) content faster, deliver (download) content faster and add more servers to handle more connections. Each of these solutions has a limit. Designing for these limits is architecting for scale.&lt;/p&gt;
+
+&lt;p&gt;A page is composed of different types of content: html, css and js. This content is either dynamic (changes frequently) or static (changes infrequently). Static content is easier to scale because you create it once and deliver it repeatedly. The work of rendering is eliminated. Static content can be pushed out to CDNs or cached locally to avoid redownloading. Requests to origin servers are reduced or eliminated. You can also download content faster with small payload sizes. There is less to deliver if there is less markup and the content is compressed. Less to deliver means faster download.&lt;/p&gt;
+
+&lt;p&gt;Dynamic content is trickier to cache because it is always changing. Reuse is difficult because pages must be regenerated for specific users at specific times. Scaling dynamic content involves database tuning, server side caching, and code optimization. If you can render a page quickly you can deliver more pages because the server can move on to new requests. Most often, at scale, you want to treat treat dynamic content like static content as best you can.&lt;/p&gt;
+
+&lt;p&gt;Adding more servers is usually the easiest way to scale but breaks down quickly. The more servers you have the more you need to keep in sync and manage. You may be able to add more web servers, but those web servers must connect to database servers. Even powerful database servers can only handle so many connections and adding multiple database servers is complicated. You may be able to add specific types of servers, like cache servers, to achieve the results you need without increasing your entire topology.&lt;/p&gt;
+
+&lt;p&gt;The more servers you have the harder it is to keep content fresh. You may feel increasing your servers will increase your load. It will become expensive to both manage and run. You may be able to achieve a similar result if you cut your response times which also gives the end user a better experience. If you understand the knobs and dials of your system you can tune properly.&lt;/p&gt;
+
+&lt;h2 id=&#34;make-assumptions:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Make Assumptions&lt;/h2&gt;
+
+&lt;p&gt;Don&amp;#8217;t be afraid to make assumptions about your traffic patterns. This will help you optimize for your particular situation. For most publicly facing websites traffic is anonymous. This is particularly true during spikes like the Super Bowl. Because you can deliver the same page to every anonymous user you effectively have static content for those users. Cache controls determine how long content is valid and powers HTTP accelerators and CDNs for distribution. You don&amp;#8217;t need to optimize for everyone; split your user base into groups and optimize for the majority. Even laxing cache rules on pages to a minute can shift the burden away from your application servers freeing valuable resources. Anonymous users will get the benefit of cached content with a quick download, dynamic users will have fast servers.&lt;/p&gt;
+
+&lt;p&gt;You can also create specific rendering pipelines for anonymous and known users for highly dynamic content. If you can identify anonymous users early you may be able to avoid costly database queries, external API calls or page renders.&lt;/p&gt;
+
+&lt;h2 id=&#34;understand-http:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Understand HTTP&lt;/h2&gt;
+
+&lt;p&gt;HTTP powers the web. The better you understand HTTP the better you can leverage tools for optimizing the web. Specifically look at &lt;a href=&#34;http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html&#34;&gt;http cache headers&lt;/a&gt; which allow you to use web accelerators like Varnish and CDNs. The vary header will allow you to split anonymous and known users giving you fine grained control on who gets what. Expiration headers determine content freshness. The worst thing you can do is set cache headers to private on static content preventing browsers from caching locally.&lt;/p&gt;
+
+&lt;h2 id=&#34;try-varnish-and-esi:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Try Varnish and ESI&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.varnish-cache.org&#34;&gt;Varnish&lt;/a&gt; is an HTTP accelerator. It caches dynamic content produced from your website for efficient delivery. Web frameworks usually have their own features for caching content, but Varnish allows you to bypass your application stack completely for faster response times. You can deliver a pre-rendered dynamic page as if it were a static page sitting in memory for a greater number of connections.&lt;/p&gt;
+
+&lt;p&gt;Edge Side Includes allow you to mix static and dynamic content together. If a page is 90% similar for everyone, you can cache the 90% in Varnish and have your application server deliver the other 10%. This greatly reduces the work your app server needs to do. ESI&amp;#8217;s are just emerging into web frameworks. It will play a more prominent role in Rails 4.&lt;/p&gt;
+
+&lt;h2 id=&#34;use-a-cdn-and-multiple-data-centers:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Use a CDN and Multiple Data Centers&lt;/h2&gt;
+
+&lt;p&gt;You don&amp;#8217;t need to add more servers to your own data center. You can leverage the web to fan work out across the Internet. I talk more about CDN&amp;#8217;s, the importance of edge locations and latency in my post &lt;a href=&#34;http://www.michaelhamrah.com/blog/2012/01/building-for-the-web-understanding-the-network/&#34;&gt;Building for the Web: Understanding the Network&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Your application servers should be reserved for doing application-specific work which is unique to every request. There are more efficient ways of delivering the same content to multiple people than processing a request top-to-bottom via a web framework. Remember &amp;#8220;the same&amp;#8221; doesn&amp;#8217;t mean the same indefinitely; it&amp;#8217;s the same for whatever timeframe you specify.&lt;/p&gt;
+
+&lt;p&gt;If you run Varnish servers in multiple data centers you can effectively create your own CDN. Your database and content may be on the east coast but if you run a Varnish server on the west coast an anonymous user in San Fransisco will have the benefit of a fast response time and you&amp;#8217;ve saved a connection to your app server. Even if Varnish has to deliver 10% dynamic content via an ESI on the east coast it can leverage the fast connection between data centers. This is much better then the end user hoping coast-to-coast themselves for an entire page.&lt;/p&gt;
+
+&lt;p&gt;Amazon&amp;#8217;s Route 53 offers the ability to route requests to an optimal location. There are other geo-aware DNS solutions. If you have a multi-region setup you are not only building for resiliency your are horizontally scaling your requests across data centers. At massive scale even load balancers may become overloaded so round-robin via DNS becomes essential. DNS may be a bottleneck as well. If your DNS provider can&amp;#8217;t handle the flood of requests trying to map your URL to your IP address nobody can even get to your data center!&lt;/p&gt;
+
+&lt;h2 id=&#34;use-auto-scaling-groups-or-alerting:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Use Auto Scaling Groups or Alerting&lt;/h2&gt;
+
+&lt;p&gt;If you can take an action when things get rough you can better handle spikes. Auto scaling groups are a great feature of AWS when some threshold is maxed. If you&amp;#8217;re not on AWS good monitoring tools will help you take action when things hit a danger zone. If you design your application with auto-scaling in mind, leveraging load balancers for internal communication and avoiding state, you are in a better position to deal with traffic growth. Scaling on demand saves money as you don&amp;#8217;t need to run all your servers all the time. Pinterest gave a talk explaining how it saves money by reducing its server farm at night when traffic is low.&lt;/p&gt;
+
+&lt;h2 id=&#34;compress-and-serialized-data-across-the-wire:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Compress and Serialized Data Across the Wire&lt;/h2&gt;
+
+&lt;p&gt;Page sizes can be greatly reduced if you enable compression. Web traffic is mostly text which is easily compressible. A 100kb page is a lot faster to download than a 1mb page. Don&amp;#8217;t forget about internal communication as well. In todays API driven world using efficient serialization protocols like protocol buffers can greatly reduce network traffic. Most RPC tools support some form of optimal serialization. SOAP was the rage in the early 2000s but XML is one of the worst ways to serialize data for speed. Compressed content allows you to store more in cache and reduces network I/O as well.&lt;/p&gt;
+
+&lt;h2 id=&#34;shut-down-features:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Shut Down Features&lt;/h2&gt;
+
+&lt;p&gt;A performance bottleneck may be caused by one particular feature. When developing new features, especially on a high traffic site, the ability to shut down a misbehaving feature could be the quick solution to a bad problem. Most high-traffic websites &amp;#8220;leak&amp;#8221; new features by deploying them to only 10% of their users to monitor behavior. Once everything is okay they activate the feature everywhere. Similar to determining page freshness for caches, determining available features under load can keep a site alive. What&amp;#8217;s more important: one specific feature or the entire system?&lt;/p&gt;
+
+&lt;h2 id=&#34;non-blocking-i-o:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Non-Blocking I/O&lt;/h2&gt;
+
+&lt;p&gt;Asynchronous programming is a challenge and probably a last-resort for scaling. Sometimes servers break down without any visible threshold. You may have seen a slow request but memory, cpu, and network levels are all okay. This scenario is usually caused by blocking threads waiting on some form of I/O. Blocked threads are plugs that clog your application. They do nothing and prevent other things from happening. If you call external web services, run long database queries or perform disk I/O beware of synchronous operations. They are bottlenecks. Asynchronous based frameworks like node.js put asynchronous programming at the forefront of development making them attractive for handling numerous concurrent connections. Asynchronous programming also paves the way for queue-based architectures. If every request is routed through a queue and processed by a worker the queue will help even out spikes in traffic. The queue size will also determine how many workers you need. It may be trickier to code but it&amp;#8217;s how things scale.&lt;/p&gt;
+
+&lt;h2 id=&#34;think-at-scale:9da68d5a6f235e570e3d7349e289ad5f&#34;&gt;Think at Scale&lt;/h2&gt;
+
+&lt;p&gt;When dealing with a high-load environment nothing can be off the table. What works for a few thousand users will grow out of control for a few million. Even small issues will become exponentially problematic.&lt;/p&gt;
+
+&lt;p&gt;Scaling isn&amp;#8217;t just about the tools to deal with load. It&amp;#8217;s about the decisions you make on how your application behaves. The most important thing is determining page freshness for users. The decisions for an up-to-the-second experience for every user are a lot different than an up-to-the-minute experience for anonymous users. When dealing with millions of concurrent requests one will involve a lot of engineering complexity and the other can be solved quickly.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Building for the Web: Understanding The Network</title>
+          <link>http://blog.michaelhamrah.com/2012/01/building-for-the-web-understanding-the-network/</link>
+          <pubDate>Fri, 06 Jan 2012 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2012/01/building-for-the-web-understanding-the-network/</guid>
+          <description>
+
+&lt;p&gt;My &lt;a href=&#34;http://wp.me/pnRto-aa&#34;&gt;first post on web technology&lt;/a&gt; talks about what we are trying to accomplish when building for the web. There are four ways we can break down the standard flow of &lt;em&gt;client action/server action/result&lt;/em&gt;: delivering, serving, rendering and developing. This post focuses on delivering content by understanding the network. Why use a &lt;a href=&#34;http://en.wikipedia.org/wiki/Content_delivery_network&#34;&gt;cdn&lt;/a&gt;? What&amp;#8217;s all the fuss about connections and compressed static assets? The network is often overlooked but understanding how it operates is essential for building high performing websites. A 50ms rendering time with a 50ms db query is meaningless if it takes three seconds to download a page.&lt;/p&gt;
+
+&lt;h2 id=&#34;tcp-know-it:117df65302b8db2107451cddb1557896&#34;&gt;TCP: Know It.&lt;/h2&gt;
+
+&lt;p&gt;Going from client to server and back again rests on the network and how well you use it. &lt;a href=&#34;http://en.wikipedia.org/wiki/Transmission_Control_Protocol&#34;&gt;TCP&lt;/a&gt; dominates communication on the web and is worth knowing well. In order to send data from one point to another a connection is established between two points via a back-and-forth handshake. Once established, data flows between the two in a series of packets. TCP offers reliability by acknowledging receipt of every packet sent by sending a second acknowledgement packet back to the server. The time it takes to go from one end to another and back is called latency or round-trip time. At any given time there are packets in flight waiting acknowledgement of receipt. TCP only allows a certain amount of unacknowledged packets in flight; this is called window size. Connections start with small window sizes but as more successful transfers occur the window size will increase (&lt;a href=&#34;http://en.wikipedia.org/wiki/Slow-start&#34;&gt;known as slow start&lt;/a&gt;). This effectively increases bandwidth because more data is sent at once. The longer the latency the slower a connection; if the window size is full then the server must wait for acknowledgements before sending more data. This is on top of the time it actually takes to send packets. The best case scenario is low latency with large, full windows.&lt;/p&gt;
+
+&lt;h2 id=&#34;reliability:117df65302b8db2107451cddb1557896&#34;&gt;Reliability&lt;/h2&gt;
+
+&lt;p&gt;Reliable connections are also important; if packets are lost they must be resent. Retransmissions slow down transfers because tcp guarantees in-order delivery of data to the application layer. If a packet is dropped and needs to be resent nothing will be delivered to the application until that one packet is received. UDP, an alternative to TCP, doesn&amp;#8217;t offer the same guarantees and assumes issues are dealt with at the application layer.&lt;/p&gt;
+
+&lt;p&gt;There is a &lt;a href=&#34;http://coding.smashingmagazine.com/2011/11/14/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/&#34;&gt;good article by Phillip Tellis on understanding the network with JS&lt;/a&gt; which talks about data transfer and TCP. &lt;a href=&#34;http://www.wireshark.org/&#34;&gt;Wireshark&lt;/a&gt; is another great tool for analyzing packets across a network. You can actually view individual packets as they come and go and see how window size is scaling, view retransmissions, measure bandwidth, and examine latency.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-importance-of-connections:117df65302b8db2107451cddb1557896&#34;&gt;The Importance of Connections&lt;/h2&gt;
+
+&lt;p&gt;Establishing a connection takes time because of the handshake involved and latency considerations. A 100ms latency could mean more than 300ms before any data is even received on top of dealing with any dns lookups and os overhead. Keeping a connection alive avoids this creation overhead. Connection pooling, for example, is a popular technique to manage database connections. A web server will talk to a database frequently; if the connection is already established there is no overhead in executing a new query which can trim valuable time off of serving a request. &lt;a href=&#34;http://en.wikipedia.org/wiki/Ping&#34;&gt;Ping&lt;/a&gt; and &lt;a href=&#34;http://en.wikipedia.org/wiki/Traceroute&#34;&gt;traceroute&lt;/a&gt; are two worthwhile tools that examine latency and the &amp;#8220;hops&amp;#8221; packets take from one network to another as they travel from end to end.&lt;/p&gt;
+
+&lt;p&gt;Connections take time to create, have a relatively limited availability and require overhead to manage. It may seem like a great idea to keep connections open for the long haul, but there is a limited number of connections a server can sustain. Concurrent connections is a popular benchmark which examines how many simultaneous connections can occur at any given time. If you hit that mark, new requests will have to wait until something frees up. The ideal situation is to pump as much as possible through a few connections so there are more available to others. If you can serve multiple files files at once great; but why keep six empty connections open between requests if you don&amp;#8217;t need too?&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;On a side note, this is where server architecture comes into play. A server usually processes a request by building a web page from a framework. If this can be done asynchronously by the web server, or offloaded somewhere else, the web server can handle a higher number of sustained connections. The server can grab a new connection while it waits for data to send on an existing one. We&amp;#8217;ll talk more about this in another post. Fast server times also keep high concurrent connections from arising in the first place.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;optimizing-the-network:117df65302b8db2107451cddb1557896&#34;&gt;Optimizing the Network&lt;/h2&gt;
+
+&lt;p&gt;Lowering latency and optimizing data throughput are what dominate delivery optimization. It is important to keep the data which flows between client and server to a minimum. Downloading a 100kb page is a lot faster than downloading a 1000kb page. Compressing static content like css and javascript greatly reduces payload which is why tools like &lt;a href=&#34;http://documentcloud.github.com/jammit/&#34;&gt;Jammit&lt;/a&gt; and &lt;a href=&#34;http://code.google.com/closure/&#34;&gt;Google Closure&lt;/a&gt; are so ubiquitous. These tools can also merge files; because of http chatter it is faster to download one larger file than several small files. Remember the importance of knowing http? Each http request requires reusing or establishing a connection, a header request sent, the server handling the request, and the response. Doing this once is better than twice. Most web servers can also dynamically compress http responses and should be used when possible.&lt;/p&gt;
+
+&lt;p&gt;Fixing latency can be done by using a content delivery network like &lt;a href=&#34;http://aws.amazon.com/cloudfront/&#34;&gt;Amazon Cloudfront&lt;/a&gt; or &lt;a href=&#34;http://www.akamai.com&#34;&gt;Akamai&lt;/a&gt;. They shorten the distance between a request and response by taking content from your server and spreading it on their infrastructure all over the world. When a user requests a resource the cdn routes the request to the server with the lowest latency. A user in Japan can download a file from Japan a lot faster than he can from Europe. Shorter distance, fewer hops, fewer retransmissions. A good cdn strategy rests on how easy it is to push content to a cdn and how easy it is to refresh it. Both concerns should be well researched when leveraging a cdn. You don&amp;#8217;t want stale css files in the wild when you release a new version of your app.&lt;/p&gt;
+
+&lt;p&gt;A &lt;a href=&#34;http://en.wikipedia.org/wiki/WAN_optimization&#34;&gt;WAN accelerator&lt;/a&gt; is also a cool technique. Let&amp;#8217;s say you want to deliver a dynamic web page from the US to Tokyo. You could have that travel over the open internet with a high latency connection. Or you could route that request to a data center in Tokyo with an optimized connection to the US. The user gets a low-latency connection to the Tokyo datacenter which in turn gets a low-latency high bandwidth connection to the US. This can greatly simplify issues with running and keeping multiple data centers in sync.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-bottom-line:117df65302b8db2107451cddb1557896&#34;&gt;The Bottom Line&lt;/h2&gt;
+
+&lt;p&gt;There&amp;#8217;s a lot of effort underway in making the web faster by changing how tcp connections are leveraged on the web. Http 1.0 requires a new connection for every request/response and browsers limit the number of parallel connections between client and server between two and six. Http keep-alive and &lt;a href=&#34;http://en.wikipedia.org/wiki/HTTP_pipelining&#34;&gt;http pipelining&lt;/a&gt; offer mechanisms to push more content through existing connections. Rails 3.1 introduced http streaming via chunked responses. Browsers can fetch assets in parallel with the main html response as soon as tags appear in the main response stream. &lt;a href=&#34;http://www.chromium.org/spdy/spdy-whitepaper&#34;&gt;Spdy&lt;/a&gt;, an effort by Google, is worth checking out: it proposes a multi-pronged attack to leverage as much flow as possible on a single connection. The docs also illustrate interesting pain points with the network on the web. The bottom line is simple: reduce the amount of data that needs to go from one place to another and make the travel time as fast as possible. Small amounts of data over existing parallel connections make a fast web.&lt;/p&gt;
+
+&lt;p&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;:&lt;a href=&#34;http://python.org/&#34;&gt;http://python.org/&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Building for the Web: What Are We Trying to Accomplish?</title>
+          <link>http://blog.michaelhamrah.com/2012/01/web-technology-what-are-we-trying-to-accomplish/</link>
+          <pubDate>Wed, 04 Jan 2012 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2012/01/web-technology-what-are-we-trying-to-accomplish/</guid>
+          <description>
+
+&lt;p&gt;The web technology landscape is huge and growing every day. There are hundreds of options from servers to languages to frameworks for building the next big thing. Is it &lt;a href=&#34;http://www.nginx.org/en/&#34;&gt;nginx&lt;/a&gt; + &lt;a href=&#34;http://unicorn.bogomips.org/&#34;&gt;unicorn&lt;/a&gt; + &lt;a href=&#34;http://rubini.us/&#34;&gt;rubinus&lt;/a&gt; or a &lt;a href=&#34;http://nodejs.org/&#34;&gt;node.js&lt;/a&gt; restful service on &lt;a href=&#34;http://cassandra.apache.org/&#34;&gt;cassandra&lt;/a&gt; running with &lt;a href=&#34;http://emberjs.com/&#34;&gt;ember.js&lt;/a&gt; and html5 on the front end? Should I learn or ? What&amp;#8217;s the best nosql database for a socially powered group buying predicative analysis real-time boutique mobile aggregator that scales to 100 million users and never fails?&lt;/p&gt;
+
+&lt;p&gt;It is true there are many choices out there but web technology boils down to a very simple premise. You want to respond to a user action as quickly as possible, under any circumstance, while easily changing functionality. Everything from the technology behind this blog to what goes into facebook operates on that simple idea. The problem comes down to doing it at the scale and speed of the modern web. You have hundreds of thousands of users; you have hundreds of thousands of things you want them to see; you want them to buy, share, create, and/or change those things; you want to deliver a beautiful, customized experience; everything that happens needs to be instantaneous; it can never stop working; and the cherry on the cake is that everything is constantly changing; different features, different experiences, different content; different users. The simple &amp;#8220;hello world&amp;#8221; app is easy. But how do you automatically translate that into every language with a personal message and show a real-time graph with historical data of every user accessing the page &lt;em&gt;at scale&lt;/em&gt;? What if we wanted to have users leave messages on the same page? Hopefully by the end of this series you will get a sense of how all the pieces fit together and what&amp;#8217;s involved from going to 10 users to 10 thousand to 10 million.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-web-at-50-000-feet:ba587cddf41afc4433f829b6dc01b418&#34;&gt;The Web at 50,000 Feet&lt;/h2&gt;
+
+&lt;p&gt;The web breaks down to three distinct areas: what happens with the client, what happens on the server, and what happens in between. Usually this is rendering a web page: a user clicks a link, a page delivered, the browser displays the content. It could also involve handling an ajax request, calling an API, posting a search form. Either way it boils down to &lt;em&gt;client action, server action, result&lt;/em&gt;. Doing this within a users attention span given any amount of meaningful content in a fail-safe way with even the smallest amount of variation is why we have all this technology. It all works together to combine flexibility and speed with power and simplicity. The trick is using the right tool in the swiss-army knife of tech to get the job done.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s break all this down a bit. Handling a user action well comes down to:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Having the server-side handle the request quickly (Serving)&lt;/li&gt;
+&lt;li&gt;A quick travel time between the client and server (Delivering)&lt;/li&gt;
+&lt;li&gt;Quickly displaying the result (Rendering)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And developing and managing all this successfully comes down to:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Changing any aspect of what is going on quickly and easily (Developing)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As sites grow and come under heavier load doing any one of these things becomes increasingly difficult. More features, more users, more servers, more code. There is only so much one server can do. There is also only so much a server &lt;em&gt;needs&lt;/em&gt; to do. Why hit the database if you can cache the result? Why render a page if you don&amp;#8217;t need to? Why download a one meg html page when it&amp;#8217;s only 100kb compressed? Why download a page if you don&amp;#8217;t have to? How do you do all this and keep your code simple? How do you ensure everything still works even if your &lt;a href=&#34;http://aws.amazon.com/message/65648/&#34;&gt;data center goes down&lt;/a&gt;?&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Http plays an important role in all of this. I didn&amp;#8217;t truly appreciate http until I read &lt;a href=&#34;http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260&#34;&gt;Restful Web Services&lt;/a&gt; by Sam Ruby and Leonard Richardson. Http as an application protocol offers an elegant, scalable mechanism for transferring data and defining intent. Understanding http verbs, various http headers and how http sits on top of tcp/ip can go along way in mastering the web.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;making-it-all-work-together:ba587cddf41afc4433f829b6dc01b418&#34;&gt;Making it all work together&lt;/h2&gt;
+
+&lt;p&gt;So how do you choose and use all the tools out there to serve, deliver, render and develop for the web? What does &lt;em&gt;client action/server action/result&lt;/em&gt; have to do with &lt;a href=&#34;http://rack.rubyforge.org/&#34;&gt;rack&lt;/a&gt; and &lt;a href=&#34;http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface&#34;&gt;wsgi&lt;/a&gt;? I naïvely thought I could write everything I wanted to in a single post: from using &lt;a href=&#34;http://sass-lang.com/&#34;&gt;sass&lt;/a&gt; for compressed, minimized css to sharding databases for horizontal scalability. It will be easier to spread it out a bit so stay tuned. But remember: any language, framework or tool out there is really about improving &lt;em&gt;client action/server action/result&lt;/em&gt;. Even something like &lt;a href=&#34;http://en.wikipedia.org/wiki/WebSocket&#34;&gt;websockets&lt;/a&gt;. Websockets eliminates the client request completely. Why wait for a user to tell you something when you can push them content? Knowing your problem domain, your bottlenecks, and your available options will help you choose the right tool and make the right time/cost/benefit decision.&lt;/p&gt;
+
+&lt;p&gt;I&amp;#8217;ll dig into the constraints and various techniques to effectively &lt;a href=&#34;http://wp.me/pnRto-af&#34;&gt;deliver&lt;/a&gt;, &lt;a href=&#34;http://wp.me/pnRto-al&#34;&gt;serve, develop&lt;/a&gt; and &lt;a href=&#34;http://wp.me/pnRto-at&#34;&gt;render&lt;/a&gt; for the web in upcoming posts.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

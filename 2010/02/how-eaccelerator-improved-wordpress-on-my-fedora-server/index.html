@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      How eAccelerator Improved WordPress on My Fedora Server &middot; Adventures in HttpContext
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/poole.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/syntax.css">
+  <link rel="stylesheet" href="http://blog.michaelhamrah.com/css/lanyon.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://blog.michaelhamrah.com/assets/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="http://blog.michaelhamrah.com/assets/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.michaelhamrah.com/atom.xml">
+</head>
+
+
+  <body>
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>Michael Hamrah</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/">Home</a>
+    <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/post">Posts</a>
+
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
+      
+    
+      
+    
+
+    <a class="sidebar-nav-item" href="http://linkedin.com/in/hamrah">LinkedIn</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/mhamrah">@mhamrah</a>
+    <a class="sidebar-nav-item" href="http://github.com/mhamrah">GitHub</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="http://blog.michaelhamrah.com/" title="Home">Adventures in HttpContext</a>
+            <small>All the stuff after &#39;Hello, World&#39;</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+
+
+<div class="post">
+  <h1 class="post-title">How eAccelerator Improved WordPress on My Fedora Server</h1>
+  <span class="post-date">Feb 1 2010</span>
+  <p>I recently moved this blog and some other smaller websites to a virtual machine running on <a href="http://www.michaelhamrah.com/blog/2010/01/rocking-the-rackspace-cloud/">Rackspace Cloud</a>. So far I&#8217;m loving having my own server, and have been able to get my hands dirty with Linux administration, apache, and mysql.</p>
+
+<p>But one quirk was really bothering me: at times, my WordPress blog would hang. I don&#8217;t get too much traffic, and using</p>
+
+<pre class="brush: bash; title: ; notranslate" title="">top</pre>
+
+<p>showed no real load on the cpu. But there were a lot of Apache threads with a good chunk of memory allocated, and I had a little free memory available.  I tried adding more memory to the server, but no luck.  I thought the issue could be mysql, but running queries wasn&#8217;t a problem.  Neither was static html- the root index.html loaded quickly.  So that left php itself.</p>
+
+<p>A couple of apache config changes didn&#8217;t help.  The thing which really did the trick was installing <a href="http://eaccelerator.net/">eAccelerator</a>.  This tool simply keeps the compiled php script available, so apache doesn&#8217;t have to recompile the php script on every load.  No, the blog is a lot faster and much more reliable.</p>
+
+<p>Installation is easy on Fedora (or CentOS, or whatever distro uses yum):</p>
+
+<pre class="brush: bash; title: ; notranslate" title="">sudo yum install php-accelerator</pre>
+
+<p>then just restart apache and you&#8217;re good to go:</p>
+
+<pre class="brush: bash; title: ; notranslate" title="">sudo /sbin/service httpd reload</pre>
+
+<p>If you don&#8217;t notice an immediate improvement, and want to check to make sure it&#8217;s loaded, then create a info.php file with the following code:</p>
+
+<pre class="brush: php; title: ; notranslate" title="">&lt;?php phpinfo(); ?&gt;</pre>
+
+<p>and you should see the accelerator info in the list.</p>
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  </body>
+</html>
+
