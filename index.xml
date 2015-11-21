@@ -1180,66 +1180,6 @@ settings = PluginDefaults.projectSettings // in a .scala file
     
       
         <item>
-          <title>Service Discovery Options with Marathon and Deimos</title>
-          <link>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</link>
-          <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
-          <author>Michael Hamrah</author>
-          <guid>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</guid>
-          <description>&lt;p&gt;I&amp;#8217;ve become a fan of Mesos and Marathon: combined with &lt;a href=&#34;https://github.com/mesosphere/deimos&#34;&gt;Deimos&lt;/a&gt; you can create a DIY PaaS for launching and scaling Docker containers across a number of nodes. Marathon supports a bare-bones service-discovery mechanism through its task API, but it would be nice for containers to register themselves with some service discovery tool themselves. In order to achieve this containers need to know their host ip address and the port Marathon assigned them so they could tell other interested services where they can be found.&lt;/p&gt;
-
-&lt;p&gt;Deimos allows default parameters to be passed in when executing &lt;code&gt;docker run&lt;/code&gt; and Marathon adds assigned ports to a container&amp;#8217;s environment variables. If a container has this information it can register it with a service discovery tool.&lt;/p&gt;
-
-&lt;p&gt;Here we assign the host&amp;#8217;s IP address as a default run option in our &lt;a href=&#34;https://github.com/mesosphere/deimos/#configuration&#34;&gt;Deimos config file&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre class=&#34;syntax bash&#34;&gt;#/etc/deimos.cfg
-[containers.options]
-append: [&#34;-e&#34;, &#34;HOST_IP=192.168.33.12&#34;]
-&lt;/pre&gt;
-
-&lt;p&gt;Now let&amp;#8217;s launch our mesos-sample container to our Mesos cluster via Marathon:&lt;/p&gt;
-
-&lt;pre class=&#34;syntax json&#34;&gt;// Post to http://192.168.33.12/v2/apps
-{
-  &#34;container&#34;: {
-    &#34;image&#34;: &#34;docker:///mhamrah/mesos-sample&#34;
-  },
-  &#34;cpus&#34;: &#34;1&#34;,
-  &#34;id&#34;: &#34;www&#34;,
-  &#34;instances&#34;: 1,
-  &#34;mem&#34;: 512,
-  &#34;ports&#34;: [0],
-  &#34;uris&#34;: [],
-  &#34;cmd&#34;: &#34;&#34;
-}
-&lt;/pre&gt;
-
-&lt;p&gt;Once our app is launch, we can inspect all the environment variables in our container with the &lt;code&gt;/env&lt;/code&gt; endpoint from &lt;code&gt;mhamrah/mesos-sample&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre class=&#34;syntax json&#34;&gt;curl http://192.168.33.12:31894/env
-[ {
-  &#34;HOSTNAME&#34; : &#34;a4305981619d&#34;
-}, {
-  &#34;PORT0&#34; : &#34;31894&#34;
-}, {
-  &#34;PATH&#34; : &#34;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&#34;
-}, {
-  &#34;PWD&#34; : &#34;/tmp/mesos-sandbox&#34;
-}, {
-  &#34;PORTS&#34; : &#34;31894&#34;
-}, {
-  &#34;HOST_IP&#34; : &#34;192.168.33.12&#34;
-}, {
-  &#34;PORT&#34; : &#34;31894&#34;
-}]
-&lt;/pre&gt;
-
-&lt;p&gt;With this information some startup script could use the &lt;code&gt;PORT&lt;/code&gt; (or &lt;code&gt;PORT0&lt;/code&gt;) and &lt;code&gt;HOST_IP&lt;/code&gt; to register itself for direct point-to-point communication in a cluster.&lt;/p&gt;
-</description>
-        </item>
-      
-    
-      
-        <item>
           <title>Accessing the Docker Host Server Within a Container</title>
           <link>http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/</link>
           <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
@@ -1317,6 +1257,66 @@ PWD=/
 &lt;/pre&gt;
 
 &lt;p&gt;If the container knows the ip address of its host, you can broadcast this out to other services via the container&amp;#8217;s application. Useful for service discovery tools run from within a container where you want to tell others the host IP so others can find you.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Service Discovery Options with Marathon and Deimos</title>
+          <link>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</link>
+          <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</guid>
+          <description>&lt;p&gt;I&amp;#8217;ve become a fan of Mesos and Marathon: combined with &lt;a href=&#34;https://github.com/mesosphere/deimos&#34;&gt;Deimos&lt;/a&gt; you can create a DIY PaaS for launching and scaling Docker containers across a number of nodes. Marathon supports a bare-bones service-discovery mechanism through its task API, but it would be nice for containers to register themselves with some service discovery tool themselves. In order to achieve this containers need to know their host ip address and the port Marathon assigned them so they could tell other interested services where they can be found.&lt;/p&gt;
+
+&lt;p&gt;Deimos allows default parameters to be passed in when executing &lt;code&gt;docker run&lt;/code&gt; and Marathon adds assigned ports to a container&amp;#8217;s environment variables. If a container has this information it can register it with a service discovery tool.&lt;/p&gt;
+
+&lt;p&gt;Here we assign the host&amp;#8217;s IP address as a default run option in our &lt;a href=&#34;https://github.com/mesosphere/deimos/#configuration&#34;&gt;Deimos config file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;#/etc/deimos.cfg
+[containers.options]
+append: [&#34;-e&#34;, &#34;HOST_IP=192.168.33.12&#34;]
+&lt;/pre&gt;
+
+&lt;p&gt;Now let&amp;#8217;s launch our mesos-sample container to our Mesos cluster via Marathon:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;// Post to http://192.168.33.12/v2/apps
+{
+  &#34;container&#34;: {
+    &#34;image&#34;: &#34;docker:///mhamrah/mesos-sample&#34;
+  },
+  &#34;cpus&#34;: &#34;1&#34;,
+  &#34;id&#34;: &#34;www&#34;,
+  &#34;instances&#34;: 1,
+  &#34;mem&#34;: 512,
+  &#34;ports&#34;: [0],
+  &#34;uris&#34;: [],
+  &#34;cmd&#34;: &#34;&#34;
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Once our app is launch, we can inspect all the environment variables in our container with the &lt;code&gt;/env&lt;/code&gt; endpoint from &lt;code&gt;mhamrah/mesos-sample&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;curl http://192.168.33.12:31894/env
+[ {
+  &#34;HOSTNAME&#34; : &#34;a4305981619d&#34;
+}, {
+  &#34;PORT0&#34; : &#34;31894&#34;
+}, {
+  &#34;PATH&#34; : &#34;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&#34;
+}, {
+  &#34;PWD&#34; : &#34;/tmp/mesos-sandbox&#34;
+}, {
+  &#34;PORTS&#34; : &#34;31894&#34;
+}, {
+  &#34;HOST_IP&#34; : &#34;192.168.33.12&#34;
+}, {
+  &#34;PORT&#34; : &#34;31894&#34;
+}]
+&lt;/pre&gt;
+
+&lt;p&gt;With this information some startup script could use the &lt;code&gt;PORT&lt;/code&gt; (or &lt;code&gt;PORT0&lt;/code&gt;) and &lt;code&gt;HOST_IP&lt;/code&gt; to register itself for direct point-to-point communication in a cluster.&lt;/p&gt;
 </description>
         </item>
       
