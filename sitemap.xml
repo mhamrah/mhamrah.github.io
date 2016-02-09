@@ -413,11 +413,6 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</loc>
-    <lastmod>2009-02-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/</loc>
     <lastmod>2009-01-14T00:00:00+00:00</lastmod>
   </url>
@@ -470,6 +465,10 @@
   <url>
     <loc>http://blog.michaelhamrah.com/about/</loc>
     <lastmod>2008-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/posts/2009-02-18-digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</loc>
   </url>
   
   <url>

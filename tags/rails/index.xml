@@ -903,68 +903,6 @@ end
         </item>
       
     
-      
-        <item>
-          <title>Digging into Ruby on Rails from C# and .MVC (Asp.Net MVC)</title>
-          <link>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</link>
-          <pubDate>Wed, 18 Feb 2009 00:00:00 UTC</pubDate>
-          <author>Michael Hamrah</author>
-          <guid>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</guid>
-          <description>&lt;p&gt;One of the things I&amp;#8217;ve been doing lately is digging into Ruby on Rails. I&amp;#8217;ve always wanted to learn Rails since I was first exposed to Rails at an AjaxWorld conference in &amp;#8217;06 (at least, I think in 06). David Heinemeier Hansson actually presented!&lt;/p&gt;
-
-&lt;p&gt;Alas, I never could devote enough time to get past the tipping point. I&amp;#8217;m comfortable with C# and ASP.NET and evolving those skills has always been the priority. But the perfect storm has happened recently- in order to save space in my apartment, I got rid of my PC desktop and now only use my MacBook. I got tired of using Parallels and Visual Studio, and a new project came up in which I could either use ASP.NET MVC (which I&amp;#8217;m calling .MVC from now on) or RoR. I thought it was time to finally try RoR.&lt;/p&gt;
-
-&lt;p&gt;The verdict is Rails is great. I still can&amp;#8217;t &amp;#8220;express&amp;#8221; myself as well as I want to with Rails, but in comparison to .MVC Rails is pretty slick, and the evolution of Rails (specifically, &lt;a href=&#34;http://rubyonrails.org/merb&#34;&gt;combining Merb with Rails&lt;/a&gt;) is pretty exciting.  Most importantly, learning Rails has actually made me a better C#/ASP.NET MVC developer- if you&amp;#8217;re working with .MVC you have to spend at least an afternoon playing around with Rails- you&amp;#8217;ll get an invaluable perspective on MVC and web programming.&lt;/p&gt;
-
-&lt;p&gt;Now, a discussion on any programming language/framework always causes a heated debated.  I&amp;#8217;m not an expert (or even a beginner) on Ruby or Rails, but these are my initial impressions.&lt;/p&gt;
-
-&lt;p&gt;**Ruby, as a Language&lt;/p&gt;
-
-&lt;p&gt;**&lt;/p&gt;
-
-&lt;p&gt;One major leap between .MVC and Rails is Ruby as a language. Yes, Ruby and C# are both OO languages, but Ruby is a &lt;a href=&#34;http://en.wikipedia.org/wiki/Dynamic_programming_language&#34;&gt;dynamic language&lt;/a&gt;&amp;#8211; and if you&amp;#8217;re up on C# 4.0, you&amp;#8217;ll know that C# is on it&amp;#8217;s way to &lt;a href=&#34;http://ironpython-urls.blogspot.com/2008/12/c-becomes-dynamic-language.html&#34;&gt;becoming a dynamic language too&lt;/a&gt;. So if you want keep your C# skills on the cutting edge, get a head start on a full fledged dynamic language!&lt;/p&gt;
-
-&lt;p&gt;I originally made the mistake of jumping in and assuming Ruby was more vb- or js- esque than it actually was.  It&amp;#8217;s pretty smart in the way it behaves, almost a tailored version of C#.  Ruby&amp;#8217;s use of &lt;a href=&#34;http://glu.ttono.us/articles/2005/08/19/understanding-ruby-symbols&#34;&gt;symbols&lt;/a&gt; is pretty big difference over other languages that&amp;#8217;s extensively used in Rails and pretty handy.&lt;/p&gt;
-
-&lt;p&gt;Lambda expressions are also core part of Ruby, and are becoming a more integral part of C#.  This allows Ruby to be extremely concise in getting things done- which is awesome when you know what you&amp;#8217;re doing.  When you don&amp;#8217;t it can be confusing.  But lambdas make sense and are awesome when you know how to use them- and knowing Ruby can help you grasp lambda expressions in C#.&lt;/p&gt;
-
-&lt;p&gt;Rails leverages Ruby&amp;#8217;s dynamic language to make a lot happen under the hood.  I personally found letting the Rails framework do its thing as one of the biggest hurdles in learning Rails.  I wanted to either program or explicitly orchestrate everything!  One prime example is the persistence model in Rails-  I struggled to figure out how properties where set in models from migration classes- but it&amp;#8217;s entirely automatic!  Also, a lot of methods are created dynamically.  This allows an extremely fluid expression in writing code, making Ruby a pretty natural programming language.  (Example: the find_by ActiveRecord methods; declaring links like edit_xxx_path).&lt;/p&gt;
-
-&lt;p&gt;C# is making its way into being a more fluid programming language similar to Ruby.  Meaning, writing code and describing code are converging to be the same thing.  This is seen in lambda expressions and fluent interfaces, where you can daisy chain methods together.  &lt;a href=&#34;http://code.google.com/p/moq/&#34;&gt;Moq&lt;/a&gt; is a good example of the fluent interface approach.  I wouldn&amp;#8217;t be surprised if there&amp;#8217;s even a larger convergence with C# and Ruby in the years to come.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Rails, as a Framework&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Those in the .NET world who follow &lt;a href=&#34;http://codebetter.com/blogs/jeremy.miller/&#34;&gt;Jeremy Miller&lt;/a&gt; have probably heard the term of &lt;a href=&#34;http://codebetter.com/blogs/jeremy.miller/archive/2008/10/23/our-opinions-on-the-asp-net-mvc-introducing-the-thunderdome-principle.aspx&#34;&gt;opinionated software.&lt;/a&gt; He talks about opinionated software in the context of &lt;a href=&#34;http://code.google.com/p/fubumvc/&#34;&gt;FubuMVC&lt;/a&gt;, an alternative to .MVC written in an opinionated style.  It&amp;#8217;s worth checking out- it&amp;#8217;s very interesting to use but Rails still cracks the MVC shell wide open because it leverages Ruby&amp;#8217;s language features.&lt;/p&gt;
-
-&lt;p&gt;Opinionated software originally came from the Adam and Eve of Rails, &lt;a href=&#34;http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php&#34;&gt;37Signals&lt;/a&gt;.  Rails is highly opinionated- which is a blessing and curse.  The great thing about Rails is that it does what it does extremely well.  The MVC triangle are completely separate but seamlessly integrated, and extension points are explicit.  It&amp;#8217;s how MVC should be- and .MVC doesn&amp;#8217;t come close to Rails as an MVC framework.  Hate NHibernate configuration?  You&amp;#8217;ve never seen an ORM framework until you&amp;#8217;ve used ActiveRecord.  Really want to abandon code-behind files and excessive code in views? Really want to do TDD (and even BDD)?  Rails right now is the iPhone in a tin cup and string world.&lt;/p&gt;
-
-&lt;p&gt;Here are some highlights:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Respond_to method for rendering html, xml, json or whatever from a single controller.  .MVC ActionResult could learn a thing or two.&lt;/li&gt;
-&lt;li&gt;Rails&amp;#8217; partial layouts, partial actions and partial views are pretty slick compared .MVC&amp;#8217;s master pages, partial views, and partial layouts.  A prime example is using Rails partial views to render a collection of objects.&lt;/li&gt;
-&lt;li&gt;Passing data between controllers and actions is a lot slicker than .MVC ViewData&lt;/li&gt;
-&lt;li&gt;Rails helpers are a lot more helpful.&lt;/li&gt;
-&lt;li&gt;Rails is pretty slick when it comes to mapping between posted data and Models- a lot better than binders.&lt;/li&gt;
-&lt;li&gt;And of course, Rails&amp;#8217; database integration will make you wonder why you ever spent more than 5 minutes learning about databases- it&amp;#8217;s such a model centric approach with migrations you&amp;#8217;ll hate doing any data tier work in .MVC.  (Although learning databases are extremely important no matter what language/framework you use).&lt;/li&gt;
-&lt;li&gt;Plugins.  Rails Plugins are simply awesome- extremely fluid integration into your Rails application.  And combining plugins and other support with gem makes maintenance and upgrades a breeze (forget the GAC!)&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;Where .MVC Shines&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;I&amp;#8217;ve been hyping up Rails a lot, but there is a major disadvantage with Rails: good luck straying from the Rails track.  If you get off the train, you&amp;#8217;re walking alone.  This is something .MVC does well- allows you to change the game with whatever architecture pattern you wish.  It&amp;#8217;s one reason I love .NET- you can do literally do whatever want (yes, you can whatever you want with any language, but the .NET framework is pretty awesome).  .MVC is extremely extensible- from replaceable view engines, routing engines, controller factories, coupled with whatever architecture pattern you want.  And all very testable.  C#&amp;#8217;s usage of extension methods also add pretty nice extensibility to classes, too.&lt;/p&gt;
-
-&lt;p&gt;In fact, Rails&amp;#8217; plans to integrate with Merb as way to be more modular is a prime example of something .MVC already does well- allows you to mix and match what you want instead of forcing conformance.  Allowing total and explicit control over the application stack- including your architecture- is a great advantage in maintaining the health of ongoing software. Yes, you can evolve Rails to do what you want, but the transparency .NET offers is something I don&amp;#8217;t see in Rails just yet.  It&amp;#8217;s definitely a pro and a con- on the one hand, Rails offers fluid interaction between components.  On the other, .NET doesn&amp;#8217;t force you into any specific pattern.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;In Conclusion&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The bottom line is, check out Rails.  The best way to get started is with &lt;a href=&#34;http://guides.rails.info/&#34;&gt;the Rails guides&lt;/a&gt;.  From a .MVC perspective, you&amp;#8217;ll learn a lot about MVC and what an MVC framework can do- and it will help you out in your .NET development.  Knowing Ruby will also keep your C# skills sharp and help you in becoming a well rounded developer.  I&amp;#8217;ll even bet you carry over some Rails tricks to your next .MVC app!&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f&#34;&gt;&lt;img src=&#34;http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f&amp;#038;bgcolor=000099&#34; border=&#34;0&#34; alt=&#34;kick it on DotNetKicks.com&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        </item>
-      
-    
 
   </channel>
 </rss>
