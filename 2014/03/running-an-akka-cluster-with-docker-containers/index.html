@@ -320,7 +320,7 @@ akka.remote {
 }
 </pre>
 
-<p>As an example the <code>clustering.seed-ip</code> setting will use <em>127.0.0.1</em> as the default. If it can find a <em>CLUSTER_IP</em> or a <em>SEED_PORT_1600_TCP_ADDR</em> override it will use that instead. You&#8217;ll notice the latter override is using docker&#8217;s environment variable pattern for linking: that&#8217;s how we set the cluster&#8217;s seed node when using docker. You don&#8217;t need the <em>CLUSTER_IP</em> in this example but that&#8217;s the environment variable we use in upper environments and I didn&#8217;t want to change our infrastructure to conform to docker&#8217;s pattern. The cascading settings are helpful if you&#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.</p>
+<p>As an example the <code>clustering.seed-ip</code> setting will use <em>127.0.0.1</em> as the default. If it can find a _CLUSTER<em>IP</em> or a <em>SEED_PORT_1600_TCP_ADDR</em> override it will use that instead. You&#8217;ll notice the latter override is using docker&#8217;s environment variable pattern for linking: that&#8217;s how we set the cluster&#8217;s seed node when using docker. You don&#8217;t need the _CLUSTER<em>IP</em> in this example but that&#8217;s the environment variable we use in upper environments and I didn&#8217;t want to change our infrastructure to conform to docker&#8217;s pattern. The cascading settings are helpful if you&#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.</p>
 
 <p>With this override in place we can use substitution to set the seed nodes in the akka cluster configuration block. The expression <code>&quot;akka.tcp://&quot;${clustering.cluster.name}&quot;@&quot;${clustering.seed-ip}&quot;:&quot;${clustering.seed-port}</code> builds the proper akka URI so the current node can find the seed node in the cluster. Seed nodes avoid potential split-brain issues during network partitions. You&#8217;ll want to run more than one in production but for local testing one is fine. On a final note the cluster-name setting is arbitrary. Because the name of the actor system and the uri must match I prefer not to hard code values in multiple places.</p>
 
@@ -444,7 +444,16 @@ rm -rf docker/tmp/
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+      ga('create', 'UA-6576586-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </body>
 </html>
 

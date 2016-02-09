@@ -78,12 +78,12 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</loc>
+    <loc>http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/</loc>
     <lastmod>2014-06-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/</loc>
+    <loc>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</loc>
     <lastmod>2014-06-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -438,12 +438,12 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/12/best-comment-ever/</loc>
     <lastmod>2008-12-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/12/best-comment-ever/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/12/event-pooling-with-jquery-using-bind-and-trigger-managing-complex-javascript/</loc>
     <lastmod>2008-12-05T00:00:00+00:00</lastmod>
   </url>
   
@@ -458,12 +458,12 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</loc>
     <lastmod>2008-11-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</loc>
     <lastmod>2008-11-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -473,11 +473,11 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/404/</loc>
+    <loc>http://blog.michaelhamrah.com/wp-content/uploads/jqueryeventpool/</loc>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/wp-content/uploads/jqueryEventPool/</loc>
+    <loc>http://blog.michaelhamrah.com/404/</loc>
   </url>
   
 </urlset>

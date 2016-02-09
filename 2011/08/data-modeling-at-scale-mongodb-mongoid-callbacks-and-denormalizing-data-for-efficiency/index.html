@@ -279,7 +279,7 @@
 
 <p>I think embedded documents are an awesome feature of MongoDb, and the general approach, as recommended on the docs, is to say &#8220;Why wouldn&#8217;t I put this in an embedded document?&#8221;. I would say if the number of Items a User would have is relatively small (say, enough that you would not need to page them on a UI, or if it would not create large network io by just accessing that field) then it can be an embedded document. The decision is a lot simpler if it is a 1..1 relationship as the potential size is clearly defined. 1..N relationships break down with embedded relations when N becomes so large that accessing it as a whole is impractical. As far as I know there does not seem to be a way to page or sort through an embedded array directly within MongoDb: you need to pull the entire field out of the database with field selection and then page on the client. Note MongoDb offers numerous ways to find data within a document no matter how it is stored within the document (see the <a href="http://www.mongodb.org/display/DOCS/Dot+Notation+%28Reaching+into+Objects%29">docs on dot notation</a> for more). You can even query on the position of elements in an array, which is helpful with sorted embedded lists (find me all Users who have Item Z as the first element). But sadly you cannot say &#8220;give me the first to the Nth element in an embedded array&#8221;. It is all or nothing.</p>
 
-<p>Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use <a href="https://github.com/amatsuda/kaminari">Kaminari</a> as will<em>paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation _embedded within its root document</em> (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &#8220;give me all Items of type &#8216;X&#8217;. You need to say &#8220;give me all Users and its Items containing Items of type &#8216;X&rsquo;&#8221;. If you ever ran into the &#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&#8217;t.</p>
+<p>Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use <a href="https://github.com/amatsuda/kaminari">Kaminari</a> as will_paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation <em>embedded within its root document</em> (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &#8220;give me all Items of type &#8216;X&#8217;. You need to say &#8220;give me all Users and its Items containing Items of type &#8216;X&rsquo;&#8221;. If you ever ran into the &#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&#8217;t.</p>
 
 <h3 id="when-to-have-separate-collections:f1205cf7689e3c00acdefcf31ce7d859">When to Have Separate Collections</h3>
 
@@ -289,7 +289,7 @@
 
 <p>So what I&#8217;m really looking for is the ability to show the username with a list of Items when each has its own collection. The trick is I do not need to aggregate this data when I am pulling it out of the database. Instead I can assemble it before I put in the database and it will all be there when I take it out. Classic denormalization. With Mongoid and <a href="http://mongoid.org/docs/callbacks.html">Callbacks</a> this becomes extremely easy.</p>
 
-<p>On my Items class I add a <em>:belongs_to :user</em> property along with a <em>:username</em> property. I want to ensure that a <em>:user</em> always exists, so I add a <em>validates_presence_of :user</em> validation. I do not need to add <em>:username</em> to this validation as we will see below. Then I leverage callbacks like so:</p>
+<p>On my Items class I add a _:belongs<em>to :user</em> property along with a <em>:username</em> property. I want to ensure that a <em>:user</em> always exists, so I add a <em>validates_presence_of :user</em> validation. I do not need to add <em>:username</em> to this validation as we will see below. Then I leverage callbacks like so:</p>
 
 <pre class="syntax ruby">before_save :add_username
 
@@ -326,7 +326,16 @@ end</pre>
     </div>
 
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+      ga('create', 'UA-6576586-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </body>
 </html>
 

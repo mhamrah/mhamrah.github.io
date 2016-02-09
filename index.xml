@@ -1180,66 +1180,6 @@ settings = PluginDefaults.projectSettings // in a .scala file
     
       
         <item>
-          <title>Service Discovery Options with Marathon and Deimos</title>
-          <link>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</link>
-          <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
-          <author>Michael Hamrah</author>
-          <guid>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</guid>
-          <description>&lt;p&gt;I&amp;#8217;ve become a fan of Mesos and Marathon: combined with &lt;a href=&#34;https://github.com/mesosphere/deimos&#34;&gt;Deimos&lt;/a&gt; you can create a DIY PaaS for launching and scaling Docker containers across a number of nodes. Marathon supports a bare-bones service-discovery mechanism through its task API, but it would be nice for containers to register themselves with some service discovery tool themselves. In order to achieve this containers need to know their host ip address and the port Marathon assigned them so they could tell other interested services where they can be found.&lt;/p&gt;
-
-&lt;p&gt;Deimos allows default parameters to be passed in when executing &lt;code&gt;docker run&lt;/code&gt; and Marathon adds assigned ports to a container&amp;#8217;s environment variables. If a container has this information it can register it with a service discovery tool.&lt;/p&gt;
-
-&lt;p&gt;Here we assign the host&amp;#8217;s IP address as a default run option in our &lt;a href=&#34;https://github.com/mesosphere/deimos/#configuration&#34;&gt;Deimos config file&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre class=&#34;syntax bash&#34;&gt;#/etc/deimos.cfg
-[containers.options]
-append: [&#34;-e&#34;, &#34;HOST_IP=192.168.33.12&#34;]
-&lt;/pre&gt;
-
-&lt;p&gt;Now let&amp;#8217;s launch our mesos-sample container to our Mesos cluster via Marathon:&lt;/p&gt;
-
-&lt;pre class=&#34;syntax json&#34;&gt;// Post to http://192.168.33.12/v2/apps
-{
-  &#34;container&#34;: {
-    &#34;image&#34;: &#34;docker:///mhamrah/mesos-sample&#34;
-  },
-  &#34;cpus&#34;: &#34;1&#34;,
-  &#34;id&#34;: &#34;www&#34;,
-  &#34;instances&#34;: 1,
-  &#34;mem&#34;: 512,
-  &#34;ports&#34;: [0],
-  &#34;uris&#34;: [],
-  &#34;cmd&#34;: &#34;&#34;
-}
-&lt;/pre&gt;
-
-&lt;p&gt;Once our app is launch, we can inspect all the environment variables in our container with the &lt;code&gt;/env&lt;/code&gt; endpoint from &lt;code&gt;mhamrah/mesos-sample&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre class=&#34;syntax json&#34;&gt;curl http://192.168.33.12:31894/env
-[ {
-  &#34;HOSTNAME&#34; : &#34;a4305981619d&#34;
-}, {
-  &#34;PORT0&#34; : &#34;31894&#34;
-}, {
-  &#34;PATH&#34; : &#34;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&#34;
-}, {
-  &#34;PWD&#34; : &#34;/tmp/mesos-sandbox&#34;
-}, {
-  &#34;PORTS&#34; : &#34;31894&#34;
-}, {
-  &#34;HOST_IP&#34; : &#34;192.168.33.12&#34;
-}, {
-  &#34;PORT&#34; : &#34;31894&#34;
-}]
-&lt;/pre&gt;
-
-&lt;p&gt;With this information some startup script could use the &lt;code&gt;PORT&lt;/code&gt; (or &lt;code&gt;PORT0&lt;/code&gt;) and &lt;code&gt;HOST_IP&lt;/code&gt; to register itself for direct point-to-point communication in a cluster.&lt;/p&gt;
-</description>
-        </item>
-      
-    
-      
-        <item>
           <title>Accessing the Docker Host Server Within a Container</title>
           <link>http://blog.michaelhamrah.com/2014/06/accessing-the-docker-host-server-within-a-container/</link>
           <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
@@ -1317,6 +1257,66 @@ PWD=/
 &lt;/pre&gt;
 
 &lt;p&gt;If the container knows the ip address of its host, you can broadcast this out to other services via the container&amp;#8217;s application. Useful for service discovery tools run from within a container where you want to tell others the host IP so others can find you.&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>Service Discovery Options with Marathon and Deimos</title>
+          <link>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</link>
+          <pubDate>Sun, 29 Jun 2014 00:00:00 UTC</pubDate>
+          <author>Michael Hamrah</author>
+          <guid>http://blog.michaelhamrah.com/2014/06/service-discovery-options-with-marathon-and-deimos/</guid>
+          <description>&lt;p&gt;I&amp;#8217;ve become a fan of Mesos and Marathon: combined with &lt;a href=&#34;https://github.com/mesosphere/deimos&#34;&gt;Deimos&lt;/a&gt; you can create a DIY PaaS for launching and scaling Docker containers across a number of nodes. Marathon supports a bare-bones service-discovery mechanism through its task API, but it would be nice for containers to register themselves with some service discovery tool themselves. In order to achieve this containers need to know their host ip address and the port Marathon assigned them so they could tell other interested services where they can be found.&lt;/p&gt;
+
+&lt;p&gt;Deimos allows default parameters to be passed in when executing &lt;code&gt;docker run&lt;/code&gt; and Marathon adds assigned ports to a container&amp;#8217;s environment variables. If a container has this information it can register it with a service discovery tool.&lt;/p&gt;
+
+&lt;p&gt;Here we assign the host&amp;#8217;s IP address as a default run option in our &lt;a href=&#34;https://github.com/mesosphere/deimos/#configuration&#34;&gt;Deimos config file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre class=&#34;syntax bash&#34;&gt;#/etc/deimos.cfg
+[containers.options]
+append: [&#34;-e&#34;, &#34;HOST_IP=192.168.33.12&#34;]
+&lt;/pre&gt;
+
+&lt;p&gt;Now let&amp;#8217;s launch our mesos-sample container to our Mesos cluster via Marathon:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;// Post to http://192.168.33.12/v2/apps
+{
+  &#34;container&#34;: {
+    &#34;image&#34;: &#34;docker:///mhamrah/mesos-sample&#34;
+  },
+  &#34;cpus&#34;: &#34;1&#34;,
+  &#34;id&#34;: &#34;www&#34;,
+  &#34;instances&#34;: 1,
+  &#34;mem&#34;: 512,
+  &#34;ports&#34;: [0],
+  &#34;uris&#34;: [],
+  &#34;cmd&#34;: &#34;&#34;
+}
+&lt;/pre&gt;
+
+&lt;p&gt;Once our app is launch, we can inspect all the environment variables in our container with the &lt;code&gt;/env&lt;/code&gt; endpoint from &lt;code&gt;mhamrah/mesos-sample&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre class=&#34;syntax json&#34;&gt;curl http://192.168.33.12:31894/env
+[ {
+  &#34;HOSTNAME&#34; : &#34;a4305981619d&#34;
+}, {
+  &#34;PORT0&#34; : &#34;31894&#34;
+}, {
+  &#34;PATH&#34; : &#34;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&#34;
+}, {
+  &#34;PWD&#34; : &#34;/tmp/mesos-sandbox&#34;
+}, {
+  &#34;PORTS&#34; : &#34;31894&#34;
+}, {
+  &#34;HOST_IP&#34; : &#34;192.168.33.12&#34;
+}, {
+  &#34;PORT&#34; : &#34;31894&#34;
+}]
+&lt;/pre&gt;
+
+&lt;p&gt;With this information some startup script could use the &lt;code&gt;PORT&lt;/code&gt; (or &lt;code&gt;PORT0&lt;/code&gt;) and &lt;code&gt;HOST_IP&lt;/code&gt; to register itself for direct point-to-point communication in a cluster.&lt;/p&gt;
 </description>
         </item>
       
@@ -1764,7 +1764,7 @@ akka.remote {
 }
 &lt;/pre&gt;
 
-&lt;p&gt;As an example the &lt;code&gt;clustering.seed-ip&lt;/code&gt; setting will use &lt;em&gt;127.0.0.1&lt;/em&gt; as the default. If it can find a &lt;em&gt;CLUSTER_IP&lt;/em&gt; or a &lt;em&gt;SEED_PORT_1600_TCP_ADDR&lt;/em&gt; override it will use that instead. You&amp;#8217;ll notice the latter override is using docker&amp;#8217;s environment variable pattern for linking: that&amp;#8217;s how we set the cluster&amp;#8217;s seed node when using docker. You don&amp;#8217;t need the &lt;em&gt;CLUSTER_IP&lt;/em&gt; in this example but that&amp;#8217;s the environment variable we use in upper environments and I didn&amp;#8217;t want to change our infrastructure to conform to docker&amp;#8217;s pattern. The cascading settings are helpful if you&amp;#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.&lt;/p&gt;
+&lt;p&gt;As an example the &lt;code&gt;clustering.seed-ip&lt;/code&gt; setting will use &lt;em&gt;127.0.0.1&lt;/em&gt; as the default. If it can find a _CLUSTER&lt;em&gt;IP&lt;/em&gt; or a &lt;em&gt;SEED_PORT_1600_TCP_ADDR&lt;/em&gt; override it will use that instead. You&amp;#8217;ll notice the latter override is using docker&amp;#8217;s environment variable pattern for linking: that&amp;#8217;s how we set the cluster&amp;#8217;s seed node when using docker. You don&amp;#8217;t need the _CLUSTER&lt;em&gt;IP&lt;/em&gt; in this example but that&amp;#8217;s the environment variable we use in upper environments and I didn&amp;#8217;t want to change our infrastructure to conform to docker&amp;#8217;s pattern. The cascading settings are helpful if you&amp;#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.&lt;/p&gt;
 
 &lt;p&gt;With this override in place we can use substitution to set the seed nodes in the akka cluster configuration block. The expression &lt;code&gt;&amp;quot;akka.tcp://&amp;quot;${clustering.cluster.name}&amp;quot;@&amp;quot;${clustering.seed-ip}&amp;quot;:&amp;quot;${clustering.seed-port}&lt;/code&gt; builds the proper akka URI so the current node can find the seed node in the cluster. Seed nodes avoid potential split-brain issues during network partitions. You&amp;#8217;ll want to run more than one in production but for local testing one is fine. On a final note the cluster-name setting is arbitrary. Because the name of the actor system and the uri must match I prefer not to hard code values in multiple places.&lt;/p&gt;
 
@@ -2913,7 +2913,7 @@ def receive = {
 
 &lt;p&gt;A cache strategy is dependent on breaking content down to store and reuse later. The more granular you can get the more options you have to serve cached content. There are two main dimensions: what to cache and whom to cache for. It is difficult to HTTP cache a page with a &amp;#8220;Hello, {{ username }}&amp;#8221; in the header for all users. However if you break your users down into logged-in users and anonymous users you can easily HTTP cache your homepage for just anonymous users using the &lt;em&gt;vary&lt;/em&gt; http-header and defer to fragment caching for logged-in users.&lt;/p&gt;
 
-&lt;p&gt;Cache key naming strategies allow you to vary the &lt;em&gt;what&lt;/em&gt; with the &lt;em&gt;who for&lt;/em&gt; in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as &lt;em&gt;role:page:fragement:id&lt;/em&gt;, as in &lt;em&gt;anon:widget_detail:widget:1234&lt;/em&gt; and serve the &lt;em&gt;widget detail&lt;/em&gt; html fragment to anonymous users. The same widget could be represented in a search detail list via &lt;em&gt;anon:widget_search:widget:1234&lt;/em&gt;. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the &lt;em&gt;what&lt;/em&gt; and &lt;em&gt;who for&lt;/em&gt; with a good key naming strategy you can leverage fragment caching and save on rendering time.&lt;/p&gt;
+&lt;p&gt;Cache key naming strategies allow you to vary the &lt;em&gt;what&lt;/em&gt; with the &lt;em&gt;who for&lt;/em&gt; in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as &lt;em&gt;role:page:fragement:id&lt;/em&gt;, as in _anon:widget&lt;em&gt;detail:widget:1234&lt;/em&gt; and serve the &lt;em&gt;widget detail&lt;/em&gt; html fragment to anonymous users. The same widget could be represented in a search detail list via _anon:widget&lt;em&gt;search:widget:1234&lt;/em&gt;. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the &lt;em&gt;what&lt;/em&gt; and &lt;em&gt;who for&lt;/em&gt; with a good key naming strategy you can leverage fragment caching and save on rendering time.&lt;/p&gt;
 
 &lt;p&gt;The &lt;em&gt;vary&lt;/em&gt; http header is very helpful for dealing with HTTP caching and is not used widely enough. By varying URIs based on certain headers (like authorization or a cookie value) you can cache different representations for the same resource in a similar way to creating multiple keys. Think of the cache key as the URI plus whatever is set in the &lt;em&gt;vary&lt;/em&gt; header. This opens up the power of HTTP caching for dynamic or per-user content.&lt;/p&gt;
 
@@ -3085,9 +3085,10 @@ def receive = {
 
 &lt;p&gt;There&amp;#8217;s a lot of effort underway in making the web faster by changing how tcp connections are leveraged on the web. Http 1.0 requires a new connection for every request/response and browsers limit the number of parallel connections between client and server between two and six. Http keep-alive and &lt;a href=&#34;http://en.wikipedia.org/wiki/HTTP_pipelining&#34;&gt;http pipelining&lt;/a&gt; offer mechanisms to push more content through existing connections. Rails 3.1 introduced http streaming via chunked responses. Browsers can fetch assets in parallel with the main html response as soon as tags appear in the main response stream. &lt;a href=&#34;http://www.chromium.org/spdy/spdy-whitepaper&#34;&gt;Spdy&lt;/a&gt;, an effort by Google, is worth checking out: it proposes a multi-pronged attack to leverage as much flow as possible on a single connection. The docs also illustrate interesting pain points with the network on the web. The bottom line is simple: reduce the amount of data that needs to go from one place to another and make the travel time as fast as possible. Small amounts of data over existing parallel connections make a fast web.&lt;/p&gt;
 
-&lt;p&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/p&gt;
-
-&lt;p&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/dt&gt;
+&lt;dt&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/dt&gt;
+&lt;/dl&gt;
 
 &lt;p&gt;:&lt;a href=&#34;http://python.org/&#34;&gt;http://python.org/&lt;/a&gt;&lt;/p&gt;
 </description>
@@ -3295,7 +3296,7 @@ def receive = {
 
 &lt;p&gt;I think embedded documents are an awesome feature of MongoDb, and the general approach, as recommended on the docs, is to say &amp;#8220;Why wouldn&amp;#8217;t I put this in an embedded document?&amp;#8221;. I would say if the number of Items a User would have is relatively small (say, enough that you would not need to page them on a UI, or if it would not create large network io by just accessing that field) then it can be an embedded document. The decision is a lot simpler if it is a 1..1 relationship as the potential size is clearly defined. 1..N relationships break down with embedded relations when N becomes so large that accessing it as a whole is impractical. As far as I know there does not seem to be a way to page or sort through an embedded array directly within MongoDb: you need to pull the entire field out of the database with field selection and then page on the client. Note MongoDb offers numerous ways to find data within a document no matter how it is stored within the document (see the &lt;a href=&#34;http://www.mongodb.org/display/DOCS/Dot+Notation+%28Reaching+into+Objects%29&#34;&gt;docs on dot notation&lt;/a&gt; for more). You can even query on the position of elements in an array, which is helpful with sorted embedded lists (find me all Users who have Item Z as the first element). But sadly you cannot say &amp;#8220;give me the first to the Nth element in an embedded array&amp;#8221;. It is all or nothing.&lt;/p&gt;
 
-&lt;p&gt;Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use &lt;a href=&#34;https://github.com/amatsuda/kaminari&#34;&gt;Kaminari&lt;/a&gt; as will&lt;em&gt;paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation _embedded within its root document&lt;/em&gt; (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &amp;#8220;give me all Items of type &amp;#8216;X&amp;#8217;. You need to say &amp;#8220;give me all Users and its Items containing Items of type &amp;#8216;X&amp;rsquo;&amp;#8221;. If you ever ran into the &amp;#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&amp;#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&amp;#8217;t.&lt;/p&gt;
+&lt;p&gt;Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use &lt;a href=&#34;https://github.com/amatsuda/kaminari&#34;&gt;Kaminari&lt;/a&gt; as will_paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation &lt;em&gt;embedded within its root document&lt;/em&gt; (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &amp;#8220;give me all Items of type &amp;#8216;X&amp;#8217;. You need to say &amp;#8220;give me all Users and its Items containing Items of type &amp;#8216;X&amp;rsquo;&amp;#8221;. If you ever ran into the &amp;#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&amp;#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&amp;#8217;t.&lt;/p&gt;
 
 &lt;h3 id=&#34;when-to-have-separate-collections:f1205cf7689e3c00acdefcf31ce7d859&#34;&gt;When to Have Separate Collections&lt;/h3&gt;
 
@@ -3305,7 +3306,7 @@ def receive = {
 
 &lt;p&gt;So what I&amp;#8217;m really looking for is the ability to show the username with a list of Items when each has its own collection. The trick is I do not need to aggregate this data when I am pulling it out of the database. Instead I can assemble it before I put in the database and it will all be there when I take it out. Classic denormalization. With Mongoid and &lt;a href=&#34;http://mongoid.org/docs/callbacks.html&#34;&gt;Callbacks&lt;/a&gt; this becomes extremely easy.&lt;/p&gt;
 
-&lt;p&gt;On my Items class I add a &lt;em&gt;:belongs_to :user&lt;/em&gt; property along with a &lt;em&gt;:username&lt;/em&gt; property. I want to ensure that a &lt;em&gt;:user&lt;/em&gt; always exists, so I add a &lt;em&gt;validates_presence_of :user&lt;/em&gt; validation. I do not need to add &lt;em&gt;:username&lt;/em&gt; to this validation as we will see below. Then I leverage callbacks like so:&lt;/p&gt;
+&lt;p&gt;On my Items class I add a _:belongs&lt;em&gt;to :user&lt;/em&gt; property along with a &lt;em&gt;:username&lt;/em&gt; property. I want to ensure that a &lt;em&gt;:user&lt;/em&gt; always exists, so I add a &lt;em&gt;validates_presence_of :user&lt;/em&gt; validation. I do not need to add &lt;em&gt;:username&lt;/em&gt; to this validation as we will see below. Then I leverage callbacks like so:&lt;/p&gt;
 
 &lt;pre class=&#34;syntax ruby&#34;&gt;before_save :add_username
 
