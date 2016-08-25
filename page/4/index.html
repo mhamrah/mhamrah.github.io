@@ -229,9 +229,9 @@
       
     
       
-    
-      
         <a class="sidebar-nav-item " href="http://blog.michaelhamrah.com/about/">About</a>
+      
+    
       
     
       
@@ -577,7 +577,7 @@
 
 <p>A cache strategy is dependent on breaking content down to store and reuse later. The more granular you can get the more options you have to serve cached content. There are two main dimensions: what to cache and whom to cache for. It is difficult to HTTP cache a page with a &#8220;Hello, {{ username }}&#8221; in the header for all users. However if you break your users down into logged-in users and anonymous users you can easily HTTP cache your homepage for just anonymous users using the <em>vary</em> http-header and defer to fragment caching for logged-in users.</p>
 
-<p>Cache key naming strategies allow you to vary the <em>what</em> with the <em>who for</em> in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as <em>role:page:fragement:id</em>, as in <em>anon:widget_detail:widget:1234</em> and serve the <em>widget detail</em> html fragment to anonymous users. The same widget could be represented in a search detail list via <em>anon:widget_search:widget:1234</em>. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the <em>what</em> and <em>who for</em> with a good key naming strategy you can leverage fragment caching and save on rendering time.</p>
+<p>Cache key naming strategies allow you to vary the <em>what</em> with the <em>who for</em> in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as <em>role:page:fragement:id</em>, as in _anon:widget<em>detail:widget:1234</em> and serve the <em>widget detail</em> html fragment to anonymous users. The same widget could be represented in a search detail list via _anon:widget<em>search:widget:1234</em>. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the <em>what</em> and <em>who for</em> with a good key naming strategy you can leverage fragment caching and save on rendering time.</p>
 
 <p>The <em>vary</em> http header is very helpful for dealing with HTTP caching and is not used widely enough. By varying URIs based on certain headers (like authorization or a cookie value) you can cache different representations for the same resource in a similar way to creating multiple keys. Think of the cache key as the URI plus whatever is set in the <em>vary</em> header. This opens up the power of HTTP caching for dynamic or per-user content.</p>
 

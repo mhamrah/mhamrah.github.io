@@ -222,9 +222,10 @@
 
 &lt;p&gt;There&amp;#8217;s a lot of effort underway in making the web faster by changing how tcp connections are leveraged on the web. Http 1.0 requires a new connection for every request/response and browsers limit the number of parallel connections between client and server between two and six. Http keep-alive and &lt;a href=&#34;http://en.wikipedia.org/wiki/HTTP_pipelining&#34;&gt;http pipelining&lt;/a&gt; offer mechanisms to push more content through existing connections. Rails 3.1 introduced http streaming via chunked responses. Browsers can fetch assets in parallel with the main html response as soon as tags appear in the main response stream. &lt;a href=&#34;http://www.chromium.org/spdy/spdy-whitepaper&#34;&gt;Spdy&lt;/a&gt;, an effort by Google, is worth checking out: it proposes a multi-pronged attack to leverage as much flow as possible on a single connection. The docs also illustrate interesting pain points with the network on the web. The bottom line is simple: reduce the amount of data that needs to go from one place to another and make the travel time as fast as possible. Small amounts of data over existing parallel connections make a fast web.&lt;/p&gt;
 
-&lt;p&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/p&gt;
-
-&lt;p&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/dt&gt;
+&lt;dt&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/dt&gt;
+&lt;/dl&gt;
 
 &lt;p&gt;:&lt;a href=&#34;http://python.org/&#34;&gt;http://python.org/&lt;/a&gt;&lt;/p&gt;
 </description>

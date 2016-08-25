@@ -393,12 +393,12 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2009/02/using-moq-3-to-implement-tests-and-avoid-stubs/</loc>
+    <loc>http://blog.michaelhamrah.com/2009/02/tips-for-managin-aspnet-mvc-views/</loc>
     <lastmod>2009-02-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2009/02/tips-for-managin-aspnet-mvc-views/</loc>
+    <loc>http://blog.michaelhamrah.com/2009/02/using-moq-3-to-implement-tests-and-avoid-stubs/</loc>
     <lastmod>2009-02-25T00:00:00+00:00</lastmod>
   </url>
   
@@ -410,11 +410,6 @@
   <url>
     <loc>http://blog.michaelhamrah.com/2009/02/how-i-got-started-learning-ruby-on-rails/</loc>
     <lastmod>2009-02-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</loc>
-    <lastmod>2009-02-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -458,12 +453,12 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</loc>
     <lastmod>2008-11-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</loc>
+    <loc>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</loc>
     <lastmod>2008-11-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -473,11 +468,15 @@
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/404/</loc>
+    <loc>http://blog.michaelhamrah.com/1/01/</loc>
   </url>
   
   <url>
-    <loc>http://blog.michaelhamrah.com/wp-content/uploads/jqueryEventPool/</loc>
+    <loc>http://blog.michaelhamrah.com/wp-content/uploads/jqueryeventpool/</loc>
+  </url>
+  
+  <url>
+    <loc>http://blog.michaelhamrah.com/404/</loc>
   </url>
   
 </urlset>

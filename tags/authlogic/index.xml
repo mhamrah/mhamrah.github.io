@@ -90,7 +90,7 @@ end
 
 &lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;undefined local variable or method &#39;crypted_password_field&#39;&lt;/pre&gt;
 
-&lt;p&gt;Not having a crypted&lt;em&gt;pasword field made sense seeing how I wasn&amp;#8217;t supporting login or password fields. But I wasn&amp;#8217;t expecting _not&lt;/em&gt; having it to be an issue.  In fact, from the docs the only required field on the user model is :persistance_token. So what&amp;#8217;s going on?&lt;/p&gt;
+&lt;p&gt;Not having a crypted_pasword field made sense seeing how I wasn&amp;#8217;t supporting login or password fields. But I wasn&amp;#8217;t expecting &lt;em&gt;not&lt;/em&gt; having it to be an issue.  In fact, from the docs the only required field on the user model is :persistance_token. So what&amp;#8217;s going on?&lt;/p&gt;
 
 &lt;p&gt;Well, it turns out the Authlogic OpenID extension is designed to work with a login/password by default.  I had to dig through the stack trace and source code, but was able to figure out what&amp;#8217;s going on.  There&amp;#8217;s a method called &lt;span class=&#34;name&#34;&gt;attributes_to_save which is responsible for persisting form fields across the OpenID process.  By default, &lt;/span&gt;&lt;span class=&#34;name&#34;&gt;attributes_to_save includes password related information.  It treats the crypted password and password salt fields a little differently, which causes a problem when you don&amp;#8217;t have a :crypted_password attribute on your model.  The solution is simple: just override the method with one which doesn&amp;#8217;t include the password fields.  The user model will look like this:&lt;/span&gt;&lt;/p&gt;
 

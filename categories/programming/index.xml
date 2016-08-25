@@ -1764,7 +1764,7 @@ akka.remote {
 }
 &lt;/pre&gt;
 
-&lt;p&gt;As an example the &lt;code&gt;clustering.seed-ip&lt;/code&gt; setting will use &lt;em&gt;127.0.0.1&lt;/em&gt; as the default. If it can find a &lt;em&gt;CLUSTER_IP&lt;/em&gt; or a &lt;em&gt;SEED_PORT_1600_TCP_ADDR&lt;/em&gt; override it will use that instead. You&amp;#8217;ll notice the latter override is using docker&amp;#8217;s environment variable pattern for linking: that&amp;#8217;s how we set the cluster&amp;#8217;s seed node when using docker. You don&amp;#8217;t need the &lt;em&gt;CLUSTER_IP&lt;/em&gt; in this example but that&amp;#8217;s the environment variable we use in upper environments and I didn&amp;#8217;t want to change our infrastructure to conform to docker&amp;#8217;s pattern. The cascading settings are helpful if you&amp;#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.&lt;/p&gt;
+&lt;p&gt;As an example the &lt;code&gt;clustering.seed-ip&lt;/code&gt; setting will use &lt;em&gt;127.0.0.1&lt;/em&gt; as the default. If it can find a _CLUSTER&lt;em&gt;IP&lt;/em&gt; or a &lt;em&gt;SEED_PORT_1600_TCP_ADDR&lt;/em&gt; override it will use that instead. You&amp;#8217;ll notice the latter override is using docker&amp;#8217;s environment variable pattern for linking: that&amp;#8217;s how we set the cluster&amp;#8217;s seed node when using docker. You don&amp;#8217;t need the _CLUSTER&lt;em&gt;IP&lt;/em&gt; in this example but that&amp;#8217;s the environment variable we use in upper environments and I didn&amp;#8217;t want to change our infrastructure to conform to docker&amp;#8217;s pattern. The cascading settings are helpful if you&amp;#8217;re forced to follow one pattern depending on the environment. We do the same thing for the ip and port of the current node when launched.&lt;/p&gt;
 
 &lt;p&gt;With this override in place we can use substitution to set the seed nodes in the akka cluster configuration block. The expression &lt;code&gt;&amp;quot;akka.tcp://&amp;quot;${clustering.cluster.name}&amp;quot;@&amp;quot;${clustering.seed-ip}&amp;quot;:&amp;quot;${clustering.seed-port}&lt;/code&gt; builds the proper akka URI so the current node can find the seed node in the cluster. Seed nodes avoid potential split-brain issues during network partitions. You&amp;#8217;ll want to run more than one in production but for local testing one is fine. On a final note the cluster-name setting is arbitrary. Because the name of the actor system and the uri must match I prefer not to hard code values in multiple places.&lt;/p&gt;
 
@@ -2913,7 +2913,7 @@ def receive = {
 
 &lt;p&gt;A cache strategy is dependent on breaking content down to store and reuse later. The more granular you can get the more options you have to serve cached content. There are two main dimensions: what to cache and whom to cache for. It is difficult to HTTP cache a page with a &amp;#8220;Hello, {{ username }}&amp;#8221; in the header for all users. However if you break your users down into logged-in users and anonymous users you can easily HTTP cache your homepage for just anonymous users using the &lt;em&gt;vary&lt;/em&gt; http-header and defer to fragment caching for logged-in users.&lt;/p&gt;
 
-&lt;p&gt;Cache key naming strategies allow you to vary the &lt;em&gt;what&lt;/em&gt; with the &lt;em&gt;who for&lt;/em&gt; in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as &lt;em&gt;role:page:fragement:id&lt;/em&gt;, as in &lt;em&gt;anon:widget_detail:widget:1234&lt;/em&gt; and serve the &lt;em&gt;widget detail&lt;/em&gt; html fragment to anonymous users. The same widget could be represented in a search detail list via &lt;em&gt;anon:widget_search:widget:1234&lt;/em&gt;. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the &lt;em&gt;what&lt;/em&gt; and &lt;em&gt;who for&lt;/em&gt; with a good key naming strategy you can leverage fragment caching and save on rendering time.&lt;/p&gt;
+&lt;p&gt;Cache key naming strategies allow you to vary the &lt;em&gt;what&lt;/em&gt; with the &lt;em&gt;who for&lt;/em&gt; in a robust way by creating multiple versions of the same resource. A cache key could include the role of the user and the page, such as &lt;em&gt;role:page:fragement:id&lt;/em&gt;, as in _anon:widget&lt;em&gt;detail:widget:1234&lt;/em&gt; and serve the &lt;em&gt;widget detail&lt;/em&gt; html fragment to anonymous users. The same widget could be represented in a search detail list via _anon:widget&lt;em&gt;search:widget:1234&lt;/em&gt;. When widget 1234 updates both keys are invalidated. Most people opt for object caching for an easy win with dynamic pages, specifically by caching via a primary key or id. This can be helpful, but if you break down your content into the &lt;em&gt;what&lt;/em&gt; and &lt;em&gt;who for&lt;/em&gt; with a good key naming strategy you can leverage fragment caching and save on rendering time.&lt;/p&gt;
 
 &lt;p&gt;The &lt;em&gt;vary&lt;/em&gt; http header is very helpful for dealing with HTTP caching and is not used widely enough. By varying URIs based on certain headers (like authorization or a cookie value) you can cache different representations for the same resource in a similar way to creating multiple keys. Think of the cache key as the URI plus whatever is set in the &lt;em&gt;vary&lt;/em&gt; header. This opens up the power of HTTP caching for dynamic or per-user content.&lt;/p&gt;
 
@@ -3085,9 +3085,10 @@ def receive = {
 
 &lt;p&gt;There&amp;#8217;s a lot of effort underway in making the web faster by changing how tcp connections are leveraged on the web. Http 1.0 requires a new connection for every request/response and browsers limit the number of parallel connections between client and server between two and six. Http keep-alive and &lt;a href=&#34;http://en.wikipedia.org/wiki/HTTP_pipelining&#34;&gt;http pipelining&lt;/a&gt; offer mechanisms to push more content through existing connections. Rails 3.1 introduced http streaming via chunked responses. Browsers can fetch assets in parallel with the main html response as soon as tags appear in the main response stream. &lt;a href=&#34;http://www.chromium.org/spdy/spdy-whitepaper&#34;&gt;Spdy&lt;/a&gt;, an effort by Google, is worth checking out: it proposes a multi-pronged attack to leverage as much flow as possible on a single connection. The docs also illustrate interesting pain points with the network on the web. The bottom line is simple: reduce the amount of data that needs to go from one place to another and make the travel time as fast as possible. Small amounts of data over existing parallel connections make a fast web.&lt;/p&gt;
 
-&lt;p&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/p&gt;
-
-&lt;p&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;This approach shouldn&amp;#8217;t be limited to users and servers; optimizing network communication within your datacenter is extremely important. You have total control over your infrastructure and can tune your network accordingly. You can also choose your communication protocols: using something like &lt;a href=&#34;http://thrift.apache.org/&#34;&gt;thrift&lt;/a&gt; or &lt;a href=&#34;http://code.google.com/p/protobuf/&#34;&gt;protocol buffers&lt;/a&gt; can save a tremendous amount of bandwidth over xml-based web services on http.&lt;/p&gt;&lt;/dt&gt;
+&lt;dt&gt;:&lt;a href=&#34;http://www.scala-lang.org/&#34;&gt;http://www.scala-lang.org/&lt;/a&gt;&lt;/p&gt;&lt;/dt&gt;
+&lt;/dl&gt;
 
 &lt;p&gt;:&lt;a href=&#34;http://python.org/&#34;&gt;http://python.org/&lt;/a&gt;&lt;/p&gt;
 </description>
@@ -3295,7 +3296,7 @@ def receive = {
 
 &lt;p&gt;I think embedded documents are an awesome feature of MongoDb, and the general approach, as recommended on the docs, is to say &amp;#8220;Why wouldn&amp;#8217;t I put this in an embedded document?&amp;#8221;. I would say if the number of Items a User would have is relatively small (say, enough that you would not need to page them on a UI, or if it would not create large network io by just accessing that field) then it can be an embedded document. The decision is a lot simpler if it is a 1..1 relationship as the potential size is clearly defined. 1..N relationships break down with embedded relations when N becomes so large that accessing it as a whole is impractical. As far as I know there does not seem to be a way to page or sort through an embedded array directly within MongoDb: you need to pull the entire field out of the database with field selection and then page on the client. Note MongoDb offers numerous ways to find data within a document no matter how it is stored within the document (see the &lt;a href=&#34;http://www.mongodb.org/display/DOCS/Dot+Notation+%28Reaching+into+Objects%29&#34;&gt;docs on dot notation&lt;/a&gt; for more). You can even query on the position of elements in an array, which is helpful with sorted embedded lists (find me all Users who have Item Z as the first element). But sadly you cannot say &amp;#8220;give me the first to the Nth element in an embedded array&amp;#8221;. It is all or nothing.&lt;/p&gt;
 
-&lt;p&gt;Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use &lt;a href=&#34;https://github.com/amatsuda/kaminari&#34;&gt;Kaminari&lt;/a&gt; as will&lt;em&gt;paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation _embedded within its root document&lt;/em&gt; (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &amp;#8220;give me all Items of type &amp;#8216;X&amp;#8217;. You need to say &amp;#8220;give me all Users and its Items containing Items of type &amp;#8216;X&amp;rsquo;&amp;#8221;. If you ever ran into the &amp;#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&amp;#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&amp;#8217;t.&lt;/p&gt;
+&lt;p&gt;Now Mongoid does offer the ability to page through an embedded association using a gem (seems like people use &lt;a href=&#34;https://github.com/amatsuda/kaminari&#34;&gt;Kaminari&lt;/a&gt; as will_paginate was removed from Mongoid some time ago). However, this paging is done within the ruby object for embedded relations. More importantly, it is only done on a per-document basis. Under the hood you need to grab the entire embedded relation &lt;em&gt;embedded within its root document&lt;/em&gt; (think an array of Users containing an array of Items, not a plain array of Items). This means you cannot grab a collection of embedded documents which span multiple root documents. You cannot say &amp;#8220;give me all Items of type &amp;#8216;X&amp;#8217;. You need to say &amp;#8220;give me all Users and its Items containing Items of type &amp;#8216;X&amp;rsquo;&amp;#8221;. If you ever ran into the &amp;#8220;Access to the collection for XXX is not allowed since it is an embedded document, please access a collection from the root document&amp;#8221; error you are probably trying to issue an unsupported Mongoid query by bypassing a root document. You think you can treat embedded relations like normal collections, but you can&amp;#8217;t.&lt;/p&gt;
 
 &lt;h3 id=&#34;when-to-have-separate-collections:f1205cf7689e3c00acdefcf31ce7d859&#34;&gt;When to Have Separate Collections&lt;/h3&gt;
 
@@ -3305,7 +3306,7 @@ def receive = {
 
 &lt;p&gt;So what I&amp;#8217;m really looking for is the ability to show the username with a list of Items when each has its own collection. The trick is I do not need to aggregate this data when I am pulling it out of the database. Instead I can assemble it before I put in the database and it will all be there when I take it out. Classic denormalization. With Mongoid and &lt;a href=&#34;http://mongoid.org/docs/callbacks.html&#34;&gt;Callbacks&lt;/a&gt; this becomes extremely easy.&lt;/p&gt;
 
-&lt;p&gt;On my Items class I add a &lt;em&gt;:belongs_to :user&lt;/em&gt; property along with a &lt;em&gt;:username&lt;/em&gt; property. I want to ensure that a &lt;em&gt;:user&lt;/em&gt; always exists, so I add a &lt;em&gt;validates_presence_of :user&lt;/em&gt; validation. I do not need to add &lt;em&gt;:username&lt;/em&gt; to this validation as we will see below. Then I leverage callbacks like so:&lt;/p&gt;
+&lt;p&gt;On my Items class I add a _:belongs&lt;em&gt;to :user&lt;/em&gt; property along with a &lt;em&gt;:username&lt;/em&gt; property. I want to ensure that a &lt;em&gt;:user&lt;/em&gt; always exists, so I add a &lt;em&gt;validates_presence_of :user&lt;/em&gt; validation. I do not need to add &lt;em&gt;:username&lt;/em&gt; to this validation as we will see below. Then I leverage callbacks like so:&lt;/p&gt;
 
 &lt;pre class=&#34;syntax ruby&#34;&gt;before_save :add_username
 
@@ -3573,7 +3574,7 @@ end&lt;/pre&gt;
           <pubDate>Fri, 10 Dec 2010 00:00:00 UTC</pubDate>
           <author>Michael Hamrah</author>
           <guid>http://blog.michaelhamrah.com/2010/12/machinist-2-mongoid-embeds_many-goodness/</guid>
-          <description>&lt;p&gt;I had a heck of a time getting fixtures working with &lt;a href=&#34;http://mongoid.org/&#34;&gt;Mongoid&lt;/a&gt; when it came to a required embeds&lt;em&gt;many property.  No matter what I did, I kept getting an error: &amp;#8220;_Access to the collection for&lt;/em&gt; XXX &lt;em&gt;is not allowed since it is an embedded document, please access a collection from the root document.&amp;#8221;&lt;/em&gt;&lt;/p&gt;
+          <description>&lt;p&gt;I had a heck of a time getting fixtures working with &lt;a href=&#34;http://mongoid.org/&#34;&gt;Mongoid&lt;/a&gt; when it came to a required embeds_many property.  No matter what I did, I kept getting an error: &amp;#8220;&lt;em&gt;Access to the collection for&lt;/em&gt; XXX &lt;em&gt;is not allowed since it is an embedded document, please access a collection from the root document.&amp;#8221;&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;Then I stumbled upon &lt;a href=&#34;https://github.com/notahat/machinist&#34;&gt;Machinist&lt;/a&gt; v2 and the &lt;a href=&#34;https://github.com/nmerouze/machinist_mongo&#34;&gt;machinist_mongo&lt;/a&gt; gem which solved the problem.  And it had a nice API, to boot!&lt;/p&gt;
 
@@ -5031,7 +5032,7 @@ end
 
 &lt;pre class=&#34;brush: bash; title: ; notranslate&#34; title=&#34;&#34;&gt;undefined local variable or method &#39;crypted_password_field&#39;&lt;/pre&gt;
 
-&lt;p&gt;Not having a crypted&lt;em&gt;pasword field made sense seeing how I wasn&amp;#8217;t supporting login or password fields. But I wasn&amp;#8217;t expecting _not&lt;/em&gt; having it to be an issue.  In fact, from the docs the only required field on the user model is :persistance_token. So what&amp;#8217;s going on?&lt;/p&gt;
+&lt;p&gt;Not having a crypted_pasword field made sense seeing how I wasn&amp;#8217;t supporting login or password fields. But I wasn&amp;#8217;t expecting &lt;em&gt;not&lt;/em&gt; having it to be an issue.  In fact, from the docs the only required field on the user model is :persistance_token. So what&amp;#8217;s going on?&lt;/p&gt;
 
 &lt;p&gt;Well, it turns out the Authlogic OpenID extension is designed to work with a login/password by default.  I had to dig through the stack trace and source code, but was able to figure out what&amp;#8217;s going on.  There&amp;#8217;s a method called &lt;span class=&#34;name&#34;&gt;attributes_to_save which is responsible for persisting form fields across the OpenID process.  By default, &lt;/span&gt;&lt;span class=&#34;name&#34;&gt;attributes_to_save includes password related information.  It treats the crypted password and password salt fields a little differently, which causes a problem when you don&amp;#8217;t have a :crypted_password attribute on your model.  The solution is simple: just override the method with one which doesn&amp;#8217;t include the password fields.  The user model will look like this:&lt;/span&gt;&lt;/p&gt;
 
@@ -5505,7 +5506,7 @@ return order;
           <guid>http://blog.michaelhamrah.com/2009/02/how-to-hire-a-software-developer-the-in-house-interview-part-two/</guid>
           <description>
 
-&lt;p&gt;&lt;em&gt;Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.  The in house interview post has two parts.  This part focuses on non-development questions.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;_Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.  The in house interview post has two parts.  This part focuses on non-development questions._&lt;/p&gt;
 
 &lt;h3 id=&#34;key-concepts:3dcafca7ca783ca88343fc510ece7ff5&#34;&gt;&lt;strong&gt;Key Concepts&lt;/strong&gt;&lt;/h3&gt;
 
@@ -5955,68 +5956,6 @@ return order;
     
       
         <item>
-          <title>Digging into Ruby on Rails from C# and .MVC (Asp.Net MVC)</title>
-          <link>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</link>
-          <pubDate>Wed, 18 Feb 2009 00:00:00 UTC</pubDate>
-          <author>Michael Hamrah</author>
-          <guid>http://blog.michaelhamrah.com/2009/02/digging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc/</guid>
-          <description>&lt;p&gt;One of the things I&amp;#8217;ve been doing lately is digging into Ruby on Rails. I&amp;#8217;ve always wanted to learn Rails since I was first exposed to Rails at an AjaxWorld conference in &amp;#8217;06 (at least, I think in 06). David Heinemeier Hansson actually presented!&lt;/p&gt;
-
-&lt;p&gt;Alas, I never could devote enough time to get past the tipping point. I&amp;#8217;m comfortable with C# and ASP.NET and evolving those skills has always been the priority. But the perfect storm has happened recently- in order to save space in my apartment, I got rid of my PC desktop and now only use my MacBook. I got tired of using Parallels and Visual Studio, and a new project came up in which I could either use ASP.NET MVC (which I&amp;#8217;m calling .MVC from now on) or RoR. I thought it was time to finally try RoR.&lt;/p&gt;
-
-&lt;p&gt;The verdict is Rails is great. I still can&amp;#8217;t &amp;#8220;express&amp;#8221; myself as well as I want to with Rails, but in comparison to .MVC Rails is pretty slick, and the evolution of Rails (specifically, &lt;a href=&#34;http://rubyonrails.org/merb&#34;&gt;combining Merb with Rails&lt;/a&gt;) is pretty exciting.  Most importantly, learning Rails has actually made me a better C#/ASP.NET MVC developer- if you&amp;#8217;re working with .MVC you have to spend at least an afternoon playing around with Rails- you&amp;#8217;ll get an invaluable perspective on MVC and web programming.&lt;/p&gt;
-
-&lt;p&gt;Now, a discussion on any programming language/framework always causes a heated debated.  I&amp;#8217;m not an expert (or even a beginner) on Ruby or Rails, but these are my initial impressions.&lt;/p&gt;
-
-&lt;p&gt;**Ruby, as a Language&lt;/p&gt;
-
-&lt;p&gt;**&lt;/p&gt;
-
-&lt;p&gt;One major leap between .MVC and Rails is Ruby as a language. Yes, Ruby and C# are both OO languages, but Ruby is a &lt;a href=&#34;http://en.wikipedia.org/wiki/Dynamic_programming_language&#34;&gt;dynamic language&lt;/a&gt;&amp;#8211; and if you&amp;#8217;re up on C# 4.0, you&amp;#8217;ll know that C# is on it&amp;#8217;s way to &lt;a href=&#34;http://ironpython-urls.blogspot.com/2008/12/c-becomes-dynamic-language.html&#34;&gt;becoming a dynamic language too&lt;/a&gt;. So if you want keep your C# skills on the cutting edge, get a head start on a full fledged dynamic language!&lt;/p&gt;
-
-&lt;p&gt;I originally made the mistake of jumping in and assuming Ruby was more vb- or js- esque than it actually was.  It&amp;#8217;s pretty smart in the way it behaves, almost a tailored version of C#.  Ruby&amp;#8217;s use of &lt;a href=&#34;http://glu.ttono.us/articles/2005/08/19/understanding-ruby-symbols&#34;&gt;symbols&lt;/a&gt; is pretty big difference over other languages that&amp;#8217;s extensively used in Rails and pretty handy.&lt;/p&gt;
-
-&lt;p&gt;Lambda expressions are also core part of Ruby, and are becoming a more integral part of C#.  This allows Ruby to be extremely concise in getting things done- which is awesome when you know what you&amp;#8217;re doing.  When you don&amp;#8217;t it can be confusing.  But lambdas make sense and are awesome when you know how to use them- and knowing Ruby can help you grasp lambda expressions in C#.&lt;/p&gt;
-
-&lt;p&gt;Rails leverages Ruby&amp;#8217;s dynamic language to make a lot happen under the hood.  I personally found letting the Rails framework do its thing as one of the biggest hurdles in learning Rails.  I wanted to either program or explicitly orchestrate everything!  One prime example is the persistence model in Rails-  I struggled to figure out how properties where set in models from migration classes- but it&amp;#8217;s entirely automatic!  Also, a lot of methods are created dynamically.  This allows an extremely fluid expression in writing code, making Ruby a pretty natural programming language.  (Example: the find_by ActiveRecord methods; declaring links like edit_xxx_path).&lt;/p&gt;
-
-&lt;p&gt;C# is making its way into being a more fluid programming language similar to Ruby.  Meaning, writing code and describing code are converging to be the same thing.  This is seen in lambda expressions and fluent interfaces, where you can daisy chain methods together.  &lt;a href=&#34;http://code.google.com/p/moq/&#34;&gt;Moq&lt;/a&gt; is a good example of the fluent interface approach.  I wouldn&amp;#8217;t be surprised if there&amp;#8217;s even a larger convergence with C# and Ruby in the years to come.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Rails, as a Framework&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Those in the .NET world who follow &lt;a href=&#34;http://codebetter.com/blogs/jeremy.miller/&#34;&gt;Jeremy Miller&lt;/a&gt; have probably heard the term of &lt;a href=&#34;http://codebetter.com/blogs/jeremy.miller/archive/2008/10/23/our-opinions-on-the-asp-net-mvc-introducing-the-thunderdome-principle.aspx&#34;&gt;opinionated software.&lt;/a&gt; He talks about opinionated software in the context of &lt;a href=&#34;http://code.google.com/p/fubumvc/&#34;&gt;FubuMVC&lt;/a&gt;, an alternative to .MVC written in an opinionated style.  It&amp;#8217;s worth checking out- it&amp;#8217;s very interesting to use but Rails still cracks the MVC shell wide open because it leverages Ruby&amp;#8217;s language features.&lt;/p&gt;
-
-&lt;p&gt;Opinionated software originally came from the Adam and Eve of Rails, &lt;a href=&#34;http://gettingreal.37signals.com/ch04_Make_Opinionated_Software.php&#34;&gt;37Signals&lt;/a&gt;.  Rails is highly opinionated- which is a blessing and curse.  The great thing about Rails is that it does what it does extremely well.  The MVC triangle are completely separate but seamlessly integrated, and extension points are explicit.  It&amp;#8217;s how MVC should be- and .MVC doesn&amp;#8217;t come close to Rails as an MVC framework.  Hate NHibernate configuration?  You&amp;#8217;ve never seen an ORM framework until you&amp;#8217;ve used ActiveRecord.  Really want to abandon code-behind files and excessive code in views? Really want to do TDD (and even BDD)?  Rails right now is the iPhone in a tin cup and string world.&lt;/p&gt;
-
-&lt;p&gt;Here are some highlights:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Respond_to method for rendering html, xml, json or whatever from a single controller.  .MVC ActionResult could learn a thing or two.&lt;/li&gt;
-&lt;li&gt;Rails&amp;#8217; partial layouts, partial actions and partial views are pretty slick compared .MVC&amp;#8217;s master pages, partial views, and partial layouts.  A prime example is using Rails partial views to render a collection of objects.&lt;/li&gt;
-&lt;li&gt;Passing data between controllers and actions is a lot slicker than .MVC ViewData&lt;/li&gt;
-&lt;li&gt;Rails helpers are a lot more helpful.&lt;/li&gt;
-&lt;li&gt;Rails is pretty slick when it comes to mapping between posted data and Models- a lot better than binders.&lt;/li&gt;
-&lt;li&gt;And of course, Rails&amp;#8217; database integration will make you wonder why you ever spent more than 5 minutes learning about databases- it&amp;#8217;s such a model centric approach with migrations you&amp;#8217;ll hate doing any data tier work in .MVC.  (Although learning databases are extremely important no matter what language/framework you use).&lt;/li&gt;
-&lt;li&gt;Plugins.  Rails Plugins are simply awesome- extremely fluid integration into your Rails application.  And combining plugins and other support with gem makes maintenance and upgrades a breeze (forget the GAC!)&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;Where .MVC Shines&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;I&amp;#8217;ve been hyping up Rails a lot, but there is a major disadvantage with Rails: good luck straying from the Rails track.  If you get off the train, you&amp;#8217;re walking alone.  This is something .MVC does well- allows you to change the game with whatever architecture pattern you wish.  It&amp;#8217;s one reason I love .NET- you can do literally do whatever want (yes, you can whatever you want with any language, but the .NET framework is pretty awesome).  .MVC is extremely extensible- from replaceable view engines, routing engines, controller factories, coupled with whatever architecture pattern you want.  And all very testable.  C#&amp;#8217;s usage of extension methods also add pretty nice extensibility to classes, too.&lt;/p&gt;
-
-&lt;p&gt;In fact, Rails&amp;#8217; plans to integrate with Merb as way to be more modular is a prime example of something .MVC already does well- allows you to mix and match what you want instead of forcing conformance.  Allowing total and explicit control over the application stack- including your architecture- is a great advantage in maintaining the health of ongoing software. Yes, you can evolve Rails to do what you want, but the transparency .NET offers is something I don&amp;#8217;t see in Rails just yet.  It&amp;#8217;s definitely a pro and a con- on the one hand, Rails offers fluid interaction between components.  On the other, .NET doesn&amp;#8217;t force you into any specific pattern.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;In Conclusion&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The bottom line is, check out Rails.  The best way to get started is with &lt;a href=&#34;http://guides.rails.info/&#34;&gt;the Rails guides&lt;/a&gt;.  From a .MVC perspective, you&amp;#8217;ll learn a lot about MVC and what an MVC framework can do- and it will help you out in your .NET development.  Knowing Ruby will also keep your C# skills sharp and help you in becoming a well rounded developer.  I&amp;#8217;ll even bet you carry over some Rails tricks to your next .MVC app!&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.dotnetkicks.com/kick/?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f&#34;&gt;&lt;img src=&#34;http://www.dotnetkicks.com/Services/Images/KickItImageGenerator.ashx?url=http%3a%2f%2fwww.michaelhamrah.com%2fblog%2findex.php%2f2009%2f02%2fdigging-into-ruby-on-rails-from-c-and-mvc-aspnet-mvc%2f&amp;#038;bgcolor=000099&#34; border=&#34;0&#34; alt=&#34;kick it on DotNetKicks.com&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        </item>
-      
-    
-      
-        <item>
           <title>All those jQuery fans: new event delegation</title>
           <link>http://blog.michaelhamrah.com/2009/01/all-those-jquery-fans-new-event-delegation/</link>
           <pubDate>Wed, 14 Jan 2009 00:00:00 UTC</pubDate>
@@ -6451,7 +6390,7 @@ $(&#34;#itemContainer&#34;).append(toInject);
           <pubDate>Wed, 10 Dec 2008 00:00:00 UTC</pubDate>
           <author>Michael Hamrah</author>
           <guid>http://blog.michaelhamrah.com/2008/12/hiring-software-developers-the-in-house-interview-open-ended-questions/</guid>
-          <description>&lt;p&gt;&lt;em&gt;Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.  I needed to break the in house interview post into two parts.  This part focuses on open ended questions.&lt;/em&gt;&lt;/p&gt;
+          <description>&lt;p&gt;_Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.  I needed to break the in house interview post into two parts.  This part focuses on open ended questions._&lt;/p&gt;
 
 &lt;p&gt;The in house interview is by far the most important part of the hiring process.  It&amp;#8217;s also the most difficult.  You need to vet a person thoroughly in a very short time.  If you don&amp;#8217;t have a strategy for the in house interview you will not effectively gauge a candidate nor be able to make a confident &amp;#8216;yes&amp;#8217; decision.  Furthermore, if you enter into a bargaining/negotiating process, you want enough information to know how far to go in the negotiations.&lt;/p&gt;
 
@@ -6766,7 +6705,7 @@ $(&#39;#eventFired&#39;).html(text);
           <pubDate>Sat, 29 Nov 2008 00:00:00 UTC</pubDate>
           <author>Michael Hamrah</author>
           <guid>http://blog.michaelhamrah.com/2008/11/how-to-hire-a-software-developer/</guid>
-          <description>&lt;p&gt;&lt;em&gt;Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+          <description>&lt;p&gt;_Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;._&lt;/p&gt;
 
 &lt;p&gt;We just finished a round of recruiting at our company, and I&amp;#8217;m somewhat happy it&amp;#8217;s over.  Hiring software developers, or any other type of employee, is never an easy task.  How do you know you&amp;#8217;re picking the right person? How do you know if they&amp;#8217;re qualified? How do you know they&amp;#8217;ll deliver as well as they interview?  These are all questions we ask ourselves as we&amp;#8217;re harassed by recruiters, rummage over resumes, and get our interview questions ready.  However, I&amp;#8217;ve learned a great deal during this last round of recruiting, and am happy to say it&amp;#8217;s no longer a painful process.&lt;/p&gt;
 
@@ -6794,7 +6733,7 @@ $(&#39;#eventFired&#39;).html(text);
           <pubDate>Sat, 29 Nov 2008 00:00:00 UTC</pubDate>
           <author>Michael Hamrah</author>
           <guid>http://blog.michaelhamrah.com/2008/11/how-to-interview-a-software-developer-the-ad-and-resumes/</guid>
-          <description>&lt;p&gt;&lt;em&gt;Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+          <description>&lt;p&gt;_Note: This is part of a series on hiring software developers.  See &lt;a title=&#34;Interview&#34; href=&#34;http://www.michaelhamrah.com/blog/index.php/tag/interview/&#34; target=&#34;_self&#34;&gt;articles tagged with interview for the series&lt;/a&gt;._&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;The Ad&lt;/strong&gt;&lt;/p&gt;
 
